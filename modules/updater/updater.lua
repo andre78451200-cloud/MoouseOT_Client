@@ -26,6 +26,10 @@ local function encodeUrlPath(path)
   return path:gsub(" ", "%%20")
 end
 
+local function normalizeChecksum(hex)
+  return hex:gsub("^0+", "")
+end
+
 local function downloadFiles(url, files, index, retries, doneCallback)
   if not updaterWindow then return end
   local entry = files[index]
@@ -45,7 +49,7 @@ local function downloadFiles(url, files, index, retries, doneCallback)
 
   httpOperationId = HTTP.download(url .. encodeUrlPath(file), file,
     function(file, checksum, err)
-      if not err and checksum ~= file_checksum then
+      if not err and normalizeChecksum(checksum) ~= normalizeChecksum(file_checksum) then
         err = "Invalid checksum of: " .. file .. ".\nShould be " .. file_checksum .. ", is: " .. checksum
       end
       if err then
@@ -101,7 +105,7 @@ local function updateFiles(data, keepCurrentFiles)
   -- update files
   for file, checksum in pairs(data.files) do
     table.insert(finalFiles, file)
-    if not localFiles[file] or localFiles[file] ~= checksum then
+    if not localFiles[file] or normalizeChecksum(localFiles[file]) ~= normalizeChecksum(checksum) then
       table.insert(toUpdate, { file, checksum })
       table.insert(toUpdateFiles, file)
       newFiles = true
