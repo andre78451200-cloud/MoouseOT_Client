@@ -88,7 +88,14 @@ local function updateFiles(data, keepCurrentFiles)
 
   local newFiles = false
   local finalFiles = {}
-  local localFiles = g_resources.filesChecksums()
+  local rawLocalFiles = g_resources.filesChecksums()
+
+  -- Normalizar paths: remover "/" do inicio para bater com o manifest
+  local localFiles = {}
+  for file, checksum in pairs(rawLocalFiles) do
+    local normalized = file:gsub("^/+", "")
+    localFiles[normalized] = checksum
+  end
 
   local toUpdate = {}
   local toUpdateFiles = {}
