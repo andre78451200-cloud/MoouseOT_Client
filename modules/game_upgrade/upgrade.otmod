@@ -1,0 +1,11 @@
+Module
+  name: game_upgrade
+  description: Sistema de Upgrade Visual
+  author: Baiak Team
+  website: https://github.com/baiak
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1006
+  scripts: [ upgrade ]
+  @onLoad: init()
+  @onUnload: terminate()

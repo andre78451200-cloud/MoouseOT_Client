@@ -1,0 +1,258 @@
+MiniWindow
+  id: mapViewWindow
+  !text: tr('Map View')
+  height: 200
+  icon: /images/topbuttons/minimap
+  @onClose: modules.game_minimap.onMapViewClose()
+  &save: false
+
+  MiniWindowContents
+    padding: 0
+    margin-left: 0
+    margin-right: 0
+    margin-bottom: 0
+
+    UIMinimap
+      id: mapViewMinimap
+      anchors.fill: parent
+      margin: 1
+      draggable: true
+      focusable: false
+      cross: true
+      color: black
+
+    Button
+      id: mvZoomIn
+      image-source: /images/automap/automap_buttons
+      image-clip: 0 40 20 20
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-right: 4
+      margin-bottom: 4
+      size: 20 20
+      @onClick: modules.game_minimap.zoomIn()
+
+      $pressed !disabled:
+        image-clip: 20 40 20 20
+
+    Button
+      id: mvZoomOut
+      image-source: /images/automap/automap_buttons
+      image-clip: 0 20 20 20
+      anchors.right: mvZoomIn.right
+      anchors.bottom: mvZoomIn.top
+      margin-bottom: 2
+      size: 20 20
+      @onClick: modules.game_minimap.zoomOut()
+
+      $pressed !disabled:
+        image-clip: 20 20 20 20
+
+    Button
+      id: mvFullMap
+      image-source: /images/automap/automap_buttons
+      image-clip: 0 0 20 20
+      anchors.right: mvZoomOut.right
+      anchors.bottom: mvZoomOut.top
+      margin-bottom: 2
+      size: 20 20
+      @onClick: modules.game_minimap.fullscreen()
+
+      $pressed !disabled:
+        image-clip: 20 0 20 20
+
+    UIWidget
+      id: mvLayersPanel
+      size: 20 68
+      anchors.right: mvFullMap.left
+      anchors.bottom: parent.bottom
+      margin-right: 4
+      margin-bottom: 4
+
+      UIWidget
+        id: automapLayers
+        image-source: /images/automap/automap_indicator_maplayers
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        image-clip: 98 0 14 67
+        size: 14 67
+
+      UIWidget
+        image-source: /images/ui/vertical_line_dark
+        margin-left: 2
+        margin-top: 4
+        margin-bottom: 4
+        anchors.left: automapLayers.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        width: 1
+
+      UIWidget
+        id: layersMark
+        anchors.left: prev.right
+        anchors.top: automapLayers.top
+        image-source: /images/automap/automap_indicator_slider_left
+        margin-top: 28
+
+      Button
+        image-source: /images/automap/automap_phantom
+        anchors.left: automapLayers.left
+        anchors.right: automapLayers.right
+        anchors.top: automapLayers.top
+        anchors.bottom: automapLayers.verticalCenter
+        @onClick: modules.game_minimap.upLayer()
+
+      Button
+        image-source: /images/automap/automap_phantom
+        anchors.left: automapLayers.left
+        anchors.right: automapLayers.right
+        anchors.top: automapLayers.verticalCenter
+        anchors.bottom: automapLayers.bottom
+        @onClick: modules.game_minimap.downLayer()
+
+    UIWidget
+      id: mvRosePanel
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 4
+      margin-right: 4
+      size: 43 43
+
+      UIWidget
+        id: ambients
+        anchors.centerIn: parent
+        size: 31 31
+
+        UIWidget
+          id: main
+          image-source: /images/automap/timedisplay_scroll
+          anchors.left: parent.left
+          anchors.top: parent.top
+          image-clip: 100 0 24 31
+          size: 24 31
+
+        UIWidget
+          id: secondary
+          image-source: /images/automap/timedisplay_scroll
+          anchors.left: main.right
+          anchors.top: parent.top
+          image-clip: 0 0 7 31
+          size: 7 31
+
+        Button
+          image-source: /images/automap/automap_phantom
+          anchors.fill: parent
+          @onClick: modules.game_minimap.resetMap()
+
+      UIWidget
+        id: rose
+        anchors.fill: parent
+        image-source: /images/automap/automap_rose
+        image-clip: 0 0 43 43
+        phantom: true
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 14 0 15 8
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 14
+        size: 15 8
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('north')
+
+        $pressed !disabled:
+          image-clip: 57 0 15 8
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 28 0 15 15
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 28
+        size: 15 15
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('north-east')
+
+        $pressed !disabled:
+          image-clip: 114 0 15 15
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 35 14 8 15
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 35
+        margin-top: 14
+        size: 8 15
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('east')
+
+        $pressed !disabled:
+          image-clip: 164 14 8 15
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 28 28 15 15
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 28
+        margin-top: 28
+        size: 15 15
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('south-east')
+
+        $pressed !disabled:
+          image-clip: 200 28 15 15
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 14 35 15 8
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-left: 14
+        margin-top: 35
+        size: 15 8
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('south')
+
+        $pressed !disabled:
+          image-clip: 229 35 15 8
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 0 28 15 15
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-top: 28
+        size: 15 15
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('south-west')
+
+        $pressed !disabled:
+          image-clip: 258 28 15 15
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 0 14 8 15
+        anchors.left: parent.left
+        anchors.top: parent.top
+        margin-top: 14
+        size: 8 15
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('west')
+
+        $pressed !disabled:
+          image-clip: 301 14 8 15
+
+      Button
+        image-source: /images/automap/automap_rose
+        image-clip: 0 0 15 15
+        anchors.left: parent.left
+        anchors.top: parent.top
+        size: 15 15
+        @onClick: |
+          modules.game_minimap.onClickRoseButton('north-west')
+
+        $pressed !disabled:
+          image-clip: 344 0 15 15

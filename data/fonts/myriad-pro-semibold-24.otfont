@@ -1,0 +1,8 @@
+Font
+  name: myriad-pro-semibold-24
+  texture: myriad-pro-semibold-24
+  height: 22
+  y-offset: 0
+  glyph-size: 24 24
+  fixed-glyph-width: 9
+  space-width: 9

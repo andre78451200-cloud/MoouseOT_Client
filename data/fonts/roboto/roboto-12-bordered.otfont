@@ -1,0 +1,8 @@
+Font
+  name: roboto-12-bordered
+  texture: roboto-12-16-bordered
+  glyph-size: 16 16
+  height: 14
+  space-width: 6
+  x-offset: 5
+  spacing: -1 0

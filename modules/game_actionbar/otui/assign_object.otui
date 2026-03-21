@@ -1,0 +1,91 @@
+MainWindow
+  id: assignObjectWindow
+  size: 280 240
+
+  UIItem
+    id: item
+    size: 86 86
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 5
+    margin-left: 5
+    virtual: true
+    phantom: true
+
+  CheckBox
+    id: UseOnYourself
+    !text: tr('Use on yourself')
+    anchors.top: parent.top
+    anchors.left: item.right
+    margin-top: 5
+    margin-left: 10
+
+  CheckBox
+    id: UseOnTarget
+    !text: tr('Use on target')
+    anchors.top: UseOnYourself.bottom
+    anchors.left: item.right
+    margin-top: 3
+    margin-left: 10
+
+  CheckBox
+    id: SelectUseTarget
+    !text: tr('Use with crosshair')
+    anchors.top: UseOnTarget.bottom
+    anchors.left: item.right
+    margin-top: 3
+    margin-left: 10
+
+  CheckBox
+    id: Equip
+    !text: tr('Equip')
+    anchors.top: SelectUseTarget.bottom
+    anchors.left: item.right
+    margin-top: 3
+    margin-left: 10
+
+  CheckBox
+    id: Use
+    !text: tr('Use')
+    anchors.top: Equip.bottom
+    anchors.left: item.right
+    margin-top: 3
+    margin-left: 10
+
+  Button
+    id: selectObjectBtn
+    !text: tr('Select Object')
+    anchors.top: item.bottom
+    anchors.left: parent.left
+    width: 100
+    margin-top: 8
+
+  HorizontalSeparator
+    id: separator
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 30
+
+  Button
+    id: buttonOk
+    !text: tr('Ok')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+
+  Button
+    id: buttonApply
+    !text: tr('Apply')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonOk.left
+    margin-right: 5
+
+  Button
+    id: buttonClose
+    !text: tr('Cancel')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonApply.left
+    margin-right: 5

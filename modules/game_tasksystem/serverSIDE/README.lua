@@ -1,0 +1,32 @@
+-- ========================================
+-- INSTRUCOES DE INSTALACAO - SERVER SIDE
+-- ========================================
+-- 
+-- Para que o sistema de Tasks funcione, voce precisa copiar o arquivo
+-- do servidor para a pasta correta:
+--
+-- COPIE O ARQUIVO:
+--   baiak/baiak/data-baiak/scripts/custom/tasksystem_opcode.lua
+--
+-- ESTE ARQUIVO JA FOI CRIADO AUTOMATICAMENTE!
+--
+-- O sistema usa o mesmo storage do sistema de tasks existente (!task),
+-- entao as tasks iniciadas pelo painel grafico serao contabilizadas
+-- junto com as tasks iniciadas por comando.
+--
+-- ========================================
+-- STORAGES UTILIZADOS:
+-- ========================================
+-- Facil:    storage=190003, storageCount=190004, total=1500 kills
+-- Medium:   storage=190005, storageCount=190006, total=2500 kills
+-- Dificil:  storage=190007, storageCount=190008, total=5000 kills
+-- Hardcore: storage=190009, storageCount=190010, total=10000 kills
+-- Boss:     storage=190011, storageCount=190012, total=600 kills
+--
+-- ========================================
+-- EXTENDED OPCODE UTILIZADO: 216
+-- ========================================
+--
+-- Este opcode e usado para comunicacao entre cliente e servidor.
+-- Certifique-se de que nenhum outro sistema usa o mesmo opcode.
+--

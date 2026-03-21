@@ -1,0 +1,12 @@
+HuntTimerLabel < Label
+  id: huntTimerLabel
+  font: verdana-11px-rounded
+  color: #00FF00
+  background-color: #00000088
+  text-auto-resize: true
+  padding: 4 10 4 10
+  visible: false
+  anchors.top: parent.top
+  anchors.horizontalCenter: parent.horizontalCenter
+  margin-top: 5
+  phantom: true

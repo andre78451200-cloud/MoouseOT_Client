@@ -1,0 +1,261 @@
+RecipeItem < UIButton
+  height: 46
+  margin-bottom: 3
+  border: 1 #555555
+  background-color: #333333
+  $checked:
+    border: 2 #c8a020
+    background-color: #4a4530
+  $hover !checked:
+    background-color: #3d3d3d
+
+  UIItem
+    id: item
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 5
+    size: 36 36
+    virtual: true
+    phantom: true
+
+  Label
+    id: nameLabel
+    anchors.left: item.right
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    margin-right: 5
+    font: verdana-11px-rounded
+    color: #dddddd
+    phantom: true
+
+CraftTabButton < UIButton
+  height: 24
+  padding: 8 4
+  font: verdana-11px-rounded
+  color: #bbbbbb
+  text-align: center
+  border: 1 #555555
+  background-color: #2a2a2a
+  $checked:
+    border: 1 #c8a020
+    background-color: #3d3520
+    color: #e8c970
+  $hover !checked:
+    background-color: #3a3a3a
+    color: #ffffff
+
+MaterialItem < Panel
+  height: 38
+  margin-bottom: 2
+  border: 1 #555555
+  background-color: #333333
+
+  Panel
+    id: itemBg
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 3
+    size: 32 32
+    border: 1 #555555
+    background-color: #222222
+
+    UIItem
+      id: item
+      anchors.fill: parent
+      margin: 2
+      virtual: true
+
+  Label
+    id: nameLabel
+    anchors.left: itemBg.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    width: 140
+    font: verdana-11px-rounded
+    color: #cccccc
+    text: Item
+
+  Label
+    id: qty
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 8
+    text: 0/0
+    text-align: right
+    font: verdana-11px-rounded
+    color: #00ff00
+    width: 80
+    font: verdana-11px-rounded
+    color: #00ff00
+
+CraftWindow < MainWindow
+  id: craftWindow
+  size: 620 520
+  text: Sistema de Craft
+  @onEscape: modules.game_craft.hide()
+
+  Panel
+    id: leftPanel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: separator.top
+    width: 220
+    margin: 8
+
+    Label
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-left: 3
+      text: Categorias:
+      font: verdana-11px-rounded
+      color: #e8c970
+
+    Panel
+      id: tabsPanel
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 18
+      height: 79
+      layout:
+        type: grid
+        cell-size: 100 24
+        cell-spacing: 3
+        num-columns: 2
+        flow: true
+
+    Label
+      anchors.top: tabsPanel.bottom
+      anchors.left: parent.left
+      margin-left: 3
+      margin-top: 8
+      text: Receitas:
+      font: verdana-11px-rounded
+      color: #e8c970
+
+    ScrollablePanel
+      id: recipePanel
+      anchors.top: tabsPanel.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-top: 28
+      vertical-scrollbar: recipeScroll
+      layout:
+        type: verticalBox
+
+    VerticalScrollBar
+      id: recipeScroll
+      anchors.top: tabsPanel.bottom
+      anchors.bottom: parent.bottom
+      anchors.right: parent.right
+      margin-top: 28
+      step: 49
+      pixels-scroll: true
+
+  Panel
+    id: rightPanel
+    anchors.top: parent.top
+    anchors.left: leftPanel.right
+    anchors.right: parent.right
+    anchors.bottom: separator.top
+    margin: 8
+    margin-left: 15
+
+    Label
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      text: Item a Criar:
+      font: verdana-11px-rounded
+      color: #e8c970
+
+    Panel
+      id: resultBg
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 22
+      size: 58 58
+      border: 2 #555555
+      background-color: #222222
+
+      UIItem
+        id: resultItem
+        anchors.fill: parent
+        margin: 3
+        virtual: true
+
+    Label
+      id: resultName
+      anchors.top: resultBg.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 10
+      text: Selecione uma receita
+      text-align: center
+      font: verdana-11px-rounded
+      color: #ffffff
+
+    Label
+      anchors.top: resultName.bottom
+      anchors.left: parent.left
+      margin-top: 18
+      text: Materiais Necessarios:
+      font: verdana-11px-rounded
+      color: #e8c970
+
+    Panel
+      id: materialsPanel
+      anchors.top: resultName.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 38
+      height: 200
+      layout:
+        type: verticalBox
+
+    Label
+      id: statusLabel
+      anchors.bottom: parent.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-bottom: 5
+      text: 
+      text-align: center
+      font: verdana-11px-rounded
+      color: #888888
+
+  HorizontalSeparator
+    id: separator
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: bottomPanel.top
+    margin-left: 8
+    margin-right: 8
+    margin-bottom: 5
+
+  Panel
+    id: bottomPanel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    height: 40
+
+    Button
+      id: craftBtn
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      margin-left: 20
+      width: 130
+      text: Criar Item
+      enabled: false
+      @onClick: modules.game_craft.doCraft()
+
+    Button
+      id: closeBtn
+      anchors.right: parent.right
+      anchors.verticalCenter: parent.verticalCenter
+      margin-right: 20
+      width: 130
+      text: Fechar
+      @onClick: modules.game_craft.hide()

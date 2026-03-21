@@ -1,0 +1,155 @@
+fonts
+  poppins-10
+    texture: poppins-10
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 10
+    y-offset: -3
+
+  poppins-11
+    texture: poppins-11
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 11
+    y-offset: -3
+
+  poppins-12
+    texture: poppins-12
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 12
+    y-offset: -4
+
+  poppins-13
+    texture: poppins-13
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 13
+    y-offset: -4
+
+  poppins-14
+    texture: poppins-14
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 14
+    y-offset: -5
+
+  poppins-shadow-14
+    texture: poppins-shadow-14
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 14
+    y-offset: -5
+
+  poppins-15
+    texture: poppins-15
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 15
+    y-offset: -5
+
+  poppins-16
+    texture: poppins-16
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 16
+    y-offset: -5
+
+  poppins-17
+    texture: poppins-17
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 17
+    y-offset: -5
+
+  poppins-18
+    texture: poppins-18
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 18
+    y-offset: -6
+
+  poppins-19
+    texture: poppins-19
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 19
+    y-offset: -6
+
+  poppins-20
+    texture: poppins-20
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    space-width: 6
+    font-size: 20
+    y-offset: -6
+
+  poppins-21
+    texture: poppins-21
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 21
+    y-offset: -6
+
+  poppins-22
+    texture: poppins-22
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 22
+    y-offset: -6
+
+  poppins-23
+    texture: poppins-23
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 23
+    y-offset: -6
+
+  poppins-24
+    texture: poppins-24
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 24
+    y-offset: -6
+
+  poppins-25
+    texture: poppins-25
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 25
+    y-offset: -6
+
+  poppins-26
+    texture: poppins-26
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 26
+    y-offset: -6
+
+  poppins-27
+    texture: poppins-27
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 27
+    y-offset: -6
+
+  poppins-28
+    texture: poppins-28
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 28
+    y-offset: -6
+
+  poppins-29
+    texture: poppins-29
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 29
+    y-offset: -6
+
+  poppins-30
+    texture: poppins-30
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 30
+    y-offset: -6

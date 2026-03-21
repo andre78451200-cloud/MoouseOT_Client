@@ -1,0 +1,18 @@
+fonts
+  myriad-pro-bordered-16
+    texture: myriad-pro-bordered-16
+    auto-sizing: true
+    font-size: 16
+    spacing: -1 -1
+
+  myriad-pro-bordered-18
+    texture: myriad-pro-bordered-18
+    auto-sizing: true
+    font-size: 18
+    spacing: -1 -1
+
+  myriad-pro-bordered-22
+    texture: myriad-pro-bordered-22
+    auto-sizing: true
+    font-size: 22
+    spacing: -1 -1

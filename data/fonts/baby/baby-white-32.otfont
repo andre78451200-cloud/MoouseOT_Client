@@ -1,0 +1,6 @@
+Font
+  name: baby-white-32
+  texture: baby-white-32
+  height: 40
+  glyph-size: 40 40
+  space-width: 5

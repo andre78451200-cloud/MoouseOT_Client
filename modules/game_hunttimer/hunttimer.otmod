@@ -1,0 +1,11 @@
+Module
+  name: game_hunttimer
+  description: Timer visual de hunt exclusiva no topo da tela
+  author: Empera OT
+  website: https://emperaot.com
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1010
+  scripts: [ hunttimer ]
+  @onLoad: init()
+  @onUnload: terminate()

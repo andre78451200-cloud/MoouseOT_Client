@@ -1,0 +1,1756 @@
+LockedPreyPanel < Panel
+  size: 195 330
+
+
+
+  NoCreaturePanel
+    id: noCreature
+    anchors.top: parent.top
+    anchors.left: parent.left
+
+  UIButton
+    id: perm
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 64
+    background-color: #1c4161
+    margin-top: 3
+    @onClick: modules.game_mainpanel.toggleStore()
+
+    UIWidget
+      id: shopPermButton
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      image-source: /images/game/prey/prey_perm_test
+      size: 195 67
+      image-clip: 0 0 204 67
+      @onClick: modules.game_mainpanel.toggleStore()
+      @onHoverChange: modules.game_prey.onHover(self)
+
+      $pressed:
+        image-clip: 0 67 204 67
+
+  UIButton
+    id: temp
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 64
+    background-color: #1c4161
+    margin-top: 7
+    @onClick: modules.game_mainpanel.toggleStore()
+
+    UIWidget
+      id: shopTempButton
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.verticalCenter: parent.verticalCenter
+      image-source: /images/game/prey/prey_temp_test
+      size: 195 67
+      image-clip: 0 0 204 67
+      @onClick: modules.game_mainpanel.toggleStore()
+      @onHoverChange: modules.game_prey.onHover(self)
+
+      $pressed:
+        image-clip: 0 67 204 67
+
+Star < UIWidget
+  size: 9 10
+  image-source: /images/game/prey/prey_star
+
+NoStar < UIWidget
+  size: 9 10
+  image-source: /images/game/prey/prey_nostar
+
+ExhaustedPreyPanel < Panel
+  size: 195 330
+
+  FlatPanel
+    size: 100 100
+    anchors.top: parent.top
+    anchors.left: parent.left
+
+    UIWidget
+      phantom: true
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.horizontalCenter: parent.horizontalCenter
+      image-source: /images/game/prey/preyhuntingtask-exhausted
+
+  FlatPanel
+    id: bonus
+    anchors.top: parent.top
+    anchors.left: prev.right
+    margin-left: 10
+    anchors.bottom: prev.bottom
+    anchors.right: parent.right
+
+    UIWidget
+      id: exhaustedBanner
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      image-source: /images/game/prey/prey_bignobonus
+      margin-top: 3
+
+    HorizontalSeparator
+      anchors.top: prev.bottom
+      margin-top: 2
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-left: 10
+      margin-right: 10
+
+    Panel
+      id: grade
+      anchors.top: prev.bottom
+      margin-top: 3
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      padding-left: 5
+      layout:
+        type: grid
+        cell-size: 9 10
+        cell-spacing: 2
+        num-columns: 5
+        num-rows: 2
+
+      NoStar
+        id: noBonusIcon1
+      NoStar
+        id: noBonusIcon2
+      NoStar
+        id: noBonusIcon3
+      NoStar
+        id: noBonusIcon4
+      NoStar
+        id: noBonusIcon5
+      NoStar
+        id: noBonusIcon6
+      NoStar
+        id: noBonusIcon7
+      NoStar
+        id: noBonusIcon8
+      NoStar
+        id: noBonusIcon9
+      NoStar
+        id: noBonusIcon10
+
+  Label
+    id: exhaustedMessage
+    anchors.top: prev.bottom
+    margin-top: 10
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    font: verdana-11px-rounded
+    text: Exhausted. You have to wait until next server save to use this Hunting Task slot.
+    text-wrap: true
+    color: #ffffff
+
+  UIButton
+    id: perm
+    anchors.top: exhaustedMessage.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 64
+    background-color: #1c4161
+    margin-top: 10
+    @onClick: modules.game_mainpanel.toggleStore()
+
+    UIWidget
+      id: shopPermButton
+
+NoCreaturePanel < Panel
+  size: 195 152
+
+  FlatPanel
+    size: 100 100
+    anchors.top: parent.top
+    anchors.left: parent.left
+    image-source: /images/ui/panel_flat
+    image-border: 1
+
+    UIWidget
+      phantom: true
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.horizontalCenter: parent.horizontalCenter
+      image-source: /images/game/prey/prey_biginactive
+
+  FlatPanel
+    id: bonus
+    anchors.top: parent.top
+    anchors.left: prev.right
+    margin-left: 10
+    anchors.bottom: prev.bottom
+    anchors.right: parent.right
+
+    UIWidget
+      id: noBonusIcon
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      image-source: /images/game/prey/prey_bignobonus
+      margin-top: 3
+      @onHoverChange: modules.game_prey.onHover(self)
+
+    HorizontalSeparator
+      anchors.top: prev.bottom
+      margin-top: 2
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-left: 10
+      margin-right: 10
+
+    Panel
+      id: grade
+      anchors.top: prev.bottom
+      margin-top: 3
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      padding-left: 5
+      layout:
+        type: grid
+        cell-size: 9 10
+        cell-spacing: 2
+        num-columns: 5
+        num-rows: 2
+
+      NoStar
+        id: noBonusIcon1
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon2
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon3
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon4
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon5
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon6
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon7
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon8
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon9
+        @onHoverChange: modules.game_prey.onHover(self)
+
+      NoStar
+        id: noBonusIcon10
+        @onHoverChange: modules.game_prey.onHover(self)
+
+  UIWidget
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 20
+    background-color: #262626
+    border: 1 black
+    id: noBonusIcon
+    @onHoverChange: modules.game_prey.onHover(self)
+
+ActivePreyPanel < Panel
+  size: 195 330
+
+  CreatureAndBonus
+    id: creatureAndBonus
+    anchors.left: parent.left
+    anchors.top: parent.top
+    margin-top: 20
+
+  BonusReroll
+    id: choose
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+
+  SelectPreyCreature
+    id: select
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.right: prev.left
+    margin-right: 2
+
+  RerollButton
+    id: reroll
+    anchors.verticalCenter: prev.verticalCenter
+    anchors.right: prev.left
+    margin-right: 2
+    @onClick: modules.game_prey.onRerollButtonClick(self)
+
+  FlatPanel
+    id: autoReroll
+    size: 160 20
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: parent.left
+
+    CheckBox
+      id: autoRerollCheck
+      margin-top: 2
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: parent.left
+      size: 155 15
+      font: verdana-11px-rounded
+      text: Automatic Bonus Rer...
+      margin-left: 5
+      image-source: /images/ui/checkbox
+      image-color: #dfdfdfff
+      image-rect: 0 0 15 15
+      focusable: true
+      checkable: true
+
+  CardLabel
+    id: autoRerollPrice
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 2
+    anchors.bottom: prev.bottom
+    anchors.right: parent.right
+
+  FlatPanel
+    id: lockPrey
+    size: 160 20
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: parent.left
+
+    CheckBox
+      id: lockPreyCheck
+      margin-top: 2
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: parent.left
+      size: 155 15
+      font: verdana-11px-rounded
+      text: Lock Prey
+      margin-left: 5
+      image-source: /images/ui/checkbox
+      image-color: #dfdfdfff
+      image-rect: 0 0 15 15
+      focusable: true
+      checkable: true
+
+  CardLabel
+    id: lockPreyPrice
+    anchors.top: prev.top
+    anchors.left: prev.right
+    margin-left: 2
+    anchors.bottom: prev.bottom
+    anchors.right: parent.right
+
+CreatureAndBonus < Panel
+  size: 195 152
+
+  UICreature
+    id: creature
+    phantom: true
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-left: -15
+    margin-top: -10
+    size: 135 135
+    creature-size: 110
+    image-border: 1
+
+  FlatPanel
+    id: bonus
+    anchors.top: parent.top
+    anchors.left: prev.right
+    margin-left: 10
+    anchors.bottom: prev.bottom
+    anchors.right: parent.right
+
+    UIWidget
+      id: icon
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      image-source: /images/game/prey/prey_bignobonus
+      margin-top: 3
+
+    HorizontalSeparator
+      anchors.top: prev.bottom
+      margin-top: 2
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-left: 10
+      margin-right: 10
+
+    Panel
+      id: grade
+      anchors.top: prev.bottom
+      margin-top: 3
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      padding-left: 5
+      layout:
+        type: grid
+        cell-size: 9 10
+        cell-spacing: 2
+        num-columns: 5
+        num-rows: 2
+
+      Star
+        id: star1
+
+      Star
+        id: star2
+
+      Star
+        id: star3
+
+      Star
+        id: star4
+
+      Star
+        id: star5
+
+      Star
+        id: star6
+
+      Star
+        id: star7
+
+      Star
+        id: star8
+
+      Star
+        id: star9
+
+      Star
+        id: star10
+
+  ProgressBar
+    id: timeLeft
+    anchors.top: prev.bottom
+    margin-top: 5
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 20
+    background-color: #C28400
+
+BonusReroll < Button
+  padding: 2
+  size: 55 92
+  phantom: true
+
+  UIButton
+    id: selectPrey
+    anchors.top: parent.top
+    margin-top: 5
+    anchors.horizontalCenter: parent.horizontalCenter
+    image-source: /images/game/prey/prey_bonus_reroll
+    size: 40 55
+    image-clip: 1 0 35 52
+    @onHoverChange: modules.game_prey.onHover(self)
+    @onClick: modules.game_prey.onPickSpecificPreyClick(self)
+
+    $pressed:
+      image-clip: 0 52 37 54
+
+  CardLabel
+    id: price
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 21
+    margin-top: 2
+
+TaskHuntingConfirm < Button
+  padding: 2
+  size: 55 92
+  phantom: true
+
+  UIButton
+    id: confirmButton
+    anchors.top: parent.top
+    margin-top: 5
+    anchors.horizontalCenter: parent.horizontalCenter
+    image-source: /images/game/prey/preyhuntingtask-finish
+    size: 40 55
+    image-clip: 1 0 35 52
+    @onHoverChange: modules.game_prey.onHover(self)
+    @onClick: modules.game_prey.onTaskHuntingConfirm(self)
+
+    $pressed:
+      image-clip: 0 52 37 54
+
+  CardLabel
+    id: price
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 21
+    margin-top: 2
+
+InactivePreyPanel < Panel
+  size: 195 330
+
+  ChoosePrey
+    id: choose
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-bottom: 10
+
+  SelectPreyCreature
+    id: select
+    anchors.bottom: parent.bottom
+    anchors.right: choose.left
+    margin-right: 2
+    margin-bottom: 10
+
+  RerollButton
+    id: reroll
+    anchors.bottom: parent.bottom
+    anchors.right: select.left
+    margin-right: 2
+    margin-bottom: 10
+
+  TextEdit
+    id: searchEdit
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 20
+    size: 180 20
+    placeholder: Type to search
+    placeholder-color: #6E706F
+    font: verdana-11px-monochrome
+    background-color: #ffffff11
+    border-color: #ffffff22
+    padding: 2
+
+  Panel
+    id: inactiveAmount
+    anchors.top: prev.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    height: 20
+    visible: false
+
+    Label
+      id: amountTitle
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      font: verdana-11px-rounded
+      text: Amount:
+      color: #ffffff
+
+    AmountRadioOption
+      id: amountOption1
+      anchors.left: prev.right
+      anchors.verticalCenter: prev.verticalCenter
+      margin-left: 8
+
+    AmountRadioOption
+      id: amountOption2
+      anchors.left: amountOption1.right
+      anchors.verticalCenter: amountOption1.verticalCenter
+      margin-left: 12
+
+  UIScrollArea
+    id: monsterList
+    anchors.top: inactiveAmount.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 10
+    size: 195 150
+    vertical-scrollbar: preyScrollBar
+    padding: 1
+    background-color: #404040
+    border-width: 1
+    border-color: #ffffff44
+    overflow: hidden
+    clip-children: true
+    visible: false
+    layout:
+      type: verticalBox
+      fit-children: false
+      spacing: 1
+
+  VerticalQtScrollBar
+    id: preyScrollBar
+    anchors.top: monsterList.top
+    anchors.bottom: monsterList.bottom
+    anchors.right: monsterList.right
+    step: 20
+    pixels-scroll: true
+    visible: false
+
+
+
+  Panel
+    id: rerollList
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 20
+    padding-left: 4
+    padding-top: 4
+    size: 186 186
+    visible: false
+    image-border: 25
+    overflow: hidden
+    layout:
+      type: grid
+      cell-size: 60 60
+      cell-spacing: 3
+      num-columns: 3
+
+  Panel
+    id: inactiveAmount3x3
+    anchors.top: rerollList.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    height: 20
+    visible: false
+
+    Label
+      id: amountTitle3x3
+      anchors.left: parent.left
+      anchors.verticalCenter: parent.verticalCenter
+      font: verdana-11px-rounded
+      text: Amount:
+      color: #ffffff
+
+    AmountRadioOption
+      id: amountOption1_3x3
+      anchors.left: prev.right
+      anchors.verticalCenter: prev.verticalCenter
+      margin-left: 8
+
+    AmountRadioOption
+      id: amountOption2_3x3
+      anchors.left: prev.right
+      anchors.verticalCenter: prev.verticalCenter
+      margin-left: 8
+
+  Panel
+    id: list
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 20
+    padding-left: 4
+    padding-top: 4
+    size: 165 165
+    visible: false
+    image-source: /images/ui/window
+    image-border: 25
+    layout:
+      type: grid
+      cell-size: 50 50
+      cell-spacing: 3
+      num-columns: 3
+
+ChoosePrey < Button
+  size: 58 92
+  padding: 10
+  phantom: true
+
+  UIButton
+    id: choosePreyButton
+    anchors.fill: parent
+    margin-bottom: 17
+    margin-top: 17
+    margin-left: 3
+    image-source: /images/game/prey/prey_choose
+    image-clip: 1 0 38 35
+    @onHoverChange: modules.game_prey.onHover(self)
+    @onClick: modules.game_prey.onPickSpecificPreyClick(self)
+
+    $pressed:
+      image-clip: 0 35 45 37
+
+SelectPreyCreature < Button
+  padding: 2
+  size: 70 92
+  phantom: true
+
+  UIButton
+    id: pickSpecificPrey
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    size: 66 66
+    image-source: /images/game/prey/prey_select
+    image-clip: 1 0 66 66
+    @onHoverChange: modules.game_prey.onHover(self)
+    @onClick: modules.game_prey.onPickSpecificPreyClick(self)
+
+    $pressed:
+      image-clip: 0 0 66 66
+
+  CardLabel
+    id: price
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.top: prev.bottom
+    margin-top: 2
+
+RerollButton < Button
+  padding: 2
+  size: 70 92
+  phantom: true
+
+  Button
+    id: button
+    size: 66 66
+    padding: 2
+    phantom: true
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+
+    ProgressBar
+      id: time
+      anchors.bottom: parent.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      height: 15
+      text-align: center
+      background-color: #C28400
+
+    UIButton
+      id: rerollButton
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: prev.top
+      image-source: /images/game/prey/prey_reroll
+      image-clip: 1 0 58 45
+      @onHoverChange: modules.game_prey.onHover(self)
+      @onClick: modules.game_prey.onRerollButtonClick(self)
+
+      $pressed:
+        image-clip: 0 46 60 47
+
+  GoldLabel
+    id: price
+    anchors.top: prev.bottom
+    margin-top: 2
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+
+CardLabel < FlatPanel
+  image-source: /images/ui/backdrop-dark-grey
+  image-border: 5
+  margin: 1
+
+  UIWidget
+    id: cards
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    image-source: /images/game/prey/prey_wildcard
+    tooltip: Prey Wildcards
+
+  UIWidget
+    id: text
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    text-align: right
+
+GoldLabel < FlatPanel
+  image-source: /images/ui/backdrop-dark-grey
+  image-border: 5
+  margin: 1
+  
+  UIWidget
+    id: gold
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    image-source: /images/game/prey/prey_gold
+    tooltip: Gold Coins
+
+  UIWidget
+    id: text
+    anchors.right: prev.left
+    margin-right: 5
+    anchors.left: parent.left
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    text-align: right
+    text-offset: -5 0
+
+TaskHuntingPointsLabel < FlatPanel
+  image-source: /images/ui/backdrop-dark-grey
+  image-border: 5
+  margin: 1
+  
+  UIWidget
+    id: points
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    image-source: /images/game/prey/preyhuntingtask-tokens
+    tooltip: Task Hunting Points
+    
+  Label
+    id: pointsText
+    anchors.right: points.left
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.left: parent.left
+    margin-right: 5
+    margin-left: 5
+    font: verdana-11px-rounded
+    text: 0
+    color: #ffffff
+    text-align: right
+
+SlotPanel < Panel
+  size: 210 340
+  image-source: /images/ui/window
+  image-border: 25
+  padding-top: 2
+  padding-bottom: 6
+  padding-left: 8
+  padding-right: 8
+
+  Label
+    id: title
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+
+  InactivePreyPanel
+    id: inactive
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    visible: false
+
+  ActivePreyPanel
+    id: active
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    visible: false
+
+  LockedPreyPanel
+    id: locked
+    margin-top: 20
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    visible: false
+
+  ExhaustedPreyPanel
+    id: exhausted
+    margin-top: 20
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    visible: false
+
+  Panel
+    id: activeTaskHunting
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    size: 195 312
+    visible: false
+
+
+    Label
+      id: title
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      text-align: center
+      font: verdana-11px-rounded
+
+
+    Panel
+      id: creatureAndBonus
+      anchors.top: title.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 17
+      height: 120
+
+      UICreature
+        id: creature
+        phantom: true
+        anchors.top: parent.top
+        anchors.left: parent.left
+        margin-left: -15
+        margin-top: -10
+        size: 135 135
+        creature-size: 110
+        image-border: 1
+
+      UIWidget
+        id: preyTokenBanner
+        anchors.top: parent.top
+        anchors.right: parent.right
+        margin-top: 10
+        margin-right: 10
+        size: 44 92
+        image-source: /images/game/prey/preyhuntingtask-preytoken-banner
+
+
+      Panel
+        id: bonus
+        anchors.top: preyTokenBanner.bottom
+        anchors.left: preyTokenBanner.left
+        anchors.right: preyTokenBanner.right
+        margin-top: 5
+        height: 40
+        padding-left: 5
+        padding-right: 5
+        visible: true
+        layout:
+          type: grid
+          cell-size: 9 10
+          cell-spacing: 0
+          num-columns: 5
+          num-rows: 1
+
+    Panel
+      id: activeHtpPoints
+      anchors.verticalCenter: parent.verticalCenter
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: -2
+      height: 1
+      visible: false
+
+      Label
+        id: activeHtpPointsText
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-left: 152
+        font: verdana-11px-rounded
+        text: 0
+        color: #ffffff
+        font-color: #ffffff
+
+      UIWidget
+        id: activeHtpPointsIcon
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        margin-right: 10
+        size: 11 11
+        image-source: /images/game/prey/preyhuntingtask-tokens
+
+    Panel
+      id: activeAmount
+      anchors.top: activeHtpPoints.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 10
+      height: 16
+      visible: false
+
+      Label
+        id: amountTitle
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        font: verdana-11px-rounded
+        text: Amount:
+        color: #ffffff
+
+      Label
+        id: amountValue
+        anchors.left: prev.right
+        anchors.verticalCenter: prev.verticalCenter
+        margin-left: 5
+        font: verdana-11px-rounded
+        text: 0
+        color: #ffffff
+
+    Panel
+      id: progress
+      anchors.top: activeHtpPoints.bottom
+      anchors.left: parent.left
+      anchors.right: parent.right
+      margin-top: 20
+      height: 40
+
+
+      Label
+        id: killsLabel
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        text-align: center
+        font: verdana-11px-rounded
+        text: Kills: 0/100
+
+
+      ProgressBar
+        id: killsProgress
+        anchors.top: killsLabel.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        margin-top: 5
+        height: 15
+        background-color: #C28400
+
+    TaskHuntingConfirm
+      id: confirm
+      anchors.right: parent.right
+      anchors.top: prev.bottom
+      margin-top: 10
+      visible: false
+      @onClick: modules.game_prey.onTaskHuntingConfirm(self)
+
+    Button
+      id: upgrade
+      anchors.verticalCenter: confirm.verticalCenter
+      anchors.right: confirm.left
+      margin-right: 2
+      size: 70 92
+      visible: false
+      @onClick: modules.game_prey.onTaskHuntingUpgrade(self)
+
+      UIWidget
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        size: 35 52
+        image-source: /images/game/prey/preyhuntingtask-reroll-huntingtaskbonus
+        phantom: true
+
+      CardLabel
+        id: upgradePrice
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 21
+        margin-top: 2
+        margin-left: -5
+        margin-right: -5
+        phantom: true
+        text-offset: -16 0
+        text-align: right
+
+    Button
+      id: cancel
+      anchors.verticalCenter: upgrade.verticalCenter
+      anchors.right: upgrade.left
+      margin-right: 2
+      size: 70 92
+      visible: false
+      @onClick: modules.game_prey.onTaskHuntingCancel(self)
+
+      UIWidget
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        size: 44 35
+        image-source: /images/game/prey/preyhuntingtask-cancel
+        phantom: true
+
+      GoldLabel
+        id: price
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 21
+        margin-top: 2
+        margin-left: -5
+        margin-right: -5
+        phantom: true
+        text-offset: -5 0
+
+    Button
+      id: finish
+      anchors.verticalCenter: upgrade.verticalCenter
+      anchors.left: upgrade.right
+      margin-right: 2
+      size: 60 92
+      visible: false
+      @onClick: modules.game_prey.onTaskHuntingClaim(self)
+
+      UIWidget
+        id: finishButton
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        size: 35 39
+        image-source: /images/game/prey/preyhuntingtask-finish-disabled
+        phantom: true
+
+    Panel
+      id: rerollList
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 20
+      padding-left: 4
+      padding-top: 4
+      size: 186 186
+      visible: false
+      image-border: 25
+      overflow: hidden
+      layout:
+        type: grid
+        cell-size: 60 60
+        cell-spacing: 3
+        num-columns: 3
+
+  Panel
+    id: inactiveTaskHunting
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    size: 195 312
+    visible: false
+
+    Label
+      id: title
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+      text-align: center
+      font: verdana-11px-rounded
+
+    UIWidget
+      id: hourglassIcon
+      phantom: true
+      size: 57 91
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 70
+      margin-left: 45
+      image-source: /images/game/prey/preyhuntingtask-exhausted
+
+    UIWidget
+      id: preyTokenBanner
+      phantom: true
+      size: 44 92
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 50
+      margin-right: 10
+      image-source: /images/game/prey/preyhuntingtask-preytoken-banner
+
+    UIWidget
+      id: noBonusIcon1
+      size: 9 10
+      anchors.top: preyTokenBanner.bottom
+      anchors.left: preyTokenBanner.left
+      margin-top: 35
+      margin-left: -2
+      image-source: /images/game/prey/prey_nostar
+
+    UIWidget
+      id: noBonusIcon2
+      size: 9 10
+      anchors.top: preyTokenBanner.bottom
+      anchors.left: preyTokenBanner.left
+      margin-top: 35
+      margin-left: 8
+      image-source: /images/game/prey/prey_nostar
+
+    UIWidget
+      id: noBonusIcon3
+      size: 9 10
+      anchors.top: preyTokenBanner.bottom
+      anchors.left: preyTokenBanner.left
+      margin-top: 35
+      margin-left: 18
+      image-source: /images/game/prey/prey_nostar
+
+    UIWidget
+      id: noBonusIcon4
+      size: 9 10
+      anchors.top: preyTokenBanner.bottom
+      anchors.left: preyTokenBanner.left
+      margin-top: 35
+      margin-left: 28
+      image-source: /images/game/prey/prey_nostar
+
+    UIWidget
+      id: noBonusIcon5
+      size: 9 10
+      anchors.top: preyTokenBanner.bottom
+      anchors.left: preyTokenBanner.left
+      margin-top: 35
+      margin-left: 38
+      image-source: /images/game/prey/prey_nostar
+
+    UIWidget
+      id: taskHuntingTokens
+      size: 11 11
+      anchors.top: noBonusIcon3.bottom
+      anchors.horizontalCenter: noBonusIcon3.horizontalCenter
+      margin-top: 10
+      image-source: /images/game/prey/preyhuntingtask-tokens
+
+    Label
+      id: taskHuntingPointsValue
+      anchors.top: taskHuntingTokens.bottom
+      anchors.right: taskHuntingTokens.left
+      margin-top: -10
+      margin-right: 2
+      text: 0
+      font: verdana-11px-rounded
+      text-align: right
+      color: #ffffff
+
+    Button
+      id: rerollButton
+      size: 70 92
+      anchors.top: taskHuntingPointsValue.bottom
+      anchors.left: parent.left
+      margin-top: 7
+      margin-left: -5
+      padding: 2
+      phantom: true
+
+      Button
+        id: button
+        size: 66 66
+        padding: 2
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        phantom: true
+
+        ProgressBar
+          id: time
+          anchors.bottom: parent.bottom
+          anchors.left: parent.left
+          anchors.right: parent.right
+          height: 15
+          text-align: center
+          background-color: #C28400
+          text: Ready
+
+        UIWidget
+          id: rerollIcon
+          anchors.top: parent.top
+          anchors.left: parent.left
+          anchors.right: parent.right
+          anchors.bottom: prev.top
+          image-source: /images/game/prey/prey_reroll_blocked
+          image-clip: 1 0 58 45
+
+      GoldLabel
+        id: rerollPrice
+        anchors.top: prev.bottom
+        margin-top: 2
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+
+    Button
+      id: selectButton
+      size: 70 92
+      anchors.top: taskHuntingPointsValue.bottom
+      anchors.left: parent.left
+      margin-top: 7
+      margin-left: 65
+      padding: 2
+      phantom: true
+
+      Button
+        id: button
+        size: 66 66
+        padding: 2
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        phantom: true
+
+        UIWidget
+          id: selectIcon
+          anchors.fill: parent
+          image-source: /images/game/prey/prey_select_blocked
+          image-clip: 1 0 64 64
+
+      CardLabel
+        id: wildCards
+        anchors.top: prev.bottom
+        margin-top: 2
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        text: 5
+
+    Button
+      id: chooseButton
+      size: 60 92
+      anchors.top: taskHuntingPointsValue.bottom
+      anchors.left: parent.left
+      margin-top: 7
+      margin-left: 135
+      padding: 2
+      phantom: true
+
+      UIWidget
+        id: chooseIcon
+        anchors.centerIn: parent
+        size: 44 35
+        margin-left: 5
+        image-source: /images/game/prey/preyhuntingtask-select-disabled
+        image-clip: 1 0 44 35
+
+    UIWidget
+      id: grade
+      anchors.top: preyTokenBanner.bottom
+      margin-top: 5
+      anchors.left: preyTokenBanner.left
+      anchors.right: preyTokenBanner.right
+      layout:
+        type: grid
+        cell-size: 9 10
+        cell-spacing: 2
+        num-columns: 5
+        num-rows: 1
+
+      NoStar
+        id: noBonusIcon1
+      NoStar
+        id: noBonusIcon2
+      NoStar
+        id: noBonusIcon3
+      NoStar
+        id: noBonusIcon4
+      NoStar
+        id: noBonusIcon5
+
+    UIScrollArea
+      id: monsterList
+      anchors.top: title.bottom
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 20
+      size: 195 150
+      vertical-scrollbar: taskHuntingScrollBar
+      padding: 1
+      background-color: #404040
+      border-width: 1
+      border-color: #ffffff44
+      overflow: hidden
+      clip-children: true
+      visible: false
+      layout:
+        type: verticalBox
+        fit-children: false
+        spacing: 1
+
+    VerticalQtScrollBar
+      id: taskHuntingScrollBar
+      anchors.top: monsterList.top
+      anchors.bottom: monsterList.bottom
+      anchors.right: monsterList.right
+      step: 20
+      pixels-scroll: true
+      visible: false
+
+    Panel
+      id: rerollList
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 20
+      padding-left: 4
+      padding-top: 4
+      size: 186 186
+      visible: false
+      image-border: 25
+      overflow: hidden
+      layout:
+        type: grid
+        cell-size: 60 60
+        cell-spacing: 3
+        num-columns: 3
+
+    Panel
+      id: list
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+      margin-top: 20
+      padding-left: 4
+      padding-top: 4
+      size: 165 165
+      visible: false
+      image-source: /images/ui/window
+      image-border: 25
+      layout:
+        type: grid
+        cell-size: 50 50
+        cell-spacing: 3
+        num-columns: 3
+
+
+MainWindow
+  id: preyWindow
+  !text: tr('Prey')
+  size: 688 550
+  @onEscape: modules.game_prey.hide()
+  padding: 20
+  @onHoverChange: modules.game_prey.onHover(self)
+
+  Panel
+    id: preyTabBar
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 39
+    margin-top: 10
+    
+    UIButton
+      id: prey1Tab
+      anchors.left: parent.left
+      anchors.top: parent.top
+      anchors.bottom: parent.bottom
+      width: 325
+      text: Prey
+      text-color: #FFFFFF
+      text-align: center
+
+      UILabel
+        id: prey1Icon
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-left: 10
+        size: 46 36
+        image-source: /images/game/prey/prey_choose2
+
+      @onClick: modules.game_prey.switchToTab1()
+
+      $on:
+        size: 325 39
+        image-source: /images/ui/widget_border
+
+      $!on:
+        size: 325 39
+        image-source: /images/ui/window_headless2
+
+      $pressed:
+        size: 325 39
+        image-source: /images/ui/window_headless2
+
+    UIButton
+      id: prey2Tab
+      anchors.top: prev.top
+      anchors.left: prev.right
+      margin-left: 1
+      text: Hunting Task
+      text-color: #FFFFFF
+      text-align: center
+
+      UILabel
+        id: prey2Icon
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        margin-left: 10
+        size: 35 36
+        image-source: /images/game/prey/preyhuntingtask-finish
+
+      @onClick: modules.game_prey.switchToTab2()
+
+      $on:
+        size: 325 39
+        image-source: /images/ui/widget_border
+
+      $!on:
+        size: 325 39
+        image-source: /images/ui/window_headless2
+
+      $pressed:
+        size: 325 39
+        image-source: /images/ui/window_headless2
+
+  Panel
+    id: prey1Panel
+    anchors.top: preyTabBar.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    visible: true
+
+    SlotPanel
+      id: slot1
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-top: 10
+
+    SlotPanel
+      id: slot2
+      anchors.verticalCenter: prev.verticalCenter
+      anchors.left: prev.right
+      margin-left: 10
+
+    SlotPanel
+      id: slot3
+      anchors.verticalCenter: prev.verticalCenter
+      anchors.left: prev.right
+      margin-left: 10
+
+  Panel
+    id: prey2Panel
+    anchors.top: preyTabBar.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    visible: false
+
+    SlotPanel
+      id: slot1
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-top: 10
+
+    SlotPanel
+      id: slot2
+      anchors.verticalCenter: prev.verticalCenter
+      anchors.left: prev.right
+      margin-left: 10
+
+    SlotPanel
+      id: slot3
+      anchors.verticalCenter: prev.verticalCenter
+      anchors.left: prev.right
+      margin-left: 10
+
+
+
+  FlatLabel
+    id: description
+    anchors.left: parent.left
+    anchors.top: slot1.bottom
+    anchors.right: parent.right
+    anchors.bottom: bottomSep.top
+    margin-bottom: 10
+    margin-top: 10
+    height: 80
+    text-wrap: true
+
+  HorizontalSeparator
+    id: bottomSep
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: closeButton.top
+    margin-bottom: 10
+
+  Button
+    id: closeButton
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    size: 45 21
+    text: Close
+    font: cipsoftFont
+    @onClick: modules.game_prey.hide()
+
+  GoldLabel
+    id: gold
+    anchors.left: bottomSep.left
+    anchors.verticalCenter: closeButton.verticalCenter
+    size: 105 20
+    text-offset: 12 0
+
+  CardLabel
+    id: wildCards
+    anchors.left: prev.right
+    margin-left: 10
+    anchors.verticalCenter: closeButton.verticalCenter
+    size: 55 20
+    text-offset: 5 0
+
+  TaskHuntingPointsLabel
+    id: taskHuntingPoints
+    anchors.left: prev.right
+    margin-left: 10
+    anchors.verticalCenter: closeButton.verticalCenter
+    size: 55 20
+
+
+
+  UIButton
+    id: openStore
+    anchors.left: prev.right
+    margin-left: 10
+    size: 26 20
+    anchors.verticalCenter: closeButton.verticalCenter
+    tooltip: Go to the Store to get more Prey Wildcards!
+    image-source: /images/game/prey/prey_smallstore
+    image-clip: 0 0 26 20
+    background-color: #17354e
+    @onClick: modules.game_mainpanel.toggleStore()
+
+    $pressed:
+      image-clip: 0 0 26 20
+      image-source: /images/game/prey/prey_smallstore_clicked
+      image-clip: -1 -1 27 21
+
+PreyCreature < Panel
+  height: 22
+  margin-top: 3
+
+  UICreature
+    id: creature
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    size: 20 20
+
+  UIWidget
+    id: noCreature
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.bottom: parent.bottom
+    size: 20 20
+    image-source: /images/game/prey/prey_inactive
+
+  UIWidget
+    id: preyType
+    anchors.left: prev.right
+    margin-left: 5
+    anchors.verticalCenter: prev.verticalCenter
+    size: 15 15
+
+  UIWidget
+    id: creatureName
+    anchors.left: prev.right
+    margin-left: 5
+    anchors.top: parent.top
+    anchors.bottom: prev.bottom
+    margin-bottom: 7
+    anchors.right: parent.right
+    text: Inactive
+    font: verdana-11px-rounded
+    text-align: left
+
+  ProgressBar
+    id: time
+    anchors.left: prev.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin-bottom: 2
+    height: 6
+    background-color: #C28400
+    phantom: false
+
+AmountRadioOption < UIButton
+  size: 65 16
+  phantom: false
+  @onClick: modules.game_prey.onAmountOptionClick(self)
+
+  UIWidget
+    id: dot
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    size: 12 12
+    image-source: /images/ui/icon-combopoint-empty
+    phantom: true
+
+  Label
+    id: value
+    anchors.left: dot.right
+    anchors.verticalCenter: dot.verticalCenter
+    anchors.right: parent.right
+    margin-left: 8
+    font: verdana-11px-rounded
+    text: 0
+    color: #ffffff
+    text-align: left
+
+PreyCreatureBox < UICheckBox
+  border-width: 0
+  padding: 3
+  focusable: true
+  checkable: true
+  @onClick: modules.game_prey.onItemBoxChecked(self)
+  @onHoverChange: modules.game_prey.onMonsterHover(self)
+
+  UICreature
+    id: creature
+    phantom: true
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: -10
+    size: 60 60
+    creature-size: 100
+    
+  $checked:
+    border-width: 2
+    border-color: #ffffff
+
+  $unchecked:
+    border-width: 0
+
+TaskHuntingCreatureBox < UICheckBox
+  border-width: 0
+  padding: 3
+  focusable: true
+  checkable: true
+  @onClick: modules.game_prey.onItemBoxChecked(self)
+  @onHoverChange: modules.game_prey.onMonsterHover(self)
+
+  UICreature
+    id: creature
+    phantom: true
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: -10
+    size: 60 60
+    creature-size: 100
+
+  $checked:
+    border-width: 2
+    border-color: #ffffff
+
+  $unchecked:
+    border-width: 0
+
+
+PreyTracker < MiniWindow
+  id: preyTracker
+  !text: tr('Prey & Task Hunting')
+  height: 280
+  icon: /images/topbuttons/prey
+  @onOpen: onMiniWindowOpen()
+  @onClose: onMiniWindowClose()
+  &save: true
+
+  MiniWindowContents
+    padding-left: 5
+    padding-right: 5
+    padding-top: 5
+    layout: verticalBox
+
+    Label
+      !text: tr('Prey Creatures')
+      font: verdana-11px-rounded
+
+    HorizontalSeparator
+      margin-top: 1
+
+    PreyCreature
+      id: slot1
+      margin-top: 5
+
+    PreyCreature
+      id: slot2
+
+    PreyCreature
+      id: slot3
+
+    HorizontalSeparator
+      margin-top: 5
+
+    Label
+      !text: tr('Task Hunting')
+      font: verdana-11px-rounded
+      margin-top: 5
+
+    HorizontalSeparator
+      margin-top: 1
+
+    PreyCreature
+      id: slot4
+      margin-top: 5
+
+    PreyCreature
+      id: slot5
+
+    PreyCreature
+      id: slot6
+

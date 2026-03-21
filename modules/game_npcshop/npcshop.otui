@@ -1,0 +1,431 @@
+NPCShopItem < UIButton
+  height: 38
+  margin-bottom: 2
+  border: 1 #555555
+  background-color: #333333
+  $checked:
+    border: 2 #c8a020
+    background-color: #4a4530
+  $hover !checked:
+    background-color: #3d3d3d
+
+  Panel
+    id: itemBg
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 3
+    size: 32 32
+    border: 1 #555555
+    background-color: #222222
+
+    UIItem
+      id: itemWidget
+      anchors.fill: parent
+      margin: 2
+      virtual: true
+
+  Label
+    id: nameLabel
+    anchors.left: itemBg.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    width: 180
+    font: verdana-11px-rounded
+    color: #cccccc
+    text: Item
+    phantom: true
+
+  Label
+    id: priceLabel
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 25
+    text: 0 gp
+    text-align: right
+    font: verdana-11px-rounded
+    color: #ff9900
+    width: 80
+    phantom: true
+
+NPCCategoryTab < UIButton
+  height: 24
+  padding: 8 4
+  font: verdana-11px-rounded
+  color: #bbbbbb
+  text-align: center
+  border: 1 #555555
+  background-color: #2a2a2a
+  $checked:
+    border: 1 #c8a020
+    background-color: #3d3520
+    color: #e8c970
+  $hover !checked:
+    background-color: #3a3a3a
+    color: #ffffff
+
+NPCTabButton < UIButton
+  height: 24
+  padding: 8 4
+  font: verdana-11px-rounded
+  color: #888888
+  text-align: center
+  border: 1 #444444
+  background-color: #252525
+  $checked:
+    border: 1 #888888
+    background-color: #353535
+    color: #ffffff
+  $hover !checked:
+    background-color: #303030
+    color: #cccccc
+
+NPCTradeTabButton < UIButton
+  height: 26
+  padding: 8 4
+  font: verdana-11px-rounded
+  color: #ffcc00
+  text-align: center
+  border: 2 #c8a020
+  background-color: #3d3520
+  $checked:
+    border: 2 #ffcc00
+    background-color: #524a28
+    color: #ffffff
+  $hover !checked:
+    background-color: #4a4020
+    color: #ffffff
+
+NPCTaskTabButton < UIButton
+  height: 26
+  padding: 8 4
+  font: verdana-11px-rounded
+  color: #ff7700
+  text-align: center
+  border: 2 #cc5500
+  background-color: #402820
+  $checked:
+    border: 2 #ff9933
+    background-color: #553322
+    color: #ffffff
+  $hover !checked:
+    background-color: #4a3025
+    color: #ffffff
+
+NPCTaskShopItem < UIButton
+  height: 38
+  margin-bottom: 2
+  border: 1 #774422
+  background-color: #332222
+  $checked:
+    border: 2 #ff7700
+    background-color: #4a3520
+  $hover !checked:
+    background-color: #3d2d2d
+
+  Panel
+    id: itemBg
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 3
+    size: 32 32
+    border: 1 #774422
+    background-color: #221111
+
+    UIItem
+      id: itemWidget
+      anchors.fill: parent
+      margin: 2
+      virtual: true
+
+  Label
+    id: nameLabel
+    anchors.left: itemBg.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    width: 180
+    font: verdana-11px-rounded
+    color: #ddaa88
+    text: Item
+    phantom: true
+
+  Label
+    id: priceLabel
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 25
+    text: 0 tokens
+    text-align: right
+    font: verdana-11px-rounded
+    color: #ff7700
+    width: 80
+    phantom: true
+
+MainWindow
+  id: npcShopWindow
+  size: 550 530
+  text: NPC Shop
+  draggable: true
+  @onEscape: modules.game_npcshop.hide()
+
+  Label
+    id: categoryLabel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 10
+    text: Categorias:
+    font: verdana-11px-rounded
+    color: #e8c970
+
+  Panel
+    id: categoryBar
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 26
+    margin-left: 8
+    margin-right: 8
+    height: 55
+    layout:
+      type: grid
+      cell-size: 75 24
+      cell-spacing: 3
+      num-columns: 7
+      flow: true
+
+  Label
+    id: goldLabel
+    anchors.top: categoryBar.bottom
+    anchors.right: parent.right
+    margin-top: 8
+    margin-right: 12
+    width: 180
+    text-align: right
+    text: Total: 0 gold
+    font: verdana-11px-rounded
+    color: #ffcc00
+
+  Label
+    id: itemsLabel
+    anchors.top: categoryBar.bottom
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 10
+    text: Itens Disponiveis:
+    font: verdana-11px-rounded
+    color: #e8c970
+
+  ScrollablePanel
+    id: itemsList
+    anchors.top: itemsLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: detailsPanel.top
+    margin-top: 4
+    margin-left: 8
+    margin-right: 8
+    margin-bottom: 8
+    vertical-scrollbar: itemsScroll
+    layout:
+      type: verticalBox
+
+  VerticalScrollBar
+    id: itemsScroll
+    anchors.top: itemsLabel.bottom
+    anchors.bottom: detailsPanel.top
+    anchors.right: parent.right
+    margin-top: 4
+    margin-bottom: 8
+    margin-right: 8
+    step: 40
+    pixels-scroll: true
+
+  Panel
+    id: detailsPanel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: bottomPanel.top
+    height: 110
+    margin-left: 8
+    margin-right: 8
+    margin-bottom: 5
+    border: 1 #555555
+    background-color: #2a2a2a
+
+    Panel
+      id: selectedItemBg
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-left: 8
+      margin-top: 8
+      size: 38 38
+      border: 1 #555555
+      background-color: #222222
+      visible: false
+
+      UIItem
+        id: selectedItemWidget
+        anchors.fill: parent
+        margin: 2
+        virtual: true
+
+    Label
+      id: selectedItemName
+      anchors.left: parent.left
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-left: 55
+      margin-top: 12
+      margin-right: 140
+      text: Clique em um item para ver detalhes
+      font: verdana-11px-rounded
+      color: #ffffff
+
+    Label
+      id: infoLabelPrice
+      anchors.left: parent.left
+      anchors.top: selectedItemName.bottom
+      margin-left: 55
+      margin-top: 5
+      text: Preco Total:
+      font: verdana-11px-rounded
+      color: #888888
+      visible: false
+
+    Label
+      id: selectedItemPrice
+      anchors.left: infoLabelPrice.right
+      anchors.top: infoLabelPrice.top
+      margin-left: 5
+      width: 120
+      text: 0 gold
+      font: verdana-11px-rounded
+      color: #ff9900
+      visible: false
+
+    Label
+      id: infoLabelMoney
+      anchors.left: parent.left
+      anchors.top: infoLabelPrice.bottom
+      margin-left: 55
+      margin-top: 4
+      text: Seu Gold:
+      font: verdana-11px-rounded
+      color: #888888
+      visible: false
+
+    Label
+      id: playerMoneyLabel
+      anchors.left: infoLabelMoney.right
+      anchors.top: infoLabelMoney.top
+      margin-left: 5
+      width: 120
+      text: 0 gold
+      font: verdana-11px-rounded
+      color: #44ff44
+      visible: false
+
+    HorizontalScrollBar
+      id: quantityScroll
+      anchors.left: parent.left
+      anchors.right: rewardPanel.left
+      anchors.bottom: parent.bottom
+      margin-left: 8
+      margin-right: 8
+      margin-bottom: 8
+      show-value: true
+      minimum: 1
+      maximum: 100
+      step: 1
+      visible: false
+      @onValueChange: modules.game_npcshop.onQuantityChange(self:getValue())
+
+    Panel
+      id: rewardPanel
+      anchors.right: actionButton.left
+      anchors.bottom: parent.bottom
+      margin-right: 8
+      margin-bottom: 6
+      size: 90 34
+      visible: false
+
+      Panel
+        id: rewardItemBg
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        size: 32 32
+        border: 1 #ff7700
+        background-color: #332211
+
+        UIItem
+          id: rewardItemWidget
+          anchors.fill: parent
+          margin: 2
+          virtual: true
+
+      Label
+        id: rewardCountLabel
+        anchors.left: rewardItemBg.right
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        margin-left: 4
+        text: x1
+        font: verdana-11px-rounded
+        color: #ff7700
+
+    Button
+      id: actionButton
+      text: Comprar
+      size: 80 28
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-right: 8
+      margin-bottom: 8
+      visible: false
+      @onClick: modules.game_npcshop.doAction()
+
+  Panel
+    id: bottomPanel
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    height: 55
+
+    Button
+      id: sellAllButton
+      text: Sell All
+      size: 100 28
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-left: 12
+      margin-top: 2
+      visible: false
+      color: #ffcc00
+      border: 2 #c8a020
+      background-color: #3d3520
+      @onClick: modules.game_npcshop.doSellAll()
+
+    Button
+      id: closeBtn
+      anchors.right: parent.right
+      anchors.top: parent.top
+      margin-right: 12
+      margin-top: 2
+      width: 100
+      text: Fechar
+      @onClick: modules.game_npcshop.hide()
+
+    Label
+      id: sellAllWarning
+      anchors.left: parent.left
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-left: 12
+      margin-right: 12
+      margin-bottom: 4
+      text: Sell All: Vende TODOS os itens de uma vez. (Cooldown: 1 min)
+      text-align: center
+      font: verdana-11px-rounded
+      color: #ffaa00
+      text-shadow: 1 1 #000000
+      visible: false

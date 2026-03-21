@@ -1,0 +1,7 @@
+Font
+  name: roboto-24
+  texture: roboto-24-32
+  y-offset: 0
+  glyph-size: 32 32
+  height: 32
+  space-width: 6

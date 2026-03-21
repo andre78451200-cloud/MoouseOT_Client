@@ -1,0 +1,146 @@
+fonts
+  poppins-semibold-10
+    texture: poppins-semibold-10
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 10
+    y-offset: -1
+
+  poppins-semibold-11
+    texture: poppins-semibold-11
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 11
+    y-offset: -1
+
+  poppins-semibold-12
+    texture: poppins-semibold-12
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 12
+    y-offset: -1
+
+  poppins-semibold-13
+    texture: poppins-semibold-13
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 13
+    y-offset: -1
+
+  poppins-semibold-14
+    texture: poppins-semibold-14
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 14
+    y-offset: -1
+
+  poppins-semibold-15
+    texture: poppins-semibold-15
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 15
+    y-offset: -1
+
+  poppins-semibold-16
+    texture: poppins-semibold-16
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 16
+    y-offset: -1
+
+  poppins-semibold-17
+    texture: poppins-semibold-17
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 17
+    y-offset: -1
+
+  poppins-semibold-18
+    texture: poppins-semibold-18
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 18
+    y-offset: -1
+
+  poppins-semibold-19
+    texture: poppins-semibold-19
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 19
+    y-offset: -1
+
+  poppins-semibold-20
+    texture: poppins-semibold-20
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 20
+    y-offset: -1
+
+  poppins-semibold-21
+    texture: poppins-semibold-21
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 21
+    y-offset: -1
+
+  poppins-semibold-22
+    texture: poppins-semibold-22
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 22
+    y-offset: -1
+
+  poppins-semibold-23
+    texture: poppins-semibold-23
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 23
+    y-offset: -1
+
+  poppins-semibold-24
+    texture: poppins-semibold-24
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 24
+
+  poppins-semibold-25
+    texture: poppins-semibold-25
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 25
+    y-offset: -1
+
+  poppins-semibold-26
+    texture: poppins-semibold-26
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 26
+    y-offset: -1
+
+  poppins-semibold-27
+    texture: poppins-semibold-27
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 27
+    y-offset: -1
+
+  poppins-semibold-28
+    texture: poppins-semibold-28
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 28
+    y-offset: -1
+
+  poppins-semibold-29
+    texture: poppins-semibold-29
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 29
+    y-offset: -1
+
+  poppins-semibold-30
+    texture: poppins-semibold-30
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 30
+    y-offset: -1

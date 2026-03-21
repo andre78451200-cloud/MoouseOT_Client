@@ -1,0 +1,11 @@
+Module
+  name: game_resetsystem
+  description: Sistema de Reset - Interface Visual
+  author: Empera OT
+  website: https://github.com/baiak
+  sandboxed: true
+  autoload: false
+  autoload-priority: 1008
+  scripts: [ resetsystem ]
+  @onLoad: init()
+  @onUnload: terminate()

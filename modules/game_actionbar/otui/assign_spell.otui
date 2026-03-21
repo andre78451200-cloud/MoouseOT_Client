@@ -1,0 +1,121 @@
+MainWindow
+  id: assignSpellWindow
+  size: 343 500
+
+  Panel
+    id: previewPanel
+    height: 36
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+    UIWidget
+      id: image
+      size: 30 30
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-left: 3
+      margin-top: 3
+      phantom: true
+
+    Label
+      id: preview
+      anchors.top: parent.top
+      anchors.left: image.right
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-left: 8
+      text-wrap: true
+
+  TextEdit
+    id: searchText
+    anchors.top: previewPanel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    margin-right: 55
+    placeholder: Search spell...
+
+  Button
+    id: clearBtn
+    !text: tr('Clear')
+    width: 50
+    anchors.top: searchText.top
+    anchors.bottom: searchText.bottom
+    anchors.right: parent.right
+
+  ScrollablePanel
+    id: spellList
+    anchors.top: searchText.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: devCheck.top
+    margin-top: 5
+    margin-bottom: 5
+    image-source: /images/ui/panel_flat
+    image-border: 1
+    padding: 2
+    padding-right: 14
+    vertical-scrollbar: spellScroll
+    layout:
+      type: verticalBox
+
+  VerticalScrollBar
+    id: spellScroll
+    anchors.top: spellList.top
+    anchors.right: spellList.right
+    anchors.bottom: spellList.bottom
+    step: 34
+    pixel-scroll: true
+
+  CheckBox
+    id: devCheck
+    !text: tr('Show All Spells')
+    anchors.bottom: paramLabel.top
+    anchors.left: parent.left
+    margin-bottom: 5
+
+  Label
+    id: paramLabel
+    !text: tr('Parameter:')
+    anchors.bottom: paramText.top
+    anchors.left: parent.left
+    margin-bottom: 3
+
+  TextEdit
+    id: paramText
+    anchors.bottom: separator.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 5
+    enabled: false
+
+  HorizontalSeparator
+    id: separator
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 30
+
+  Button
+    id: buttonOk
+    !text: tr('Ok')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+
+  Button
+    id: buttonApply
+    !text: tr('Apply')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonOk.left
+    margin-right: 5
+
+  Button
+    id: buttonClose
+    !text: tr('Cancel')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonApply.left
+    margin-right: 5

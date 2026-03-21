@@ -1,0 +1,6 @@
+Font
+  name: baby-26
+  texture: baby-26
+  height: 32
+  glyph-size: 32 32
+  space-width: 5

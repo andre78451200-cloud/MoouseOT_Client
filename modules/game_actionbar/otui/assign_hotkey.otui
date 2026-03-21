@@ -1,0 +1,73 @@
+MainWindow
+  id: assignHotkeyWindow
+  size: 370 200
+
+  Label
+    id: chatMode
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    text-align: center
+    margin-top: 5
+
+  Panel
+    id: display
+    height: 33
+    anchors.top: chatMode.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 8
+    image-source: /images/ui/panel_flat
+    image-border: 1
+    text-align: center
+    focusable: false
+
+  Label
+    id: desc
+    anchors.top: display.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 8
+    text-wrap: true
+    text-align: center
+
+  Label
+    id: warning
+    anchors.top: desc.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 5
+    text-wrap: true
+    text-align: center
+    color: #ff4444
+    visible: false
+
+  HorizontalSeparator
+    id: separator
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 30
+
+  Button
+    id: buttonOk
+    !text: tr('Ok')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+
+  Button
+    id: buttonClear
+    !text: tr('Clear')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonOk.left
+    margin-right: 5
+
+  Button
+    id: buttonClose
+    !text: tr('Cancel')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonClear.left
+    margin-right: 5

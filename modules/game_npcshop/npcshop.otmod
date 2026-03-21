@@ -1,0 +1,11 @@
+Module
+  name: game_npcshop
+  description: NPC Shop System - Buy and Sell items with Gold
+  author: Baiak Team
+  website: https://github.com/baiak
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1006
+  scripts: [ npcshop ]
+  @onLoad: init()
+  @onUnload: terminate()

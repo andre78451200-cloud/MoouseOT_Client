@@ -1,0 +1,7 @@
+Font
+  name: terminus-14px-bold-bordered-emoji
+  texture: terminus-chat-14px-bold-bordered-emoji
+  height: 16
+  y-offset: 2
+  glyph-size: 16 16
+  space-width: 8

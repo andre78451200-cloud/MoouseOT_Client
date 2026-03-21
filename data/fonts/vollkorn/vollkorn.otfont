@@ -1,0 +1,162 @@
+fonts
+  vollkorn-18
+    texture: vollkorn-18
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 18
+
+  vollkorn-19
+    texture: vollkorn-19
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 19
+
+  vollkorn-20
+    texture: vollkorn-20
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 20
+
+  vollkorn-21
+    texture: vollkorn-21
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 21
+
+  vollkorn-22
+    texture: vollkorn-22
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 22
+
+  vollkorn-23
+    texture: vollkorn-23
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 23
+
+  vollkorn-24
+    texture: vollkorn-24
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 24
+
+  vollkorn-25
+    texture: vollkorn-25
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 25
+
+  vollkorn-26
+    texture: vollkorn-26
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 26
+
+  vollkorn-27
+    texture: vollkorn-27
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 27
+
+  vollkorn-28
+    texture: vollkorn-28
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 28
+
+  vollkorn-29
+    texture: vollkorn-29
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 29
+
+  vollkorn-30
+    texture: vollkorn-30
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 30
+
+  vollkorn-31
+    texture: vollkorn-31
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 31
+
+  vollkorn-32
+    texture: vollkorn-32
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 32
+
+  vollkorn-33
+    texture: vollkorn-33
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 33
+
+  vollkorn-34
+    texture: vollkorn-34
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 34
+
+  vollkorn-35
+    texture: vollkorn-35
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 35
+
+  vollkorn-36
+    texture: vollkorn-36
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 36
+
+  vollkorn-37
+    texture: vollkorn-37
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 37
+
+  vollkorn-38
+    texture: vollkorn-38
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 38
+
+  vollkorn-39
+    texture: vollkorn-39
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 39
+
+  vollkorn-40
+    texture: vollkorn-40
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 40
+
+  vollkorn-14
+    texture: vollkorn-14
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 14
+
+  vollkorn-15
+    texture: vollkorn-15
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 15
+
+  vollkorn-16
+    texture: vollkorn-16
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 16
+
+  vollkorn-17
+    texture: vollkorn-17
+    auto-sizing: true
+    auto-sizing-multiplier: 1.5
+    font-size: 17

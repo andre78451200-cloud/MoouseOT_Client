@@ -1,0 +1,27 @@
+fonts
+  eras-bold-12
+    texture: erasbold-thin-12
+    auto-sizing: true
+    font-size: 12
+    space-width: 5
+
+  eras-bold-13
+    texture: erasbold-thin-13
+    auto-sizing: true
+    font-size: 13
+    spacing: -1 0
+    space-width: 5
+
+  eras-bold-14
+    texture: erasbold-thin-14
+    auto-sizing: true
+    font-size: 14
+    spacing: -1 0
+    space-width: 6
+    
+  eras-bold-14-red
+    texture: erasbold-thin-14-red
+    auto-sizing: true
+    font-size: 14
+    spacing: -1 0
+    space-width: 6

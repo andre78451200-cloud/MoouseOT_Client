@@ -1,0 +1,8 @@
+Font
+  name: myriad-pro-semibold-18
+  texture: myriad-pro-semibold-18
+  height: 16
+  y-offset: 0
+  glyph-size: 18 18
+  fixed-glyph-width: 7
+  space-width: 7

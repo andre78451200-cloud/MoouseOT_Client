@@ -1,0 +1,199 @@
+// ==========================================================
+// Estilos para Atributo de Reset (linha com + e -)
+// ==========================================================
+ResetAtributeRow < Panel
+  height: 32
+  margin-bottom: 2
+
+  Label
+    id: nomeLabel
+    anchors.left: parent.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-left: 8
+    width: 180
+    font: verdana-11px-rounded
+    color: #cccccc
+    text-wrap: true
+
+  UIButton
+    id: btnRemover
+    anchors.right: valorLabel.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 4
+    size: 22 22
+    text: -
+    font: verdana-11px-rounded
+    color: #ff4444
+    background-color: #442222
+    border: 1 #663333
+    $hover:
+      background-color: #553333
+    $pressed:
+      background-color: #331111
+
+  Label
+    id: valorLabel
+    anchors.right: btnAdicionar.left
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 4
+    width: 50
+    text-align: center
+    font: verdana-11px-rounded
+    color: #e8c970
+    text: 0/50
+
+  UIButton
+    id: btnAdicionar
+    anchors.right: parent.right
+    anchors.verticalCenter: parent.verticalCenter
+    margin-right: 4
+    size: 22 22
+    text: +
+    font: verdana-11px-rounded
+    color: #44ff44
+    background-color: #224422
+    border: 1 #336633
+    $hover:
+      background-color: #335533
+    $pressed:
+      background-color: #113311
+
+// ==========================================================
+// Separador de Secao
+// ==========================================================
+ResetSectionLabel < Label
+  height: 24
+  margin-bottom: 2
+  margin-top: 6
+  font: verdana-11px-rounded
+  text-align: center
+
+// ==========================================================
+// Janela Principal do Sistema de Reset
+// ==========================================================
+ResetWindow < MainWindow
+  id: resetWindow
+  size: 520 560
+  text: Sistema de Reset
+  @onEscape: modules.game_resetsystem.hide()
+
+  // ======= CABECALHO COM INFORMACOES =======
+  Panel
+    id: headerPanel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    height: 90
+    margin-top: 5
+    border: 1 #555555
+    background-color: #2a2a2a
+
+    // Linha 1: Resets e Nivel
+    Label
+      id: resetCountLabel
+      anchors.top: parent.top
+      anchors.left: parent.left
+      margin-top: 8
+      margin-left: 12
+      width: 200
+      font: verdana-11px-rounded
+      color: #e8c970
+      text: Resets: 0/100
+
+    Label
+      id: nivelLabel
+      anchors.top: parent.top
+      anchors.right: parent.right
+      margin-top: 8
+      margin-right: 12
+      width: 220
+      text-align: right
+      font: verdana-11px-rounded
+      color: #aaaaaa
+      text: Nivel: 1 / 5000
+
+    // Linha 2: Pontos
+    Label
+      id: pontosLabel
+      anchors.top: resetCountLabel.bottom
+      anchors.left: parent.left
+      margin-top: 6
+      margin-left: 12
+      width: 200
+      font: verdana-11px-rounded
+      color: #44dd44
+      text: Pontos Disponiveis: 0
+
+    Label
+      id: pontosGastosLabel
+      anchors.top: pontosLabel.top
+      anchors.right: parent.right
+      margin-right: 12
+      width: 220
+      text-align: right
+      font: verdana-11px-rounded
+      color: #aaaaaa
+      text: Pontos Gastos: 0
+
+    // Linha 3: Bonus por ponto
+    Label
+      id: bonusInfoLabel
+      anchors.top: pontosLabel.bottom
+      anchors.left: parent.left
+      margin-top: 6
+      margin-left: 12
+      width: 300
+      font: verdana-11px-rounded
+      color: #888888
+      text: Cada ponto = 1% de bonus
+
+  // ======= PAINEL DE ATRIBUTOS (scrollavel) =======
+  VerticalScrollBar
+    id: atributosScrollbar
+    anchors.top: headerPanel.bottom
+    anchors.bottom: btnResetar.top
+    anchors.right: parent.right
+    margin-top: 8
+    margin-bottom: 10
+    step: 32
+    pixels-scroll: true
+
+  TextList
+    id: atributosPanel
+    anchors.top: headerPanel.bottom
+    anchors.left: parent.left
+    anchors.right: atributosScrollbar.left
+    anchors.bottom: btnResetar.top
+    margin-top: 8
+    margin-bottom: 10
+    vertical-scrollbar: atributosScrollbar
+    focusable: false
+    auto-focus: none
+    border: 1 #444444
+    background-color: #222222
+
+  // ======= BOTAO DE RESET =======
+  UIButton
+    id: btnResetar
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 4
+    margin-left: 4
+    margin-right: 4
+    height: 36
+    text: RESETAR PERSONAGEM
+    font: verdana-11px-rounded
+    color: #ffffff
+    text-align: center
+    background-color: #8b0000
+    border: 1 #cc3333
+    $hover:
+      background-color: #aa2222
+      border: 1 #ff4444
+    $pressed:
+      background-color: #660000
+    $disabled:
+      background-color: #444444
+      color: #888888
+      border: 1 #555555

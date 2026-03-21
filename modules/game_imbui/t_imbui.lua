@@ -1,0 +1,233 @@
+if not Imbuement then
+  Imbuement = {
+    window = nil,
+    selectItemOrScroll = nil,
+    scrollImbue = nil,
+    selectImbue = nil,
+    clearImbue = nil,
+
+    messageWindow = nil,
+
+    bankGold = 0,
+    inventoryGold = 0,
+  }
+  Imbuement.__index = Imbuement
+end
+
+Imbuement.MessageDialog = {
+	ImbuementSuccess = 0,
+	ImbuementError = 1,
+	ImbuementRollFailed = 2,
+	ImbuingStationNotFound = 3,
+	ClearingCharmSuccess = 10,
+	ClearingCharmError = 11,
+	PreyMessage = 20,
+	PreyError = 21,
+}
+
+local self = Imbuement
+function Imbuement.init()
+  self.window = g_ui.displayUI('t_imbui')
+  self:hide()
+
+  ImbuementSelection:startUp()
+
+  self.selectItemOrScroll = self.window:recursiveGetChildById('selectItemOrScroll')
+  self.scrollImbue = self.window:recursiveGetChildById('scrollImbue')
+  self.selectImbue = self.window:recursiveGetChildById('selectImbue')
+  self.clearImbue = self.window:recursiveGetChildById('clearImbue')
+
+  connect(g_game, {
+    onGameStart = self.offline,
+    onGameEnd = self.offline,
+    onOpenImbuementWindow = self.onOpenImbuementWindow,
+    onImbuementItem = self.onImbuementItem,
+    onImbuementScroll = self.onImbuementScroll,
+    onResourceBalance = self.onResourceBalance,
+    onCloseImbuementWindow = self.offline,
+    onMessageDialog = self.onMessageDialog,
+  })
+end
+
+function Imbuement.terminate()
+  disconnect(g_game, {
+    onGameStart = self.offline,
+    onGameEnd = self.offline,
+    onOpenImbuementWindow = self.onOpenImbuementWindow,
+    onImbuementItem = self.onImbuementItem,
+    onImbuementScroll = self.onImbuementScroll,
+    onResourceBalance = self.onResourceBalance,
+    onCloseImbuementWindow = self.offline,
+    onMessageDialog = self.onMessageDialog,
+  })
+
+  if self.messageWindow then
+    self.messageWindow:destroy()
+    self.messageWindow = nil
+  end
+
+  ImbuementItem:shutdown()
+  ImbuementSelection:shutdown()
+  ImbuementScroll:shutdown()
+  if self.selectItemOrScroll then
+    self.selectItemOrScroll:destroy()
+    self.selectItemOrScroll = nil
+  end
+
+  if self.scrollImbue then
+    self.scrollImbue:destroy()
+    self.scrollImbue = nil
+  end
+
+  if self.selectImbue then
+    self.selectImbue:destroy()
+    self.selectImbue = nil
+  end
+
+  if self.clearImbue then
+    self.clearImbue:destroy()
+    self.clearImbue = nil
+  end
+
+  if self.window then
+    self.window:destroy()
+    self.window = nil
+  end
+end
+
+function Imbuement.online()
+ self:hide()
+ if self.messageWindow then
+   self.messageWindow:destroy()
+   self.messageWindow = nil
+ end
+end
+
+function Imbuement.offline()
+  self:hide()
+  ImbuementItem:shutdown()
+  ImbuementScroll:shutdown()
+  if self.messageWindow then
+    self.messageWindow:destroy()
+    self.messageWindow = nil
+  end
+  -- g_client.setInputLockWidget(nil) -- deprecated
+end
+
+function Imbuement.show()
+  self.window:show(true)
+  self.window:raise()
+  self.window:focus()
+  if self.messageWindow then
+    self.messageWindow:destroy()
+    self.messageWindow = nil
+  end
+  -- g_client.setInputLockWidget(self.window) -- deprecated
+end
+
+function Imbuement.hide()
+  if self.window then
+    self.window:hide()
+  end
+  -- g_client.setInputLockWidget(nil) -- deprecated
+end
+
+function Imbuement.close()
+  if g_game.isOnline() then
+    g_game.closeImbuingWindow()
+  end
+
+  self.window:hide()
+  -- g_client.setInputLockWidget(nil) -- deprecated
+end
+
+-- testOpen removed (temporary debug button deleted)
+
+function Imbuement:toggleMenu(menu)
+  for key, value in pairs(self) do
+    if type(value) ~= 'userdata' or key == 'window' then
+      goto continue
+    end
+
+    if key == menu then
+      value:show()
+      if value.main_window_size then
+        self.window:setSize(value.main_window_size)
+      end
+
+    else
+      value:hide()
+    end
+
+    ::continue::
+  end
+end
+
+function Imbuement.onOpenImbuementWindow()
+  self:show()
+  self:toggleMenu("selectItemOrScroll")
+end
+
+function Imbuement.onImbuementItem(itemId, tier, slots, activeSlots, availableImbuements, needItems)
+  -- refresh resources so gold/balance UI and checks are accurate
+  if g_game and g_game.sendResourceBalance then g_game.sendResourceBalance() end
+  self:toggleMenu("selectImbue")
+  ImbuementItem.setup(itemId, tier, slots, activeSlots, availableImbuements, needItems)
+end
+
+function Imbuement.onImbuementScroll(availableImbuements, needItems)
+  if g_game and g_game.sendResourceBalance then g_game.sendResourceBalance() end
+  self:toggleMenu("scrollImbue")
+  ImbuementScroll.setup(availableImbuements, needItems)
+end
+
+function Imbuement.onSelectItem()
+  self:hide()
+  ImbuementSelection:selectItem()
+end
+
+function Imbuement.onSelectScroll()
+  g_game.selectImbuementScroll()
+end
+
+function Imbuement.onResourceBalance(type, balance)
+  local player = g_game.getLocalPlayer()
+  local bankMoney = player:getResourceBalance(0) -- RESOURCE_BANK_BALANCE
+  local characterMoney = player:getResourceBalance(1) -- RESOURCE_GOLD_EQUIPPED
+
+  self.bankGold = bankMoney or 0
+  self.inventoryGold = characterMoney or 0
+
+  if type == 0 or type == 1 then
+    if self.window and self.window.contentPanel and self.window.contentPanel.gold and self.window.contentPanel.gold.text then
+      self.window.contentPanel.gold.text:setText(comma_value(self.bankGold + self.inventoryGold))
+    end
+  end
+end
+
+function Imbuement.onMessageDialog(type, content)
+  if type > Imbuement.MessageDialog.ImbuingStationNotFound or not self.window:isVisible() then
+    return
+  end
+
+  self:hide()
+  local message = content or ""
+  if self.messageWindow then
+    self.messageWindow:destroy()
+    self.messageWindow = nil
+  end
+
+  local function confirm()
+      self.messageWindow:destroy()
+      self.messageWindow = nil
+
+      Imbuement.show()
+  end
+
+  self.messageWindow = displayGeneralBox(tr('Message Dialog'), content,
+    { { text=tr('Ok'), callback=confirm },
+    }, confirm, confirm)
+
+
+  -- g_client.setInputLockWidget(self.messageWindow) -- deprecated
+end

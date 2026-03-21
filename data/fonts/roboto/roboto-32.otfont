@@ -1,0 +1,7 @@
+Font
+  name: roboto-32
+  texture: roboto-32-48
+  y-offset: 0
+  glyph-size: 48 48
+  height: 48
+  space-width: 6

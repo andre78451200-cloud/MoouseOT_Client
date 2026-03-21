@@ -1,0 +1,7 @@
+Font
+  name: roboto-12-bold
+  texture: roboto-12-16-bold
+  y-offset: 0
+  glyph-size: 16 16
+  height: 14
+  space-width: 4

@@ -1,0 +1,10 @@
+Module
+  name: game_craft
+  description: Visual Craft System with item icons
+  author: Baiak Project
+  sandboxed: true
+  autoload: true
+  autoload-priority: 1005
+  scripts: [ craft ]
+  @onLoad: init()
+  @onUnload: terminate()

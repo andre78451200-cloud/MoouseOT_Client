@@ -1,0 +1,160 @@
+function postostring(pos)
+    return pos.x .. ' ' .. pos.y .. ' ' .. pos.z
+end
+
+function dirtostring(dir)
+    for k, v in pairs(Directions) do
+        if v == dir then
+            return k
+        end
+    end
+end
+
+function comma_value(n)
+    local left, num, right = string.match(n, '^([^%d]*%d)(%d*)(.-)$')
+    return left .. (num:reverse():gsub('(%d%d%d)', '%1,'):reverse()) .. right
+end
+
+function formatTimeBySeconds(totalSeconds)
+    local hours = math.floor(totalSeconds / 3600)
+    local remainingSeconds = totalSeconds % 3600
+    local minutes = math.floor(remainingSeconds / 60)
+    return string.format("%02d:%02d", hours, minutes)
+end
+
+function formatTimeByMinutes(totalMinutes)
+    local totalSeconds = totalMinutes * 60
+    local hours = math.floor(totalSeconds / 3600)
+    local remainingSeconds = totalSeconds % 3600
+    local minutes = math.floor(remainingSeconds / 60)
+    return string.format("%02d:%02d", hours, minutes)
+end
+
+function translateWheelVocation(id)
+	-- Sprawdź czy id jest stringiem i spróbuj przekonwertować
+	if type(id) == "string" then
+		id = tonumber(id)
+	end
+	
+	if id == 1 or id == 11 then
+		return 1 -- ek
+	elseif id == 2 or id == 12 then
+		return 2 -- rp
+	elseif id == 3 or id == 13 then
+		return 3 -- ms
+	elseif id == 4 or id == 14 then
+		return 4 -- ed
+  elseif id == 5 or id == 15 then
+    return 5 -- em
+	end
+  return 0
+end
+
+-- servers may have different id's, change if not working properly (only for protocols 910+)
+function getVocationSt(id)
+  if id == 1 then
+    return "K0"
+  elseif id == 2 then
+    return "P0"
+  elseif id == 3 then
+    return "S0"
+  elseif id == 4 then
+    return "D0"
+  elseif id == 5 then
+    return "M0"
+  end
+  return "N"
+end
+
+function getVocationId(name)
+  if string.find(name:lower(), "knight") then
+    return 11 -- Elite Knight
+  elseif string.find(name:lower(), "paladin") then
+    return 12 -- Royal Paladin
+  elseif string.find(name:lower(), "sorcerer") or string.find(name:lower(), "mag") then
+    return 13 -- Master Sorcerer
+  elseif string.find(name:lower(), "druid") then
+    return 14 -- Elder Druid
+  elseif string.find(name:lower(), "monk") then
+    return 15 -- Elder Monk
+  end
+
+  return 0
+end
+
+function roundToTwoDecimalPlaces(num)
+  return math.floor(num * 100 + 0.5) / 100
+end
+
+function convertLongGold(amount, short)
+  if short then
+    if amount >= 1000000 then
+      return string.format("%.1fM", amount / 1000000)
+    elseif amount >= 1000 then
+      return string.format("%.1fK", amount / 1000)
+    else
+      return tostring(amount)
+    end
+  else
+    return comma_value(amount)
+  end
+end
+
+function comma_value(amount)
+  local formatted = tostring(amount)
+  local k
+  while true do
+    formatted, k = string.gsub(formatted, "^(-?%d+)(%d%d%d)", '%1,%2')
+    if k == 0 then
+      break
+    end
+  end
+  return formatted
+end
+
+-- Dodaj funkcję string.empty jeśli nie istnieje
+if not string.empty then
+  function string.empty(str)
+    return str == nil or str == ""
+  end
+end
+
+function wrapTextByWords(str, n)
+    local result = {}
+    local i = 1
+    while i <= #str do
+        local chunk = str:sub(i, i + n - 1)
+        if #chunk < n then
+            table.insert(result, chunk)
+            break
+        end
+
+        -- find last space or punctuation within chunk
+        local breakAt = chunk:match("^.*()[%s,%.;:!?%-]")
+        if breakAt and breakAt > 1 then
+      local chunk = str:sub(i, i + breakAt - 1)
+      chunk = chunk:gsub("[%s,%.;:!?%-]+$", "")
+      table.insert(result, chunk)
+            i = i + breakAt
+        else
+            -- fallback if no space/punctuation is found
+            table.insert(result, chunk)
+            i = i + n
+        end
+    end
+    return table.concat(result, "\n")
+end
+
+function matchText(input, target)
+    input = input:lower()
+    target = target:lower()
+
+    if input == target then
+        return true
+    end
+
+    if #input >= 1 and target:find(input, 1, true) then
+        return true
+    end
+    return false
+end

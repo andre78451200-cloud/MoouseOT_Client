@@ -1,0 +1,28 @@
+# Executables and DLLs
+*.exe
+*.dll
+
+# Certificates
+cacert.pem
+
+# Logs
+*.log
+
+# Minimap data
+data/minimap.otmm
+data/minimap.otmm.bak
+
+# Settings (user-specific)
+data/setup.otml
+
+# Things (large binary files - sprites/dat)
+data/things/
+
+# Sounds (large files)
+data/sounds/
+
+# Scripts
+generate_manifest.ps1
+
+# Packet log
+packet.log

@@ -1,0 +1,82 @@
+MainWindow
+  id: assignPassiveWindow
+  size: 260 300
+
+  Panel
+    id: previewPanel
+    height: 36
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+    UIWidget
+      id: image
+      size: 32 32
+      anchors.left: parent.left
+      anchors.top: parent.top
+      margin-left: 3
+      margin-top: 2
+      phantom: true
+
+    Label
+      id: preview
+      anchors.top: parent.top
+      anchors.left: image.right
+      anchors.right: parent.right
+      anchors.bottom: parent.bottom
+      margin-left: 8
+      text-wrap: true
+
+  ScrollablePanel
+    id: passiveList
+    anchors.top: previewPanel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: separator.top
+    margin-top: 5
+    margin-bottom: 5
+    image-source: /images/ui/panel_flat
+    image-border: 1
+    padding: 2
+    padding-right: 14
+    vertical-scrollbar: passiveScroll
+    layout:
+      type: verticalBox
+
+  VerticalScrollBar
+    id: passiveScroll
+    anchors.top: passiveList.top
+    anchors.right: passiveList.right
+    anchors.bottom: passiveList.bottom
+    step: 34
+    pixel-scroll: true
+
+  HorizontalSeparator
+    id: separator
+    anchors.bottom: parent.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-bottom: 30
+
+  Button
+    id: buttonOk
+    !text: tr('Ok')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+
+  Button
+    id: buttonApply
+    !text: tr('Apply')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonOk.left
+    margin-right: 5
+
+  Button
+    id: buttonClose
+    !text: tr('Cancel')
+    width: 45
+    anchors.bottom: parent.bottom
+    anchors.right: buttonApply.left
+    margin-right: 5

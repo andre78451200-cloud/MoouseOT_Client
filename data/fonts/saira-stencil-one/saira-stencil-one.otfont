@@ -1,0 +1,154 @@
+fonts
+  saira-stencil-one-50
+    texture: saira-stencil-one-50
+    auto-sizing: true
+    font-size: 50
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-51
+    texture: saira-stencil-one-51
+    auto-sizing: true
+    font-size: 51
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-52
+    texture: saira-stencil-one-52
+    auto-sizing: true
+    font-size: 52
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-53
+    texture: saira-stencil-one-53
+    auto-sizing: true
+    font-size: 53
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-54
+    texture: saira-stencil-one-54
+    auto-sizing: true
+    font-size: 54
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-55
+    texture: saira-stencil-one-55
+    auto-sizing: true
+    font-size: 55
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-56
+    texture: saira-stencil-one-56
+    auto-sizing: true
+    font-size: 56
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-57
+    texture: saira-stencil-one-57
+    auto-sizing: true
+    font-size: 57
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-58
+    texture: saira-stencil-one-58
+    auto-sizing: true
+    font-size: 58
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-59
+    texture: saira-stencil-one-59
+    auto-sizing: true
+    font-size: 59
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-60
+    texture: saira-stencil-one-60
+    auto-sizing: true
+    font-size: 60
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-70
+    texture: saira-stencil-one-70
+    auto-sizing: true
+    font-size: 70
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-71
+    texture: saira-stencil-one-71
+    auto-sizing: true
+    font-size: 71
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-72
+    texture: saira-stencil-one-72
+    auto-sizing: true
+    font-size: 72
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-73
+    texture: saira-stencil-one-73
+    auto-sizing: true
+    font-size: 73
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-74
+    texture: saira-stencil-one-74
+    auto-sizing: true
+    font-size: 74
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-75
+    texture: saira-stencil-one-75
+    auto-sizing: true
+    font-size: 75
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-76
+    texture: saira-stencil-one-76
+    auto-sizing: true
+    font-size: 76
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-77
+    texture: saira-stencil-one-77
+    auto-sizing: true
+    font-size: 77
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-78
+    texture: saira-stencil-one-78
+    auto-sizing: true
+    font-size: 78
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-79
+    texture: saira-stencil-one-79
+    auto-sizing: true
+    font-size: 79
+    last-glyph: 64
+    y-offset: -6
+
+  saira-stencil-one-80
+    texture: saira-stencil-one-80
+    auto-sizing: true
+    font-size: 80
+    last-glyph: 64
+    y-offset: -6
