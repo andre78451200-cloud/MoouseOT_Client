@@ -49,9 +49,6 @@ local function downloadFiles(url, files, index, retries, doneCallback)
 
   httpOperationId = HTTP.download(url .. encodeUrlPath(file), file,
     function(file, checksum, err)
-      if not err and normalizeChecksum(checksum) ~= normalizeChecksum(file_checksum) then
-        err = "Invalid checksum of: " .. file .. ".\nShould be " .. file_checksum .. ", is: " .. checksum
-      end
       if err then
         if retries >= Updater.maxRetries then
           Updater.error("Can't download file: " .. file .. ".\nError: " .. err)
