@@ -1,0 +1,3 @@
+# Disable line ending conversion - preserve files exactly as-is
+# This is critical for the auto-updater CRC32 checksum matching
+* -text
