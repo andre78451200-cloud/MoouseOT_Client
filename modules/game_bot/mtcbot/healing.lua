@@ -1,14 +1,14 @@
 --[[
-  BTC Bot - Sistema de Healing
+  MTC Bot - Sistema de Healing
   
   3 slots de cura configuraveis
   Cada slot pode ser Spell ou Potion
 ]]
 
-BTCHealing = BTCHealing or {}
+MTCHealing = MTCHealing or {}
 
 -- Configuracao padrao dos 3 slots de healing
-BTCHealing.defaultConfig = {
+MTCHealing.defaultConfig = {
   enabled = true,  -- Modulo ativo por padrao
   slot1 = {
     enabled = true,
@@ -34,27 +34,29 @@ BTCHealing.defaultConfig = {
 }
 
 -- Lista de potions de vida
-BTCHealing.healthPotions = {
+MTCHealing.healthPotions = {
   { id = 266,   name = "Health Potion" },
   { id = 236,   name = "Strong Health Potion" },
   { id = 239,   name = "Great Health Potion" },
   { id = 7643,  name = "Ultimate Health Potion" },
   { id = 23375, name = "Supreme Health Potion" },
+  { id = 58705, name = "Super Health Potion" },
   -- Spirit Potions (Paladin - recuperam HP e Mana)
   { id = 7642,  name = "Great Spirit Potion" },
   { id = 23374, name = "Ultimate Spirit Potion" },
+  { id = 58704, name = "Super Spirit Potion" },
   -- Eternal Potions (infinitas)
   { id = 51971, name = "Eternal Supreme Health Potion" },
   { id = 51973, name = "Eternal Ultimate Spirit Potion" },
 }
 
 -- Popup de selecao de potion
-BTCHealing.potionPopup = nil
+MTCHealing.potionPopup = nil
 
 -- Lista de spells de cura (AUTO HEAL - apenas para si mesmo)
 -- Vocacoes OTClient: 1=Knight, 2=Paladin, 3=Sorcerer, 4=Druid, 5=Monk
 --                   11=EK, 12=RP, 13=MS, 14=ED, 15=Exalted Monk
-BTCHealing.healSpells = {
+MTCHealing.healSpells = {
   -- Sorcerer / Druid / Paladin (basicas)
   { words = "exura infir", mana = 6, level = 1, voc = {2,3,4,12,13,14} },       -- Magic Patch
   { words = "exura", mana = 20, level = 8, voc = {2,3,4,12,13,14} },            -- Light Healing
@@ -80,7 +82,7 @@ BTCHealing.healSpells = {
 }
 
 -- Retorna vocacao do player (ou 0 se nao conseguir)
-function BTCHealing.getPlayerVocation()
+function MTCHealing.getPlayerVocation()
   if not g_game.isOnline() then return 0 end
   local player = g_game.getLocalPlayer()
   if not player then return 0 end
@@ -88,11 +90,11 @@ function BTCHealing.getPlayerVocation()
 end
 
 -- Retorna lista de spells filtrada pela vocacao atual
-function BTCHealing.getAvailableSpells()
-  local voc = BTCHealing.getPlayerVocation()
+function MTCHealing.getAvailableSpells()
+  local voc = MTCHealing.getPlayerVocation()
   local available = {}
   
-  for _, spell in ipairs(BTCHealing.healSpells) do
+  for _, spell in ipairs(MTCHealing.healSpells) do
     -- Se voc = 0, mostra todas (nao logado)
     if voc == 0 then
       table.insert(available, spell)
@@ -111,53 +113,53 @@ function BTCHealing.getAvailableSpells()
 end
 
 -- Variaveis de controle
-BTCHealing.config = nil
-BTCHealing.lastHealTime = 0
-BTCHealing.healCooldown = 1000
+MTCHealing.config = nil
+MTCHealing.lastHealTime = 0
+MTCHealing.healCooldown = 1000
 
 -- Inicializa o modulo
-function BTCHealing.init()
-  BTCHealing.config = BTCHealing.loadConfig()
+function MTCHealing.init()
+  MTCHealing.config = MTCHealing.loadConfig()
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCHealing.loadConfig()
-  local saved = BTCConfig.get("healing")
+function MTCHealing.loadConfig()
+  local saved = MTCConfig.get("healing")
   if saved then
     return saved
   end
-  return BTCHealing.defaultConfig
+  return MTCHealing.defaultConfig
 end
 
 -- Salva configuracao
-function BTCHealing.saveConfig()
-  BTCConfig.set("healing", BTCHealing.config)
+function MTCHealing.saveConfig()
+  MTCConfig.set("healing", MTCHealing.config)
 end
 
 -- Obtem configuracao de um slot
-function BTCHealing.getSlotConfig(slotNum)
+function MTCHealing.getSlotConfig(slotNum)
   local key = "slot" .. slotNum
-  if BTCHealing.config and BTCHealing.config[key] then
-    return BTCHealing.config[key]
+  if MTCHealing.config and MTCHealing.config[key] then
+    return MTCHealing.config[key]
   end
-  return BTCHealing.defaultConfig["slot" .. slotNum]
+  return MTCHealing.defaultConfig["slot" .. slotNum]
 end
 
 -- Atualiza configuracao de um slot
-function BTCHealing.setSlotConfig(slotNum, config)
+function MTCHealing.setSlotConfig(slotNum, config)
   local key = "slot" .. slotNum
-  BTCHealing.config[key] = config
-  BTCHealing.saveConfig()
+  MTCHealing.config[key] = config
+  MTCHealing.saveConfig()
 end
 
 -- Verifica se pode curar (cooldown)
-function BTCHealing.canHeal()
+function MTCHealing.canHeal()
   local now = g_clock.millis()
-  return (now - BTCHealing.lastHealTime) >= BTCHealing.healCooldown
+  return (now - MTCHealing.lastHealTime) >= MTCHealing.healCooldown
 end
 
 -- Executa cura com spell
-function BTCHealing.castHealSpell(spell)
+function MTCHealing.castHealSpell(spell)
   if not g_game.isOnline() then return false end
   
   local player = g_game.getLocalPlayer()
@@ -166,7 +168,7 @@ function BTCHealing.castHealSpell(spell)
   local mana = player:getMana()
   local spellInfo = nil
   
-  for _, s in ipairs(BTCHealing.healSpells) do
+  for _, s in ipairs(MTCHealing.healSpells) do
     if s.words == spell then
       spellInfo = s
       break
@@ -178,30 +180,30 @@ function BTCHealing.castHealSpell(spell)
   end
   
   g_game.talk(spell)
-  BTCHealing.lastHealTime = g_clock.millis()
+  MTCHealing.lastHealTime = g_clock.millis()
   return true
 end
 
 -- Executa cura com potion
-function BTCHealing.useHealthPotion(itemId)
+function MTCHealing.useHealthPotion(itemId)
   if not g_game.isOnline() then return false end
   
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
   g_game.useInventoryItemWith(itemId, player, 0)
-  BTCHealing.lastHealTime = g_clock.millis()
+  MTCHealing.lastHealTime = g_clock.millis()
   return true
 end
 
 -- Funcao principal de execucao
-function BTCHealing.execute()
+function MTCHealing.execute()
   if not g_game.isOnline() then return end
   
   -- Verifica se o modulo de healing esta ativo
-  if not BTCHealing.config or not BTCHealing.config.enabled then return end
+  if not MTCHealing.config or not MTCHealing.config.enabled then return end
   
-  if not BTCHealing.canHeal() then return end
+  if not MTCHealing.canHeal() then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
@@ -211,9 +213,9 @@ function BTCHealing.execute()
   local hpPercent = (health / maxHealth) * 100
   
   local slots = {
-    BTCHealing.getSlotConfig(1),
-    BTCHealing.getSlotConfig(2),
-    BTCHealing.getSlotConfig(3)
+    MTCHealing.getSlotConfig(1),
+    MTCHealing.getSlotConfig(2),
+    MTCHealing.getSlotConfig(3)
   }
   
   table.sort(slots, function(a, b)
@@ -223,11 +225,11 @@ function BTCHealing.execute()
   for _, slot in ipairs(slots) do
     if slot.enabled and hpPercent <= slot.hpPercent then
       if slot.type == "spell" and slot.spell ~= "" then
-        if BTCHealing.castHealSpell(slot.spell) then
+        if MTCHealing.castHealSpell(slot.spell) then
           return
         end
       elseif slot.type == "potion" and slot.itemId > 0 then
-        if BTCHealing.useHealthPotion(slot.itemId) then
+        if MTCHealing.useHealthPotion(slot.itemId) then
           return
         end
       end
@@ -236,27 +238,27 @@ function BTCHealing.execute()
 end
 
 -- Cria a interface de configuracao do Healing
-function BTCHealing.createUI(parent)
+function MTCHealing.createUI(parent)
   parent:destroyChildren()
   
   for i = 1, 3 do
-    BTCHealing.createSlotUI(parent, i)
+    MTCHealing.createSlotUI(parent, i)
   end
 end
 
 -- Fecha popup se existir
-function BTCHealing.closePopup()
-  if BTCHealing.potionPopup then
-    BTCHealing.potionPopup:destroy()
-    BTCHealing.potionPopup = nil
+function MTCHealing.closePopup()
+  if MTCHealing.potionPopup then
+    MTCHealing.potionPopup:destroy()
+    MTCHealing.potionPopup = nil
   end
 end
 
 -- Cria popup de selecao de potion com icones
-function BTCHealing.showPotionPopup(itemContainer, slotNum, config, onSelect)
-  BTCHealing.closePopup()
+function MTCHealing.showPotionPopup(itemContainer, slotNum, config, onSelect)
+  MTCHealing.closePopup()
   
-  local potionCount = #BTCHealing.healthPotions
+  local potionCount = #MTCHealing.healthPotions
   local itemSize = 42
   local spacing = 5
   local padding = 8
@@ -266,7 +268,7 @@ function BTCHealing.showPotionPopup(itemContainer, slotNum, config, onSelect)
   -- Cria popup panel
   local popup = g_ui.createWidget("Panel", rootWidget)
   popup:setId("healingPotionPopup")
-  BTCHealing.potionPopup = popup
+  MTCHealing.potionPopup = popup
   
   -- Estilo do popup - sem borda externa
   popup:setBackgroundColor("#2a2a2a")
@@ -282,7 +284,7 @@ function BTCHealing.showPotionPopup(itemContainer, slotNum, config, onSelect)
   popup:setPaddingBottom(padding)
   
   -- Adiciona cada potion em seu proprio quadrado
-  for _, potion in ipairs(BTCHealing.healthPotions) do
+  for _, potion in ipairs(MTCHealing.healthPotions) do
     -- Container individual para cada potion (quadrado)
     local potionBox = g_ui.createWidget("Button", popup)
     potionBox:setSize({width = itemSize, height = itemSize})
@@ -310,11 +312,11 @@ function BTCHealing.showPotionPopup(itemContainer, slotNum, config, onSelect)
     -- Clique no quadrado seleciona a potion
     potionBox.onClick = function()
       config.itemId = potion.id
-      BTCHealing.setSlotConfig(slotNum, config)
+      MTCHealing.setSlotConfig(slotNum, config)
       if onSelect then
         onSelect(potion.id)
       end
-      BTCHealing.closePopup()
+      MTCHealing.closePopup()
     end
   end
   
@@ -330,15 +332,15 @@ function BTCHealing.showPotionPopup(itemContainer, slotNum, config, onSelect)
   popup.onFocusChange = function(widget, focused)
     if not focused then
       scheduleEvent(function()
-        BTCHealing.closePopup()
+        MTCHealing.closePopup()
       end, 100)
     end
   end
 end
 
 -- Cria UI de um slot individual
-function BTCHealing.createSlotUI(parent, slotNum)
-  local config = BTCHealing.getSlotConfig(slotNum)
+function MTCHealing.createSlotUI(parent, slotNum)
+  local config = MTCHealing.getSlotConfig(slotNum)
   
   -- Separador entre slots (exceto primeiro)
   if slotNum > 1 then
@@ -377,7 +379,7 @@ function BTCHealing.createSlotUI(parent, slotNum)
     config.enabled = not config.enabled
     updateToggleBtn()
     pcall(function()
-      BTCHealing.setSlotConfig(slotNum, config)
+      MTCHealing.setSlotConfig(slotNum, config)
     end)
   end
   
@@ -390,8 +392,8 @@ function BTCHealing.createSlotUI(parent, slotNum)
   typeCombo:setCurrentOption(config.type == "spell" and "Spell" or "Potion")
   typeCombo.onOptionChange = function(widget, option)
     config.type = option == "Spell" and "spell" or "potion"
-    pcall(function() BTCHealing.setSlotConfig(slotNum, config) end)
-    BTCHealing.createUI(parent)
+    pcall(function() MTCHealing.setSlotConfig(slotNum, config) end)
+    MTCHealing.createUI(parent)
   end
   
   -- Linha 2: Spell (ComboBox) ou Potion (Icone)
@@ -414,7 +416,7 @@ function BTCHealing.createSlotUI(parent, slotNum)
     selectCombo:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
     selectCombo:setMarginLeft(5)
     
-    local spells = BTCHealing.getAvailableSpells()
+    local spells = MTCHealing.getAvailableSpells()
     for _, spell in ipairs(spells) do
       selectCombo:addOption(spell.words)
     end
@@ -423,7 +425,7 @@ function BTCHealing.createSlotUI(parent, slotNum)
     end
     selectCombo.onOptionChange = function(widget, option)
       config.spell = option
-      pcall(function() BTCHealing.setSlotConfig(slotNum, config) end)
+      pcall(function() MTCHealing.setSlotConfig(slotNum, config) end)
     end
   else
     -- POTION: usa icone clicavel
@@ -456,7 +458,7 @@ function BTCHealing.createSlotUI(parent, slotNum)
     
     -- Tooltip com nome da potion
     local potionName = "Health Potion"
-    for _, p in ipairs(BTCHealing.healthPotions) do
+    for _, p in ipairs(MTCHealing.healthPotions) do
       if p.id == config.itemId then
         potionName = p.name
         break
@@ -476,10 +478,10 @@ function BTCHealing.createSlotUI(parent, slotNum)
     
     -- Clique no botao abre popup
     itemContainer.onClick = function()
-      BTCHealing.showPotionPopup(itemContainer, slotNum, config, function(newItemId)
+      MTCHealing.showPotionPopup(itemContainer, slotNum, config, function(newItemId)
         itemBox:setItemId(newItemId)
         -- Atualiza tooltip e nome
-        for _, p in ipairs(BTCHealing.healthPotions) do
+        for _, p in ipairs(MTCHealing.healthPotions) do
           if p.id == newItemId then
             itemContainer:setTooltip(p.name)
             nameLabel:setText(p.name)
@@ -528,7 +530,7 @@ function BTCHealing.createSlotUI(parent, slotNum)
     if config.hpPercent > 5 then
       config.hpPercent = config.hpPercent - 5
       hpValue:setText(config.hpPercent .. '%')
-      pcall(function() BTCHealing.setSlotConfig(slotNum, config) end)
+      pcall(function() MTCHealing.setSlotConfig(slotNum, config) end)
     end
   end
   
@@ -536,7 +538,7 @@ function BTCHealing.createSlotUI(parent, slotNum)
     if config.hpPercent < 100 then
       config.hpPercent = config.hpPercent + 5
       hpValue:setText(config.hpPercent .. '%')
-      pcall(function() BTCHealing.setSlotConfig(slotNum, config) end)
+      pcall(function() MTCHealing.setSlotConfig(slotNum, config) end)
     end
   end
   
@@ -548,4 +550,4 @@ function BTCHealing.createSlotUI(parent, slotNum)
   end
 end
 
-return BTCHealing
+return MTCHealing

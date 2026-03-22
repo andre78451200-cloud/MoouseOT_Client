@@ -1,5 +1,5 @@
 --[[
-  BTC Bot - Sistema de Equipment (Ring/Amulet)
+  MTC Bot - Sistema de Equipment (Ring/Amulet)
   
   Equipa automaticamente rings e amulets baseado em HP/MP:
   - Quando HP/MP <= threshold% -> EQUIPA o item
@@ -10,10 +10,10 @@
   - HP sobe para 85% -> Remove Energy Ring
 ]]
 
-BTCEquipment = BTCEquipment or {}
+MTCEquipment = MTCEquipment or {}
 
 -- Configuracao padrao
-BTCEquipment.defaultConfig = {
+MTCEquipment.defaultConfig = {
   enabled = false,
   slots = {
     {
@@ -48,43 +48,43 @@ BTCEquipment.defaultConfig = {
 }
 
 -- Slots do inventario (InventorySlot enum)
-BTCEquipment.SLOT_HEAD = 1
-BTCEquipment.SLOT_NECKLACE = 2      -- AMULET slot correto
-BTCEquipment.SLOT_BACKPACK = 3
-BTCEquipment.SLOT_ARMOR = 4
-BTCEquipment.SLOT_RIGHT = 5
-BTCEquipment.SLOT_LEFT = 6
-BTCEquipment.SLOT_LEGS = 7
-BTCEquipment.SLOT_FEET = 8
-BTCEquipment.SLOT_FINGER = 9        -- RING slot correto
-BTCEquipment.SLOT_AMMO = 10
+MTCEquipment.SLOT_HEAD = 1
+MTCEquipment.SLOT_NECKLACE = 2      -- AMULET slot correto
+MTCEquipment.SLOT_BACKPACK = 3
+MTCEquipment.SLOT_ARMOR = 4
+MTCEquipment.SLOT_RIGHT = 5
+MTCEquipment.SLOT_LEFT = 6
+MTCEquipment.SLOT_LEGS = 7
+MTCEquipment.SLOT_FEET = 8
+MTCEquipment.SLOT_FINGER = 9        -- RING slot correto
+MTCEquipment.SLOT_AMMO = 10
 
 -- Variaveis de controle
-BTCEquipment.config = nil
-BTCEquipment.lastActionTime = {}
-BTCEquipment.actionCooldown = 500   -- Cooldown entre acoes (equip/unequip)
+MTCEquipment.config = nil
+MTCEquipment.lastActionTime = {}
+MTCEquipment.actionCooldown = 500   -- Cooldown entre acoes (equip/unequip)
 
 -- Inicializa o modulo
-function BTCEquipment.init()
-  BTCEquipment.config = BTCEquipment.loadConfig()
+function MTCEquipment.init()
+  MTCEquipment.config = MTCEquipment.loadConfig()
 end
 
 -- Carrega configuracao
-function BTCEquipment.loadConfig()
-  local saved = BTCConfig.get("equipment")
+function MTCEquipment.loadConfig()
+  local saved = MTCConfig.get("equipment")
   if saved then
     return saved
   end
-  return table.copy(BTCEquipment.defaultConfig)
+  return table.copy(MTCEquipment.defaultConfig)
 end
 
 -- Salva configuracao
-function BTCEquipment.saveConfig()
-  BTCConfig.set("equipment", BTCEquipment.config)
+function MTCEquipment.saveConfig()
+  MTCConfig.set("equipment", MTCEquipment.config)
 end
 
 -- Retorna porcentagem de vida
-function BTCEquipment.getHealthPercent()
+function MTCEquipment.getHealthPercent()
   if not g_game.isOnline() then return 100 end
   local player = g_game.getLocalPlayer()
   if not player then return 100 end
@@ -97,7 +97,7 @@ function BTCEquipment.getHealthPercent()
 end
 
 -- Retorna porcentagem de mana
-function BTCEquipment.getManaPercent()
+function MTCEquipment.getManaPercent()
   if not g_game.isOnline() then return 100 end
   local player = g_game.getLocalPlayer()
   if not player then return 100 end
@@ -110,39 +110,39 @@ function BTCEquipment.getManaPercent()
 end
 
 -- Retorna o valor atual da condicao (life ou mana)
-function BTCEquipment.getCurrentValue(condition)
+function MTCEquipment.getCurrentValue(condition)
   if condition == "life" then
-    return BTCEquipment.getHealthPercent()
+    return MTCEquipment.getHealthPercent()
   elseif condition == "mana" then
-    return BTCEquipment.getManaPercent()
+    return MTCEquipment.getManaPercent()
   end
   return 100
 end
 
 -- Verifica cooldown para acao
-function BTCEquipment.canAct(slotIndex)
+function MTCEquipment.canAct(slotIndex)
   local now = g_clock.millis()
-  local lastAction = BTCEquipment.lastActionTime[slotIndex] or 0
-  return (now - lastAction) >= BTCEquipment.actionCooldown
+  local lastAction = MTCEquipment.lastActionTime[slotIndex] or 0
+  return (now - lastAction) >= MTCEquipment.actionCooldown
 end
 
 -- Atualiza cooldown
-function BTCEquipment.updateCooldown(slotIndex)
-  BTCEquipment.lastActionTime[slotIndex] = g_clock.millis()
+function MTCEquipment.updateCooldown(slotIndex)
+  MTCEquipment.lastActionTime[slotIndex] = g_clock.millis()
 end
 
 -- Retorna o slot de inventario correto para o tipo
-function BTCEquipment.getInventorySlot(slotType)
+function MTCEquipment.getInventorySlot(slotType)
   if slotType == "ring" then
-    return BTCEquipment.SLOT_FINGER
+    return MTCEquipment.SLOT_FINGER
   elseif slotType == "amulet" then
-    return BTCEquipment.SLOT_NECKLACE
+    return MTCEquipment.SLOT_NECKLACE
   end
   return nil
 end
 
 -- Procura item nos containers (backpacks)
-function BTCEquipment.findItemInContainers(itemId)
+function MTCEquipment.findItemInContainers(itemId)
   if not itemId or itemId == 0 then return nil, nil end
   
   local containers = g_game.getContainers()
@@ -159,7 +159,7 @@ function BTCEquipment.findItemInContainers(itemId)
 end
 
 -- Encontra o primeiro container aberto (para mover item para la)
-function BTCEquipment.findOpenContainer()
+function MTCEquipment.findOpenContainer()
   local containers = g_game.getContainers()
   for _, container in pairs(containers) do
     if container:getItemsCount() < container:getCapacity() then
@@ -174,65 +174,65 @@ function BTCEquipment.findOpenContainer()
 end
 
 -- Retorna o item equipado no slot especificado
-function BTCEquipment.getEquippedItem(slotType)
+function MTCEquipment.getEquippedItem(slotType)
   if not g_game.isOnline() then return nil end
   local player = g_game.getLocalPlayer()
   if not player then return nil end
   
-  local inventorySlot = BTCEquipment.getInventorySlot(slotType)
+  local inventorySlot = MTCEquipment.getInventorySlot(slotType)
   if not inventorySlot then return nil end
   
   return player:getInventoryItem(inventorySlot)
 end
 
 -- Verifica se o item especificado esta equipado
-function BTCEquipment.isItemEquipped(itemId, slotType)
-  local equippedItem = BTCEquipment.getEquippedItem(slotType)
+function MTCEquipment.isItemEquipped(itemId, slotType)
+  local equippedItem = MTCEquipment.getEquippedItem(slotType)
   return equippedItem and equippedItem:getId() == itemId
 end
 
 -- EQUIPA um item da backpack para o slot
-function BTCEquipment.equipItem(slotIndex, slot)
+function MTCEquipment.equipItem(slotIndex, slot)
   if not g_game.isOnline() then return false end
-  if not BTCEquipment.canAct(slotIndex) then return false end
+  if not MTCEquipment.canAct(slotIndex) then return false end
   
   -- Ja esta equipado?
-  if BTCEquipment.isItemEquipped(slot.itemId, slot.type) then
+  if MTCEquipment.isItemEquipped(slot.itemId, slot.type) then
     return false
   end
   
   -- Procura o item na backpack
-  local item, container = BTCEquipment.findItemInContainers(slot.itemId)
+  local item, container = MTCEquipment.findItemInContainers(slot.itemId)
   if not item then
     return false
   end
   
   -- Move para o slot de equipamento
-  local inventorySlot = BTCEquipment.getInventorySlot(slot.type)
+  local inventorySlot = MTCEquipment.getInventorySlot(slot.type)
   if not inventorySlot then return false end
   
   local destPos = {x = 65535, y = inventorySlot, z = 0}
   g_game.move(item, destPos, 1)
   
-  BTCEquipment.updateCooldown(slotIndex)
+  MTCEquipment.updateCooldown(slotIndex)
   return true
 end
 
 -- REMOVE um item equipado e move para a backpack
-function BTCEquipment.unequipItem(slotIndex, slot)
+function MTCEquipment.unequipItem(slotIndex, slot)
   if not g_game.isOnline() then return false end
-  if not BTCEquipment.canAct(slotIndex) then return false end
+  if not MTCEquipment.canAct(slotIndex) then return false end
   
   -- Verifica se o item esta equipado
-  if not BTCEquipment.isItemEquipped(slot.itemId, slot.type) then
+  if not MTCEquipment.isItemEquipped(slot.itemId, slot.type) then
     return false
   end
   
-  local equippedItem = BTCEquipment.getEquippedItem(slot.type)
+  local equippedItem = MTCEquipment.getEquippedItem(slot.type)
   if not equippedItem then return false end
   
   -- Encontra um container para mover
-  local container = BTCEquipment.findOpenContainer()
+  local container = MTCEquipment.findOpenContainer()
   if not container then
     return false
   end
@@ -241,36 +241,36 @@ function BTCEquipment.unequipItem(slotIndex, slot)
   local destPos = container:getSlotPosition(container:getItemsCount())
   g_game.move(equippedItem, destPos, 1)
   
-  BTCEquipment.updateCooldown(slotIndex)
+  MTCEquipment.updateCooldown(slotIndex)
   return true
 end
 
 -- Funcao principal de execucao
-function BTCEquipment.execute()
+function MTCEquipment.execute()
   if not g_game.isOnline() then return end
-  if not BTCEquipment.config or not BTCEquipment.config.enabled then return end
+  if not MTCEquipment.config or not MTCEquipment.config.enabled then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
   
-  for i, slot in ipairs(BTCEquipment.config.slots) do
+  for i, slot in ipairs(MTCEquipment.config.slots) do
     if slot.enabled and slot.itemId and slot.itemId > 0 then
-      local currentValue = BTCEquipment.getCurrentValue(slot.condition)
+      local currentValue = MTCEquipment.getCurrentValue(slot.condition)
       local threshold = slot.threshold or 80
       
       if currentValue <= threshold then
         -- HP/MP baixo -> EQUIPAR
-        BTCEquipment.equipItem(i, slot)
+        MTCEquipment.equipItem(i, slot)
       else
         -- HP/MP alto -> REMOVER (se estiver equipado)
-        BTCEquipment.unequipItem(i, slot)
+        MTCEquipment.unequipItem(i, slot)
       end
     end
   end
 end
 
 -- Cria a interface
-function BTCEquipment.createUI(parent)
+function MTCEquipment.createUI(parent)
   parent:destroyChildren()
   
   local titleLabel = g_ui.createWidget('Label', parent)
@@ -286,7 +286,7 @@ function BTCEquipment.createUI(parent)
   descLabel:setMarginBottom(8)
   
   for i = 1, 4 do
-    BTCEquipment.createSlotUI(parent, i)
+    MTCEquipment.createSlotUI(parent, i)
   end
   
   -- Dicas de IDs comuns
@@ -298,8 +298,8 @@ function BTCEquipment.createUI(parent)
 end
 
 -- Cria UI de um slot
-function BTCEquipment.createSlotUI(parent, slotIndex)
-  local slot = BTCEquipment.config.slots[slotIndex]
+function MTCEquipment.createSlotUI(parent, slotIndex)
+  local slot = MTCEquipment.config.slots[slotIndex]
   if not slot then return end
   
   -- Container do slot
@@ -321,8 +321,8 @@ function BTCEquipment.createSlotUI(parent, slotIndex)
   enableCheck:setWidth(65)
   
   enableCheck.onCheckChange = function(widget, checked)
-    BTCEquipment.config.slots[slotIndex].enabled = checked
-    BTCEquipment.saveConfig()
+    MTCEquipment.config.slots[slotIndex].enabled = checked
+    MTCEquipment.saveConfig()
   end
   
   local typeCombo = g_ui.createWidget('ComboBox', row1)
@@ -333,8 +333,8 @@ function BTCEquipment.createSlotUI(parent, slotIndex)
   typeCombo:setMarginLeft(10)
   
   typeCombo.onOptionChange = function(widget, option)
-    BTCEquipment.config.slots[slotIndex].type = option:lower()
-    BTCEquipment.saveConfig()
+    MTCEquipment.config.slots[slotIndex].type = option:lower()
+    MTCEquipment.saveConfig()
   end
   
   -- Item Icon (preview)
@@ -353,8 +353,8 @@ function BTCEquipment.createSlotUI(parent, slotIndex)
   
   itemIdInput.onTextChange = function(widget, text)
     local id = tonumber(text) or 0
-    BTCEquipment.config.slots[slotIndex].itemId = id
-    BTCEquipment.saveConfig()
+    MTCEquipment.config.slots[slotIndex].itemId = id
+    MTCEquipment.saveConfig()
     -- Atualiza preview
     if id > 0 then
       itemPreview:setItemId(id)
@@ -382,8 +382,8 @@ function BTCEquipment.createSlotUI(parent, slotIndex)
   condCombo:setMarginLeft(5)
   
   condCombo.onOptionChange = function(widget, option)
-    BTCEquipment.config.slots[slotIndex].condition = option:lower()
-    BTCEquipment.saveConfig()
+    MTCEquipment.config.slots[slotIndex].condition = option:lower()
+    MTCEquipment.saveConfig()
   end
   
   local lessLabel = g_ui.createWidget('Label', row2)
@@ -401,8 +401,8 @@ function BTCEquipment.createSlotUI(parent, slotIndex)
     local value = tonumber(text) or 80
     if value < 0 then value = 0 end
     if value > 100 then value = 100 end
-    BTCEquipment.config.slots[slotIndex].threshold = value
-    BTCEquipment.saveConfig()
+    MTCEquipment.config.slots[slotIndex].threshold = value
+    MTCEquipment.saveConfig()
   end
   
   local percentLabel = g_ui.createWidget('Label', row2)
@@ -427,10 +427,10 @@ function BTCEquipment.createSlotUI(parent, slotIndex)
     local value = tonumber(text) or 80
     if value < 0 then value = 0 end
     if value > 100 then value = 100 end
-    BTCEquipment.config.slots[slotIndex].threshold = value
-    BTCEquipment.saveConfig()
+    MTCEquipment.config.slots[slotIndex].threshold = value
+    MTCEquipment.saveConfig()
     removeInfo:setText('(Remove automaticamente quando > ' .. tostring(value) .. '%)')
   end
 end
 
-return BTCEquipment
+return MTCEquipment

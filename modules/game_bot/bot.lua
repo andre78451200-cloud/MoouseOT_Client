@@ -24,28 +24,28 @@ local statusLabel = nil
 
 local configManagerUrl = "http://otclient.ovh/configs.php"
 
--- BTC Bot Menu Sections (nossa interface bonita)
+-- MTC Bot Menu Sections (nossa interface bonita)
 local menuSections = {
-  { id = "overview", name = "Overview", icon = "/images/btcbot/overview.png" },
-  { id = "healing", name = "Healing", icon = "/images/btcbot/healing.png" },
-  { id = "healfriend", name = "Heal Friend", icon = "/images/btcbot/healfriend.png" },
-  { id = "mana", name = "Mana", icon = "/images/btcbot/mana.png" },
-  { id = "attack", name = "Attack", icon = "/images/btcbot/attack.png" },
-  { id = "cavebot", name = "CaveBot", icon = "/images/btcbot/cavebot.png" },
-  { id = "tools", name = "Tools", icon = "/images/btcbot/tools.png" },
-  { id = "equipment", name = "Ring/Amulet", icon = "/images/btcbot/equipment.png" },
-  { id = "time", name = "Time", icon = "/images/btcbot/tools.png" },
-  { id = "settings", name = "Settings", icon = "/images/btcbot/settings.png" },
+  { id = "overview", name = "Overview", icon = "/images/mtcbot/overview.png" },
+  { id = "healing", name = "Healing", icon = "/images/mtcbot/healing.png" },
+  { id = "healfriend", name = "Heal Friend", icon = "/images/mtcbot/healfriend.png" },
+  { id = "mana", name = "Mana", icon = "/images/mtcbot/mana.png" },
+  { id = "attack", name = "Attack", icon = "/images/mtcbot/attack.png" },
+  { id = "cavebot", name = "CaveBot", icon = "/images/mtcbot/cavebot.png" },
+  { id = "tools", name = "Tools", icon = "/images/mtcbot/tools.png" },
+  { id = "equipment", name = "Ring/Amulet", icon = "/images/mtcbot/equipment.png" },
+  { id = "time", name = "Time", icon = "/images/mtcbot/tools.png" },
+  { id = "settings", name = "Settings", icon = "/images/mtcbot/settings.png" },
 }
 
--- BTC Bot Instance
-BTCBot = nil
-BTCHealing = nil
-BTCHealFriend = nil
-BTCMana = nil
-BTCAttack = nil
-BTCCaveBot = nil
-BTCConfig = nil
+-- MTC Bot Instance
+MTCBot = nil
+MTCHealing = nil
+MTCHealFriend = nil
+MTCMana = nil
+MTCAttack = nil
+MTCCaveBot = nil
+MTCConfig = nil
 
 function init()
   dofile("executor")
@@ -57,31 +57,31 @@ function init()
   g_ui.importStyle("ui/container.otui")
   g_ui.importStyle("botmodal.otui")
 
-  -- Load BTC Bot modules
-  dofile("btcbot/config")
-  dofile("btcbot/healing")
-  dofile("btcbot/healfriend")
-  dofile("btcbot/mana")
-  dofile("btcbot/attack")
-  dofile("btcbot/targeting")
-  dofile("btcbot/cavebot")
-  dofile("btcbot/tools")
-  dofile("btcbot/equipment")
-  dofile("btcbot/time")
-  dofile("btcbot/btcbot")
+  -- Load MTC Bot modules
+  dofile("mtcbot/config")
+  dofile("mtcbot/healing")
+  dofile("mtcbot/healfriend")
+  dofile("mtcbot/mana")
+  dofile("mtcbot/attack")
+  dofile("mtcbot/targeting")
+  dofile("mtcbot/cavebot")
+  dofile("mtcbot/tools")
+  dofile("mtcbot/equipment")
+  dofile("mtcbot/time")
+  dofile("mtcbot/mtcbot")
   
-  -- Initialize BTC Bot
-  BTCConfig.init()
-  BTCHealing.init()
-  BTCHealFriend.init()
-  BTCMana.init()
-  BTCAttack.init()
-  BTCTargeting.init()
-  BTCCaveBot.init()
-  BTCTools.init()
-  BTCEquipment.init()
-  BTCTime.init()
-  BTCBot.init()  -- Inicia o loop principal (necessario para recording)
+  -- Initialize MTC Bot
+  MTCConfig.init()
+  MTCHealing.init()
+  MTCHealFriend.init()
+  MTCMana.init()
+  MTCAttack.init()
+  MTCTargeting.init()
+  MTCCaveBot.init()
+  MTCTools.init()
+  MTCEquipment.init()
+  MTCTime.init()
+  MTCBot.init()  -- Inicia o loop principal (necessario para recording)
 
   connect(g_game, {
     onGameStart = online,
@@ -345,35 +345,35 @@ function showModal()
   botModalWindow:raise()
   botModalWindow:focus()
   
-  -- Update toggle button state based on BTC Bot
+  -- Update toggle button state based on MTC Bot
   local toggleBtn = botModalWindow:recursiveGetChildById('toggleBotButton')
   if toggleBtn then
-    toggleBtn:setOn(BTCBot and BTCBot.enabled or false)
+    toggleBtn:setOn(MTCBot and MTCBot.enabled or false)
   end
   
   -- Update indicator based on bot status
   updateBotIndicator()
   
   -- Verifica se trocou de personagem e recarrega configs
-  if BTCConfig and BTCConfig.checkCharacterChange then
-    if BTCConfig.checkCharacterChange() then
+  if MTCConfig and MTCConfig.checkCharacterChange then
+    if MTCConfig.checkCharacterChange() then
       -- Recarrega todos os modulos com as novas configs
-      BTCHealing.init()
-      BTCHealFriend.init()
-      BTCMana.init()
-      BTCAttack.init()
-      BTCTargeting.init()
-      BTCCaveBot.init()
-      BTCTools.init()
-      BTCEquipment.init()
-      BTCTime.init()
+      MTCHealing.init()
+      MTCHealFriend.init()
+      MTCMana.init()
+      MTCAttack.init()
+      MTCTargeting.init()
+      MTCCaveBot.init()
+      MTCTools.init()
+      MTCEquipment.init()
+      MTCTime.init()
     end
   end
   
   -- Sempre reseta para Overview quando abre o bot
   currentSection = "overview"
   
-  -- Create menu with BTC Bot sections (agora currentSection ja e "overview")
+  -- Create menu with MTC Bot sections (agora currentSection ja e "overview")
   createModalMenu()
   
   -- Mostra a secao overview
@@ -417,7 +417,7 @@ function createModalMenu()
   
   menuContent:destroyChildren()
   
-  -- Create menu buttons for BTC Bot sections
+  -- Create menu buttons for MTC Bot sections
   local overviewBtn = nil
   local allButtons = {}
   
@@ -532,14 +532,14 @@ function showSection(sectionId)
   
   -- Secoes que tem botao ON/OFF (modulos funcionais)
   local sectionsWithToggle = {
-    healing = { module = "BTCHealing", configKey = "healingEnabled" },
-    healfriend = { module = "BTCHealFriend", configKey = "healfriendEnabled" },
-    mana = { module = "BTCMana", configKey = "manaEnabled" },
-    attack = { module = "BTCAttack", configKey = "attackEnabled" },
-    cavebot = { module = "BTCCaveBot", configKey = "cavebotEnabled" },
-    tools = { module = "BTCTools", configKey = "toolsEnabled" },
-    equipment = { module = "BTCEquipment", configKey = "equipmentEnabled" },
-    time = { module = "BTCTime", configKey = "timeEnabled" },
+    healing = { module = "MTCHealing", configKey = "healingEnabled" },
+    healfriend = { module = "MTCHealFriend", configKey = "healfriendEnabled" },
+    mana = { module = "MTCMana", configKey = "manaEnabled" },
+    attack = { module = "MTCAttack", configKey = "attackEnabled" },
+    cavebot = { module = "MTCCaveBot", configKey = "cavebotEnabled" },
+    tools = { module = "MTCTools", configKey = "toolsEnabled" },
+    equipment = { module = "MTCEquipment", configKey = "equipmentEnabled" },
+    time = { module = "MTCTime", configKey = "timeEnabled" },
   }
   
   -- Configura o botao ON/OFF da secao
@@ -550,24 +550,24 @@ function showSection(sectionId)
       
       -- Pega estado atual do modulo
       local isEnabled = false
-      if sectionId == "cavebot" and BTCCaveBot and BTCCaveBot.config then
-        isEnabled = BTCCaveBot.config.enabled or false
-      elseif sectionId == "healing" and BTCHealing and BTCHealing.config then
-        isEnabled = BTCHealing.config.enabled or false
-      elseif sectionId == "healfriend" and BTCHealFriend and BTCHealFriend.config then
-        isEnabled = BTCHealFriend.config.enabled or false
-      elseif sectionId == "mana" and BTCMana and BTCMana.config then
-        isEnabled = BTCMana.config.enabled or false
-      elseif sectionId == "attack" and BTCAttack and BTCAttack.config then
-        isEnabled = BTCAttack.config.enabled or false
-      elseif sectionId == "tools" and BTCTools and BTCTools.config then
-        isEnabled = BTCTools.config.enabled or false
-      elseif sectionId == "equipment" and BTCEquipment and BTCEquipment.config then
-        isEnabled = BTCEquipment.config.enabled or false
-      elseif sectionId == "time" and BTCTime and BTCTime.config then
-        isEnabled = BTCTime.config.enabled or false
+      if sectionId == "cavebot" and MTCCaveBot and MTCCaveBot.config then
+        isEnabled = MTCCaveBot.config.enabled or false
+      elseif sectionId == "healing" and MTCHealing and MTCHealing.config then
+        isEnabled = MTCHealing.config.enabled or false
+      elseif sectionId == "healfriend" and MTCHealFriend and MTCHealFriend.config then
+        isEnabled = MTCHealFriend.config.enabled or false
+      elseif sectionId == "mana" and MTCMana and MTCMana.config then
+        isEnabled = MTCMana.config.enabled or false
+      elseif sectionId == "attack" and MTCAttack and MTCAttack.config then
+        isEnabled = MTCAttack.config.enabled or false
+      elseif sectionId == "tools" and MTCTools and MTCTools.config then
+        isEnabled = MTCTools.config.enabled or false
+      elseif sectionId == "equipment" and MTCEquipment and MTCEquipment.config then
+        isEnabled = MTCEquipment.config.enabled or false
+      elseif sectionId == "time" and MTCTime and MTCTime.config then
+        isEnabled = MTCTime.config.enabled or false
       else
-        isEnabled = BTCConfig and BTCConfig.get(sectionInfo.configKey) or false
+        isEnabled = MTCConfig and MTCConfig.get(sectionInfo.configKey) or false
       end
       updateSectionToggleBtn(sectionToggleBtn, isEnabled)
       
@@ -576,61 +576,61 @@ function showSection(sectionId)
         local newState = false
         
         -- Toggle o estado do modulo
-        if sectionId == "cavebot" and BTCCaveBot and BTCCaveBot.config then
-          BTCCaveBot.config.enabled = not BTCCaveBot.config.enabled
-          newState = BTCCaveBot.config.enabled
+        if sectionId == "cavebot" and MTCCaveBot and MTCCaveBot.config then
+          MTCCaveBot.config.enabled = not MTCCaveBot.config.enabled
+          newState = MTCCaveBot.config.enabled
           -- Se ligou o CaveBot e Auto Record esta ON, desliga o Auto Record
-          if newState and BTCCaveBot.recordingEnabled then
-            BTCCaveBot.toggleRecording()
-            if BTCCaveBot.autoRecordBtn then
-              BTCCaveBot.autoRecordBtn:setText('Auto Record: OFF')
-              BTCCaveBot.autoRecordBtn:setColor('#ff4444')
+          if newState and MTCCaveBot.recordingEnabled then
+            MTCCaveBot.toggleRecording()
+            if MTCCaveBot.autoRecordBtn then
+              MTCCaveBot.autoRecordBtn:setText('Auto Record: OFF')
+              MTCCaveBot.autoRecordBtn:setColor('#ff4444')
             end
             print("[CaveBot] Auto Record desligado automaticamente ao ligar CaveBot")
           end
-          BTCCaveBot.saveConfig()
-          if BTCCaveBot.refreshWaypointList then
-            BTCCaveBot.refreshWaypointList()
+          MTCCaveBot.saveConfig()
+          if MTCCaveBot.refreshWaypointList then
+            MTCCaveBot.refreshWaypointList()
           end
           print("[CaveBot] " .. (newState and "LIGADO" or "DESLIGADO"))
-        elseif sectionId == "healing" and BTCHealing and BTCHealing.config then
-          BTCHealing.config.enabled = not BTCHealing.config.enabled
-          newState = BTCHealing.config.enabled
-          BTCHealing.saveConfig()
-        elseif sectionId == "healfriend" and BTCHealFriend and BTCHealFriend.config then
-          BTCHealFriend.config.enabled = not BTCHealFriend.config.enabled
-          newState = BTCHealFriend.config.enabled
-          BTCHealFriend.saveConfig()
-        elseif sectionId == "mana" and BTCMana and BTCMana.config then
-          BTCMana.config.enabled = not BTCMana.config.enabled
-          newState = BTCMana.config.enabled
-          BTCMana.saveConfig()
-        elseif sectionId == "attack" and BTCAttack and BTCAttack.config then
-          BTCAttack.config.enabled = not BTCAttack.config.enabled
-          newState = BTCAttack.config.enabled
-          BTCAttack.saveConfig()
+        elseif sectionId == "healing" and MTCHealing and MTCHealing.config then
+          MTCHealing.config.enabled = not MTCHealing.config.enabled
+          newState = MTCHealing.config.enabled
+          MTCHealing.saveConfig()
+        elseif sectionId == "healfriend" and MTCHealFriend and MTCHealFriend.config then
+          MTCHealFriend.config.enabled = not MTCHealFriend.config.enabled
+          newState = MTCHealFriend.config.enabled
+          MTCHealFriend.saveConfig()
+        elseif sectionId == "mana" and MTCMana and MTCMana.config then
+          MTCMana.config.enabled = not MTCMana.config.enabled
+          newState = MTCMana.config.enabled
+          MTCMana.saveConfig()
+        elseif sectionId == "attack" and MTCAttack and MTCAttack.config then
+          MTCAttack.config.enabled = not MTCAttack.config.enabled
+          newState = MTCAttack.config.enabled
+          MTCAttack.saveConfig()
           -- Targeting acompanha o estado do Attack
-          if BTCTargeting and BTCTargeting.config then
-            BTCTargeting.config.enabled = newState
-            BTCTargeting.saveConfig()
+          if MTCTargeting and MTCTargeting.config then
+            MTCTargeting.config.enabled = newState
+            MTCTargeting.saveConfig()
           end
-        elseif sectionId == "tools" and BTCTools and BTCTools.config then
-          BTCTools.config.enabled = not BTCTools.config.enabled
-          newState = BTCTools.config.enabled
-          BTCTools.saveConfig()
-        elseif sectionId == "equipment" and BTCEquipment and BTCEquipment.config then
-          BTCEquipment.config.enabled = not BTCEquipment.config.enabled
-          newState = BTCEquipment.config.enabled
-          BTCEquipment.saveConfig()
-        elseif sectionId == "time" and BTCTime and BTCTime.config then
-          BTCTime.config.enabled = not BTCTime.config.enabled
-          newState = BTCTime.config.enabled
-          BTCTime.saveConfig()
+        elseif sectionId == "tools" and MTCTools and MTCTools.config then
+          MTCTools.config.enabled = not MTCTools.config.enabled
+          newState = MTCTools.config.enabled
+          MTCTools.saveConfig()
+        elseif sectionId == "equipment" and MTCEquipment and MTCEquipment.config then
+          MTCEquipment.config.enabled = not MTCEquipment.config.enabled
+          newState = MTCEquipment.config.enabled
+          MTCEquipment.saveConfig()
+        elseif sectionId == "time" and MTCTime and MTCTime.config then
+          MTCTime.config.enabled = not MTCTime.config.enabled
+          newState = MTCTime.config.enabled
+          MTCTime.saveConfig()
         else
-          local currentState = BTCConfig and BTCConfig.get(sectionInfo.configKey) or false
+          local currentState = MTCConfig and MTCConfig.get(sectionInfo.configKey) or false
           newState = not currentState
-          if BTCConfig then
-            BTCConfig.set(sectionInfo.configKey, newState)
+          if MTCConfig then
+            MTCConfig.set(sectionInfo.configKey, newState)
           end
         end
         
@@ -671,13 +671,13 @@ function showSection(sectionId)
 end
 
 -- ============================================
--- BTC BOT UI SECTIONS
+-- MTC BOT UI SECTIONS
 -- ============================================
 
 function createOverviewUI(parent)
   -- Title
   local title = g_ui.createWidget('Label', parent)
-  title:setText('BTC Bot')
+  title:setText('MTC Bot')
   title:setTextAlign(AlignCenter)
   title:setFont('verdana-11px-rounded')
   title:setColor('#00ff88')
@@ -715,8 +715,8 @@ function createOverviewUI(parent)
   savedTitle:setColor('#aaaaaa')
   savedTitle:setMarginBottom(5)
   
-  if BTCConfig and BTCConfig.getSavedCharacters then
-    local chars = BTCConfig.getSavedCharacters()
+  if MTCConfig and MTCConfig.getSavedCharacters then
+    local chars = MTCConfig.getSavedCharacters()
     if #chars > 0 then
       for _, name in ipairs(chars) do
         local cLabel = g_ui.createWidget('Label', parent)
@@ -755,9 +755,9 @@ function createOverviewUI(parent)
 end
 
 function createHealingUI(parent)
-  -- Use BTC Healing module to create UI
-  if BTCHealing then
-    BTCHealing.createUI(parent)
+  -- Use MTC Healing module to create UI
+  if MTCHealing then
+    MTCHealing.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('Módulo de Healing não carregado')
@@ -766,9 +766,9 @@ function createHealingUI(parent)
 end
 
 function createHealFriendUI(parent)
-  -- Use BTC Heal Friend module to create UI
-  if BTCHealFriend then
-    BTCHealFriend.createUI(parent)
+  -- Use MTC Heal Friend module to create UI
+  if MTCHealFriend then
+    MTCHealFriend.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('Módulo de Heal Friend não carregado')
@@ -777,9 +777,9 @@ function createHealFriendUI(parent)
 end
 
 function createManaUI(parent)
-  -- Use BTC Mana module to create UI
-  if BTCMana then
-    BTCMana.createUI(parent)
+  -- Use MTC Mana module to create UI
+  if MTCMana then
+    MTCMana.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('Modulo de Mana nao carregado')
@@ -788,9 +788,9 @@ function createManaUI(parent)
 end
 
 function createAttackUI(parent)
-  -- Use BTC Attack module to create UI
-  if BTCAttack then
-    BTCAttack.createUI(parent)
+  -- Use MTC Attack module to create UI
+  if MTCAttack then
+    MTCAttack.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('Modulo de Attack nao carregado')
@@ -799,9 +799,9 @@ function createAttackUI(parent)
 end
 
 function createCaveBotUI(parent)
-  -- Usa nosso modulo BTCCaveBot
-  if BTCCaveBot and BTCCaveBot.createUI then
-    BTCCaveBot.createUI(parent)
+  -- Usa nosso modulo MTCCaveBot
+  if MTCCaveBot and MTCCaveBot.createUI then
+    MTCCaveBot.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('CaveBot')
@@ -816,8 +816,8 @@ function createCaveBotUI(parent)
 end
 
 function createToolsUI(parent)
-  if BTCTools then
-    BTCTools.createUI(parent)
+  if MTCTools then
+    MTCTools.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('Erro: Modulo Tools nao carregado')
@@ -826,8 +826,8 @@ function createToolsUI(parent)
 end
 
 function createEquipmentUI(parent)
-  if BTCEquipment then
-    BTCEquipment.createUI(parent)
+  if MTCEquipment then
+    MTCEquipment.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('Erro: Modulo Equipment nao carregado')
@@ -836,8 +836,8 @@ function createEquipmentUI(parent)
 end
 
 function createTimeUI(parent)
-  if BTCTime then
-    BTCTime.createUI(parent)
+  if MTCTime then
+    MTCTime.createUI(parent)
   else
     local label = g_ui.createWidget('Label', parent)
     label:setText('Erro: Modulo Time nao carregado')
@@ -868,17 +868,17 @@ function createSettingsUI(parent)
   resetBtn:setWidth(180)
   resetBtn:setMarginBottom(10)
   resetBtn.onClick = function()
-    if BTCConfig then
-      BTCConfig.reset()
-      BTCHealing.init()
-      BTCHealFriend.init()
-      BTCMana.init()
-      BTCAttack.init()
-      BTCTargeting.init()
-      BTCCaveBot.init()
-      BTCTools.init()
-      BTCEquipment.init()
-      BTCTime.init()
+    if MTCConfig then
+      MTCConfig.reset()
+      MTCHealing.init()
+      MTCHealFriend.init()
+      MTCMana.init()
+      MTCAttack.init()
+      MTCTargeting.init()
+      MTCCaveBot.init()
+      MTCTools.init()
+      MTCEquipment.init()
+      MTCTime.init()
       displayMessage("Configs resetadas para " .. charName)
       showSection("overview")
     end
@@ -891,8 +891,8 @@ function createSettingsUI(parent)
   savedLabel:setMarginTop(15)
   savedLabel:setMarginBottom(5)
   
-  if BTCConfig and BTCConfig.getSavedCharacters then
-    local chars = BTCConfig.getSavedCharacters()
+  if MTCConfig and MTCConfig.getSavedCharacters then
+    local chars = MTCConfig.getSavedCharacters()
     for _, name in ipairs(chars) do
       local cLabel = g_ui.createWidget('Label', parent)
       cLabel:setText('  - ' .. name)
@@ -910,7 +910,7 @@ end
 -- Display message to user
 function displayMessage(msg)
   -- Could show in-game message or status
-  print("[BTC Bot] " .. msg)
+  print("[MTC Bot] " .. msg)
 end
 
 -- Atualiza visual do botao ON/OFF da secao
@@ -928,8 +928,8 @@ end
 function updateBotIndicator()
   if not botModalWindow then return end
   
-  -- Check if BTC Bot is enabled
-  local isRunning = BTCBot and BTCBot.enabled
+  -- Check if MTC Bot is enabled
+  local isRunning = MTCBot and MTCBot.enabled
   
   -- Also update the toggle button
   local toggleBtn = botModalWindow:recursiveGetChildById('toggleBotButton')
@@ -952,9 +952,9 @@ function toggleBotEnabled()
     return
   end
   
-  -- Toggle BTC Bot
-  if BTCBot then
-    local newState = BTCBot.toggle()
+  -- Toggle MTC Bot
+  if MTCBot then
+    local newState = MTCBot.toggle()
     botEnabled = newState
     
     -- Update UI
@@ -985,7 +985,7 @@ function updateModalInfo()
   -- Update version label
   local versionLabel = botModalWindow:recursiveGetChildById('versionLabel')
   if versionLabel then
-    versionLabel:setText('vBot 4.8 - BTC Bot')
+    versionLabel:setText('vBot 4.8 - MTC Bot')
   end
   
   -- Update indicator

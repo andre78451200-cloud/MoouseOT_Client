@@ -1,5 +1,5 @@
 --[[
-  BTC Bot - Sistema de Tools (Suporte)
+  MTC Bot - Sistema de Tools (Suporte)
   
   Magias de suporte automaticas:
   - Haste (utani hur, utani gran hur, utani tempo hur)
@@ -7,10 +7,10 @@
   - Buff spells (utito tempo, utamo tempo, etc)
 ]]
 
-BTCTools = BTCTools or {}
+MTCTools = MTCTools or {}
 
 -- Configuracao padrao
-BTCTools.defaultConfig = {
+MTCTools.defaultConfig = {
   enabled = false,
   
   -- Haste (correr mais rapido)
@@ -75,7 +75,7 @@ BTCTools.defaultConfig = {
 }
 
 -- Spells de suporte por tipo
-BTCTools.supportSpells = {
+MTCTools.supportSpells = {
   -- Haste spells (velocidade de movimento)
   haste = {
     { words = "utani hur", name = "Haste", mana = 60, level = 14, voc = {1,2,3,4,5,11,12,13,14,15}, duration = 33000 },
@@ -130,9 +130,9 @@ BTCTools.supportSpells = {
 }
 
 -- Variaveis de controle
-BTCTools.config = nil
-BTCTools.lastCastTime = {}    -- Guarda ultimo cast para evitar spam
-BTCTools.spellCooldown = 1000  -- Cooldown minimo entre casts (1 segundo)
+MTCTools.config = nil
+MTCTools.lastCastTime = {}    -- Guarda ultimo cast para evitar spam
+MTCTools.spellCooldown = 1000  -- Cooldown minimo entre casts (1 segundo)
 
 -- Constantes dos PlayerStates (valores fixos do protocolo)
 local STATE_HASTE = 64
@@ -142,26 +142,26 @@ local STATE_PARTYBUFF = 4096
 local STATE_PARALYZE = 32
 
 -- Inicializa o modulo
-function BTCTools.init()
-  BTCTools.config = BTCTools.loadConfig()
+function MTCTools.init()
+  MTCTools.config = MTCTools.loadConfig()
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCTools.loadConfig()
-  local saved = BTCConfig.get("tools")
+function MTCTools.loadConfig()
+  local saved = MTCConfig.get("tools")
   if saved then
     return saved
   end
-  return BTCTools.defaultConfig
+  return MTCTools.defaultConfig
 end
 
 -- Salva configuracao
-function BTCTools.saveConfig()
-  BTCConfig.set("tools", BTCTools.config)
+function MTCTools.saveConfig()
+  MTCConfig.set("tools", MTCTools.config)
 end
 
 -- Retorna vocacao do player
-function BTCTools.getPlayerVocation()
+function MTCTools.getPlayerVocation()
   if not g_game.isOnline() then return 0 end
   local player = g_game.getLocalPlayer()
   if not player then return 0 end
@@ -169,8 +169,8 @@ function BTCTools.getPlayerVocation()
 end
 
 -- Verifica se player tem a vocacao para usar a spell
-function BTCTools.canUseSpell(spellInfo)
-  local voc = BTCTools.getPlayerVocation()
+function MTCTools.canUseSpell(spellInfo)
+  local voc = MTCTools.getPlayerVocation()
   if voc == 0 then return true end  -- Se nao conseguir pegar voc, permite
   
   for _, v in ipairs(spellInfo.voc) do
@@ -182,7 +182,7 @@ function BTCTools.canUseSpell(spellInfo)
 end
 
 -- Verifica se o player tem um estado/buff ativo usando bit.band
-function BTCTools.hasState(state)
+function MTCTools.hasState(state)
   if not g_game.isOnline() then return false end
   local player = g_game.getLocalPlayer()
   if not player then return false end
@@ -198,17 +198,17 @@ function BTCTools.hasState(state)
 end
 
 -- Verifica se tem Haste ativo
-function BTCTools.hasHaste()
-  return BTCTools.hasState(STATE_HASTE)
+function MTCTools.hasHaste()
+  return MTCTools.hasState(STATE_HASTE)
 end
 
 -- Verifica se tem Magic Shield ativo (verifica ambos os estados: antigo e novo)
-function BTCTools.hasManaShield()
+function MTCTools.hasManaShield()
   -- Verifica o estado antigo (16) e o novo (67108864)
-  if BTCTools.hasState(STATE_MANASHIELD) then
+  if MTCTools.hasState(STATE_MANASHIELD) then
     return true
   end
-  if BTCTools.hasState(STATE_NEWMANASHIELD) then
+  if MTCTools.hasState(STATE_NEWMANASHIELD) then
     return true
   end
   return false
@@ -216,29 +216,29 @@ end
 
 -- Verifica se tem PartyBuff ativo (Blood Rage, Protector, Sharpshooter, Swift Foot)
 -- Todos esses buffs usam o mesmo icone PartyBuff
-function BTCTools.hasPartyBuff()
+function MTCTools.hasPartyBuff()
   -- Verifica o estado PartyBuff (4096)
-  if BTCTools.hasState(STATE_PARTYBUFF) then
+  if MTCTools.hasState(STATE_PARTYBUFF) then
     return true
   end
   return false
 end
 
 -- Verifica se esta paralyzed
-function BTCTools.isParalyzed()
-  return BTCTools.hasState(STATE_PARALYZE)
+function MTCTools.isParalyzed()
+  return MTCTools.hasState(STATE_PARALYZE)
 end
 
 -- Verifica se passou cooldown desde ultimo cast
-function BTCTools.canCast(spellKey)
+function MTCTools.canCast(spellKey)
   local now = g_clock.millis()
-  local lastCast = BTCTools.lastCastTime[spellKey] or 0
-  return (now - lastCast) >= BTCTools.spellCooldown
+  local lastCast = MTCTools.lastCastTime[spellKey] or 0
+  return (now - lastCast) >= MTCTools.spellCooldown
 end
 
 -- Obtem info da spell pelo words
-function BTCTools.getSpellInfo(spellWords)
-  for category, spells in pairs(BTCTools.supportSpells) do
+function MTCTools.getSpellInfo(spellWords)
+  for category, spells in pairs(MTCTools.supportSpells) do
     for _, spell in ipairs(spells) do
       if spell.words == spellWords then
         return spell
@@ -249,23 +249,23 @@ function BTCTools.getSpellInfo(spellWords)
 end
 
 -- Casta spell de Haste (verifica se nao tem haste ativo)
-function BTCTools.castHaste(spellKey, spellWords)
+function MTCTools.castHaste(spellKey, spellWords)
   if not g_game.isOnline() then return false end
   
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
   -- Se ja tem haste, nao precisa castar
-  if BTCTools.hasHaste() then
+  if MTCTools.hasHaste() then
     return false
   end
   
   -- Verifica cooldown para evitar spam
-  if not BTCTools.canCast(spellKey) then
+  if not MTCTools.canCast(spellKey) then
     return false
   end
   
-  local spellInfo = BTCTools.getSpellInfo(spellWords)
+  local spellInfo = MTCTools.getSpellInfo(spellWords)
   if not spellInfo then return false end
   
   -- Verifica mana
@@ -273,33 +273,33 @@ function BTCTools.castHaste(spellKey, spellWords)
   if mana < spellInfo.mana then return false end
   
   -- Verifica vocacao
-  if not BTCTools.canUseSpell(spellInfo) then return false end
+  if not MTCTools.canUseSpell(spellInfo) then return false end
   
   -- Casta
   g_game.talk(spellWords)
-  BTCTools.lastCastTime[spellKey] = g_clock.millis()
+  MTCTools.lastCastTime[spellKey] = g_clock.millis()
   
   return true
 end
 
 -- Casta Magic Shield (verifica se nao tem shield ativo)
-function BTCTools.castManaShield(spellKey, spellWords)
+function MTCTools.castManaShield(spellKey, spellWords)
   if not g_game.isOnline() then return false end
   
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
   -- Se ja tem magic shield, nao precisa castar
-  if BTCTools.hasManaShield() then
+  if MTCTools.hasManaShield() then
     return false
   end
   
   -- Verifica cooldown para evitar spam
-  if not BTCTools.canCast(spellKey) then
+  if not MTCTools.canCast(spellKey) then
     return false
   end
   
-  local spellInfo = BTCTools.getSpellInfo(spellWords)
+  local spellInfo = MTCTools.getSpellInfo(spellWords)
   if not spellInfo then return false end
   
   -- Verifica mana
@@ -307,33 +307,33 @@ function BTCTools.castManaShield(spellKey, spellWords)
   if mana < spellInfo.mana then return false end
   
   -- Verifica vocacao
-  if not BTCTools.canUseSpell(spellInfo) then return false end
+  if not MTCTools.canUseSpell(spellInfo) then return false end
   
   -- Casta
   g_game.talk(spellWords)
-  BTCTools.lastCastTime[spellKey] = g_clock.millis()
+  MTCTools.lastCastTime[spellKey] = g_clock.millis()
   
   return true
 end
 
 -- Casta spell de Buff (verifica se nao tem party buff ativo)
-function BTCTools.castBuff(spellKey, spellWords)
+function MTCTools.castBuff(spellKey, spellWords)
   if not g_game.isOnline() then return false end
   
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
   -- Se ja tem party buff, nao precisa castar
-  if BTCTools.hasPartyBuff() then
+  if MTCTools.hasPartyBuff() then
     return false
   end
   
   -- Verifica cooldown para evitar spam
-  if not BTCTools.canCast(spellKey) then
+  if not MTCTools.canCast(spellKey) then
     return false
   end
   
-  local spellInfo = BTCTools.getSpellInfo(spellWords)
+  local spellInfo = MTCTools.getSpellInfo(spellWords)
   if not spellInfo then return false end
   
   -- Verifica mana
@@ -341,19 +341,19 @@ function BTCTools.castBuff(spellKey, spellWords)
   if mana < spellInfo.mana then return false end
   
   -- Verifica vocacao
-  if not BTCTools.canUseSpell(spellInfo) then return false end
+  if not MTCTools.canUseSpell(spellInfo) then return false end
   
   -- Casta
   g_game.talk(spellWords)
-  BTCTools.lastCastTime[spellKey] = g_clock.millis()
+  MTCTools.lastCastTime[spellKey] = g_clock.millis()
   
   return true
 end
 
 -- Funcao principal de execucao
-function BTCTools.execute()
+function MTCTools.execute()
   if not g_game.isOnline() then return end
-  if not BTCTools.config or not BTCTools.config.enabled then return end
+  if not MTCTools.config or not MTCTools.config.enabled then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
@@ -361,56 +361,56 @@ function BTCTools.execute()
   -- ========== HASTE SPELLS (verificam hasHaste) ==========
   
   -- Haste (utani hur)
-  if BTCTools.config.haste and BTCTools.config.haste.enabled then
-    BTCTools.castHaste("haste", BTCTools.config.haste.spell)
+  if MTCTools.config.haste and MTCTools.config.haste.enabled then
+    MTCTools.castHaste("haste", MTCTools.config.haste.spell)
   end
   
   -- Strong Haste (utani gran hur)
-  if BTCTools.config.strongHaste and BTCTools.config.strongHaste.enabled then
-    BTCTools.castHaste("strongHaste", BTCTools.config.strongHaste.spell)
+  if MTCTools.config.strongHaste and MTCTools.config.strongHaste.enabled then
+    MTCTools.castHaste("strongHaste", MTCTools.config.strongHaste.spell)
   end
   
   -- Charge (utani tempo hur)
-  if BTCTools.config.charge and BTCTools.config.charge.enabled then
-    BTCTools.castHaste("charge", BTCTools.config.charge.spell)
+  if MTCTools.config.charge and MTCTools.config.charge.enabled then
+    MTCTools.castHaste("charge", MTCTools.config.charge.spell)
   end
   
   -- ========== MAGIC SHIELD (verifica hasManaShield) ==========
   
   -- Magic Shield (utamo vita)
-  if BTCTools.config.magicShield and BTCTools.config.magicShield.enabled then
-    BTCTools.castManaShield("magicShield", BTCTools.config.magicShield.spell)
+  if MTCTools.config.magicShield and MTCTools.config.magicShield.enabled then
+    MTCTools.castManaShield("magicShield", MTCTools.config.magicShield.spell)
   end
   
   -- ========== BUFF SPELLS (verificam hasPartyBuff) ==========
   
   -- Utito Tempo / Blood Rage
-  if BTCTools.config.utitoTempo and BTCTools.config.utitoTempo.enabled then
-    BTCTools.castBuff("utitoTempo", BTCTools.config.utitoTempo.spell)
+  if MTCTools.config.utitoTempo and MTCTools.config.utitoTempo.enabled then
+    MTCTools.castBuff("utitoTempo", MTCTools.config.utitoTempo.spell)
   end
   
   -- Utamo Tempo / Protector
-  if BTCTools.config.utamoTempo and BTCTools.config.utamoTempo.enabled then
-    BTCTools.castBuff("utamoTempo", BTCTools.config.utamoTempo.spell)
+  if MTCTools.config.utamoTempo and MTCTools.config.utamoTempo.enabled then
+    MTCTools.castBuff("utamoTempo", MTCTools.config.utamoTempo.spell)
   end
   
   -- Sharpshooter
-  if BTCTools.config.sharpshooter and BTCTools.config.sharpshooter.enabled then
-    BTCTools.castBuff("sharpshooter", BTCTools.config.sharpshooter.spell)
+  if MTCTools.config.sharpshooter and MTCTools.config.sharpshooter.enabled then
+    MTCTools.castBuff("sharpshooter", MTCTools.config.sharpshooter.spell)
   end
   
   -- Swift Foot
-  if BTCTools.config.swiftFoot and BTCTools.config.swiftFoot.enabled then
-    BTCTools.castBuff("swiftFoot", BTCTools.config.swiftFoot.spell)
+  if MTCTools.config.swiftFoot and MTCTools.config.swiftFoot.enabled then
+    MTCTools.castBuff("swiftFoot", MTCTools.config.swiftFoot.spell)
   end
 end
 
 -- Retorna lista de spells de haste disponiveis para a vocacao
-function BTCTools.getAvailableHasteSpells()
-  local voc = BTCTools.getPlayerVocation()
+function MTCTools.getAvailableHasteSpells()
+  local voc = MTCTools.getPlayerVocation()
   local available = {}
   
-  for _, spell in ipairs(BTCTools.supportSpells.haste) do
+  for _, spell in ipairs(MTCTools.supportSpells.haste) do
     if voc == 0 then
       table.insert(available, spell)
     else
@@ -427,7 +427,7 @@ function BTCTools.getAvailableHasteSpells()
 end
 
 -- Cria a interface de configuracao
-function BTCTools.createUI(parent)
+function MTCTools.createUI(parent)
   parent:destroyChildren()
   
   -- ========== SECAO HASTE ==========
@@ -438,13 +438,13 @@ function BTCTools.createUI(parent)
   hasteLabel:setMarginTop(5)
   
   -- Haste normal
-  BTCTools.createSpellRow(parent, "haste", "Haste", "utani hur")
+  MTCTools.createSpellRow(parent, "haste", "Haste", "utani hur")
   
   -- Strong Haste
-  BTCTools.createSpellRow(parent, "strongHaste", "Strong Haste", "utani gran hur")
+  MTCTools.createSpellRow(parent, "strongHaste", "Strong Haste", "utani gran hur")
   
   -- Charge (Knight)
-  BTCTools.createSpellRow(parent, "charge", "Charge", "utani tempo hur")
+  MTCTools.createSpellRow(parent, "charge", "Charge", "utani tempo hur")
   
   -- Separador
   local sep1 = g_ui.createWidget('HorizontalSeparator', parent)
@@ -458,7 +458,7 @@ function BTCTools.createUI(parent)
   shieldLabel:setHeight(18)
   
   -- Utamo Vita
-  BTCTools.createSpellRow(parent, "magicShield", "Magic Shield", "utamo vita")
+  MTCTools.createSpellRow(parent, "magicShield", "Magic Shield", "utamo vita")
   
   -- Separador
   local sep2 = g_ui.createWidget('HorizontalSeparator', parent)
@@ -472,10 +472,10 @@ function BTCTools.createUI(parent)
   knightLabel:setHeight(18)
   
   -- Blood Rage (utito tempo)
-  BTCTools.createSpellRow(parent, "utitoTempo", "Blood Rage", "utito tempo")
+  MTCTools.createSpellRow(parent, "utitoTempo", "Blood Rage", "utito tempo")
   
   -- Protector (utamo tempo)
-  BTCTools.createSpellRow(parent, "utamoTempo", "Protector", "utamo tempo")
+  MTCTools.createSpellRow(parent, "utamoTempo", "Protector", "utamo tempo")
   
   -- Separador
   local sep3 = g_ui.createWidget('HorizontalSeparator', parent)
@@ -489,15 +489,15 @@ function BTCTools.createUI(parent)
   paladinLabel:setHeight(18)
   
   -- Sharpshooter
-  BTCTools.createSpellRow(parent, "sharpshooter", "Sharpshooter", "utito tempo san")
+  MTCTools.createSpellRow(parent, "sharpshooter", "Sharpshooter", "utito tempo san")
   
   -- Swift Foot
-  BTCTools.createSpellRow(parent, "swiftFoot", "Swift Foot", "utamo tempo san")
+  MTCTools.createSpellRow(parent, "swiftFoot", "Swift Foot", "utamo tempo san")
 end
 
 -- Cria uma linha de configuracao de spell
-function BTCTools.createSpellRow(parent, configKey, displayName, defaultSpell)
-  local config = BTCTools.config[configKey] or { enabled = false, spell = defaultSpell }
+function MTCTools.createSpellRow(parent, configKey, displayName, defaultSpell)
+  local config = MTCTools.config[configKey] or { enabled = false, spell = defaultSpell }
   
   local row = g_ui.createWidget('Panel', parent)
   row:setHeight(24)
@@ -512,12 +512,12 @@ function BTCTools.createSpellRow(parent, configKey, displayName, defaultSpell)
   checkBox:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
   
   checkBox.onCheckChange = function(widget, checked)
-    if not BTCTools.config[configKey] then
-      BTCTools.config[configKey] = { enabled = false, spell = defaultSpell }
+    if not MTCTools.config[configKey] then
+      MTCTools.config[configKey] = { enabled = false, spell = defaultSpell }
     end
-    BTCTools.config[configKey].enabled = checked
-    BTCTools.saveConfig()
+    MTCTools.config[configKey].enabled = checked
+    MTCTools.saveConfig()
   end
 end
 
-return BTCTools
+return MTCTools

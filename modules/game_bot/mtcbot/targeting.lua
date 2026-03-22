@@ -1,15 +1,15 @@
 --[[
-  BTC Bot - Sistema de Targeting
+  MTC Bot - Sistema de Targeting
   
   Controla comportamento de movimento em relacao ao alvo:
   - Approach (ir para cima do monstro) - para Knights
   - Stand Still (ficar parado)
 ]]
 
-BTCTargeting = BTCTargeting or {}
+MTCTargeting = MTCTargeting or {}
 
 -- Configuracao padrao
-BTCTargeting.defaultConfig = {
+MTCTargeting.defaultConfig = {
   enabled = false,
   -- Modo de movimento: "approach", "stand"
   moveMode = "stand",
@@ -20,18 +20,18 @@ BTCTargeting.defaultConfig = {
 }
 
 -- Variaveis de controle
-BTCTargeting.config = nil
-BTCTargeting.lastMoveTime = 0
-BTCTargeting.moveCooldown = 200  -- ms entre movimentos (mais rapido)
+MTCTargeting.config = nil
+MTCTargeting.lastMoveTime = 0
+MTCTargeting.moveCooldown = 200  -- ms entre movimentos (mais rapido)
 
 -- Inicializa o modulo
-function BTCTargeting.init()
-  BTCTargeting.config = BTCTargeting.loadConfig()
+function MTCTargeting.init()
+  MTCTargeting.config = MTCTargeting.loadConfig()
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCTargeting.loadConfig()
-  local saved = BTCConfig.get("targeting")
+function MTCTargeting.loadConfig()
+  local saved = MTCConfig.get("targeting")
   if saved then
     if saved.moveMode == nil then saved.moveMode = "stand" end
     if saved.onlyWhenAttacking == nil then saved.onlyWhenAttacking = true end
@@ -40,16 +40,16 @@ function BTCTargeting.loadConfig()
     if saved.moveMode == "keepDistance" then saved.moveMode = "stand" end
     return saved
   end
-  return table.copy(BTCTargeting.defaultConfig)
+  return table.copy(MTCTargeting.defaultConfig)
 end
 
 -- Salva configuracao
-function BTCTargeting.saveConfig()
-  BTCConfig.set("targeting", BTCTargeting.config)
+function MTCTargeting.saveConfig()
+  MTCConfig.set("targeting", MTCTargeting.config)
 end
 
 -- Calcula distancia entre duas posicoes
-function BTCTargeting.getDistance(pos1, pos2)
+function MTCTargeting.getDistance(pos1, pos2)
   if not pos1 or not pos2 then return 999 end
   local dx = math.abs(pos1.x - pos2.x)
   local dy = math.abs(pos1.y - pos2.y)
@@ -57,16 +57,16 @@ function BTCTargeting.getDistance(pos1, pos2)
 end
 
 -- Verifica se pode mover
-function BTCTargeting.canMove()
+function MTCTargeting.canMove()
   local now = g_clock.millis()
-  return (now - BTCTargeting.lastMoveTime) >= BTCTargeting.moveCooldown
+  return (now - MTCTargeting.lastMoveTime) >= MTCTargeting.moveCooldown
 end
 
 -- Encontra posicao para ir para cima do monstro (com alternativas)
-function BTCTargeting.findApproachPosition(playerPos, targetPos)
+function MTCTargeting.findApproachPosition(playerPos, targetPos)
   if not playerPos or not targetPos then return nil end
   
-  local currentDist = BTCTargeting.getDistance(playerPos, targetPos)
+  local currentDist = MTCTargeting.getDistance(playerPos, targetPos)
   
   -- Ja esta adjacente
   if currentDist <= 1 then return nil end
@@ -114,7 +114,7 @@ function BTCTargeting.findApproachPosition(playerPos, targetPos)
   
   -- Retorna a primeira posicao walkable
   for _, pos in ipairs(positions) do
-    if BTCTargeting.isWalkable(pos) then
+    if MTCTargeting.isWalkable(pos) then
       return pos
     end
   end
@@ -129,7 +129,7 @@ function BTCTargeting.findApproachPosition(playerPos, targetPos)
 end
 
 -- Verifica se tile e walkable
-function BTCTargeting.isWalkable(pos)
+function MTCTargeting.isWalkable(pos)
   if not pos then return false end
   
   local tile = g_map.getTile(pos)
@@ -140,7 +140,7 @@ function BTCTargeting.isWalkable(pos)
 end
 
 -- Move para posicao usando direcao
-function BTCTargeting.moveTo(pos)
+function MTCTargeting.moveTo(pos)
   if not pos then return false end
   
   local player = g_game.getLocalPlayer()
@@ -170,7 +170,7 @@ function BTCTargeting.moveTo(pos)
   
   if dir then
     -- Se nao permite diagonal, converte para cardinal
-    if not BTCTargeting.config.allowDiagonal then
+    if not MTCTargeting.config.allowDiagonal then
       if dir == NorthEast then 
         dir = math.abs(dx) >= math.abs(dy) and East or North
       elseif dir == NorthWest then 
@@ -183,7 +183,7 @@ function BTCTargeting.moveTo(pos)
     end
     
     g_game.walk(dir)
-    BTCTargeting.lastMoveTime = g_clock.millis()
+    MTCTargeting.lastMoveTime = g_clock.millis()
     return true
   end
   
@@ -191,14 +191,14 @@ function BTCTargeting.moveTo(pos)
 end
 
 -- Funcao principal de execucao
-function BTCTargeting.execute()
+function MTCTargeting.execute()
   if not g_game.isOnline() then return end
   -- Targeting funciona quando Attack esta ON (nao precisa de enabled proprio)
-  if not BTCTargeting.config then return end
-  if BTCTargeting.config.moveMode == "stand" then return end
+  if not MTCTargeting.config then return end
+  if MTCTargeting.config.moveMode == "stand" then return end
   -- Verifica se Attack esta ativo
-  if not BTCAttack or not BTCAttack.config or not BTCAttack.config.enabled then return end
-  if not BTCTargeting.canMove() then return end
+  if not MTCAttack or not MTCAttack.config or not MTCAttack.config.enabled then return end
+  if not MTCTargeting.canMove() then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
@@ -208,8 +208,8 @@ function BTCTargeting.execute()
   
   -- IMPORTANTE: Se o CaveBot esta ativo e NAO esta parado para monstros,
   -- o Targeting NAO deve interferir no movimento!
-  if BTCCaveBot and BTCCaveBot.config and BTCCaveBot.config.enabled then
-    if not BTCCaveBot.shouldStopForMonsters() then
+  if MTCCaveBot and MTCCaveBot.config and MTCCaveBot.config.enabled then
+    if not MTCCaveBot.shouldStopForMonsters() then
       -- CaveBot esta andando, nao interfere
       return
     end
@@ -217,7 +217,7 @@ function BTCTargeting.execute()
   
   -- Verifica se esta atacando (se configurado)
   local target = g_game.getAttackingCreature()
-  if BTCTargeting.config.onlyWhenAttacking and not target then return end
+  if MTCTargeting.config.onlyWhenAttacking and not target then return end
   
   if not target then return end
   if target:isDead() then return end
@@ -230,18 +230,18 @@ function BTCTargeting.execute()
   
   local newPos = nil
   
-  if BTCTargeting.config.moveMode == "approach" then
+  if MTCTargeting.config.moveMode == "approach" then
     -- Ir para cima do monstro
-    newPos = BTCTargeting.findApproachPosition(playerPos, targetPos)
+    newPos = MTCTargeting.findApproachPosition(playerPos, targetPos)
   end
   
   if newPos then
-    BTCTargeting.moveTo(newPos)
+    MTCTargeting.moveTo(newPos)
   end
 end
 
 -- Cria a UI do modulo
-function BTCTargeting.createUI(container)
+function MTCTargeting.createUI(container)
   if not container then return end
   
   container:destroyChildren()
@@ -274,7 +274,7 @@ function BTCTargeting.createUI(container)
   local modeButtons = {}
   local function updateModeButtons()
     for mode, btn in pairs(modeButtons) do
-      if BTCTargeting.config.moveMode == mode then
+      if MTCTargeting.config.moveMode == mode then
         btn:setColor('#00ff00')
       else
         btn:setColor('#888888')
@@ -290,8 +290,8 @@ function BTCTargeting.createUI(container)
   modeButtons["stand"] = standBtn
   
   standBtn.onClick = function()
-    BTCTargeting.config.moveMode = "stand"
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.moveMode = "stand"
+    MTCTargeting.saveConfig()
     updateModeButtons()
   end
   
@@ -304,8 +304,8 @@ function BTCTargeting.createUI(container)
   modeButtons["approach"] = approachBtn
   
   approachBtn.onClick = function()
-    BTCTargeting.config.moveMode = "approach"
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.moveMode = "approach"
+    MTCTargeting.saveConfig()
     updateModeButtons()
   end
   
@@ -328,7 +328,7 @@ function BTCTargeting.createUI(container)
   onlyAttackRow:setMarginBottom(5)
   
   local onlyAttackBtn = g_ui.createWidget("Button", onlyAttackRow)
-  onlyAttackBtn:setText(BTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
+  onlyAttackBtn:setText(MTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
   onlyAttackBtn:setWidth(28)
   onlyAttackBtn:addAnchor(AnchorLeft, 'parent', AnchorLeft)
   onlyAttackBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
@@ -341,9 +341,9 @@ function BTCTargeting.createUI(container)
   onlyAttackLabel:setMarginLeft(5)
   
   onlyAttackBtn.onClick = function()
-    BTCTargeting.config.onlyWhenAttacking = not BTCTargeting.config.onlyWhenAttacking
-    onlyAttackBtn:setText(BTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.onlyWhenAttacking = not MTCTargeting.config.onlyWhenAttacking
+    onlyAttackBtn:setText(MTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
+    MTCTargeting.saveConfig()
   end
   
   -- Checkbox: Permitir diagonal
@@ -352,7 +352,7 @@ function BTCTargeting.createUI(container)
   diagRow:setMarginBottom(5)
   
   local diagBtn = g_ui.createWidget("Button", diagRow)
-  diagBtn:setText(BTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
+  diagBtn:setText(MTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
   diagBtn:setWidth(28)
   diagBtn:addAnchor(AnchorLeft, 'parent', AnchorLeft)
   diagBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
@@ -365,9 +365,9 @@ function BTCTargeting.createUI(container)
   diagLabel:setMarginLeft(5)
   
   diagBtn.onClick = function()
-    BTCTargeting.config.allowDiagonal = not BTCTargeting.config.allowDiagonal
-    diagBtn:setText(BTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.allowDiagonal = not MTCTargeting.config.allowDiagonal
+    diagBtn:setText(MTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
+    MTCTargeting.saveConfig()
   end
   
   -- Info
@@ -379,16 +379,16 @@ function BTCTargeting.createUI(container)
 end
 
 -- Retorna status do modulo
-function BTCTargeting.getStatus()
-  if not BTCTargeting.config then
+function MTCTargeting.getStatus()
+  if not MTCTargeting.config then
     return "OFF"
   end
   local modes = {
     stand = "Parado",
     approach = "Approach"
   }
-  return modes[BTCTargeting.config.moveMode] or "ON"
+  return modes[MTCTargeting.config.moveMode] or "ON"
 end
 
 -- Inicializa
-BTCTargeting.init()
+MTCTargeting.init()

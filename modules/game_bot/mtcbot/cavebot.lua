@@ -1,5 +1,5 @@
 --[[
-  BTC Bot - CaveBot
+  MTC Bot - CaveBot
   
   Sistema de waypoints automatico
   - Andar ate posicao (goto)
@@ -8,10 +8,10 @@
   - Pathfinding inteligente
 ]]
 
-BTCCaveBot = BTCCaveBot or {}
+MTCCaveBot = MTCCaveBot or {}
 
 -- Tipos de waypoints
-BTCCaveBot.WaypointTypes = {
+MTCCaveBot.WaypointTypes = {
   WALK = "walk",       -- Andar ate posicao
   USE = "use",         -- Usar objeto na posicao (escada, buraco, lever)
   USEWITH = "usewith", -- Usar item em objeto
@@ -23,7 +23,7 @@ BTCCaveBot.WaypointTypes = {
 }
 
 -- Configuracao padrao
-BTCCaveBot.defaultConfig = {
+MTCCaveBot.defaultConfig = {
   enabled = false,
   walkDelay = 100,
   waypoints = {},
@@ -33,33 +33,33 @@ BTCCaveBot.defaultConfig = {
 }
 
 -- Variaveis de controle
-BTCCaveBot.config = nil
-BTCCaveBot.isWalking = false
-BTCCaveBot.lastWalkTime = 0
-BTCCaveBot.walkCooldown = 200
-BTCCaveBot.retryCount = 0
-BTCCaveBot.maxRetries = 10
-BTCCaveBot.stuckCount = 0      -- Contador de vezes que ficou preso
-BTCCaveBot.maxStuckCount = 30  -- Apos 30 falhas (3 segundos), volta ao waypoint 1
-BTCCaveBot.scrollOffset = 0    -- Offset do scroll da lista
-BTCCaveBot.lastPosition = nil  -- Ultima posicao para detectar stuck real
-BTCCaveBot.samePositionCount = 0 -- Contador de vezes na mesma posicao
+MTCCaveBot.config = nil
+MTCCaveBot.isWalking = false
+MTCCaveBot.lastWalkTime = 0
+MTCCaveBot.walkCooldown = 200
+MTCCaveBot.retryCount = 0
+MTCCaveBot.maxRetries = 10
+MTCCaveBot.stuckCount = 0      -- Contador de vezes que ficou preso
+MTCCaveBot.maxStuckCount = 30  -- Apos 30 falhas (3 segundos), volta ao waypoint 1
+MTCCaveBot.scrollOffset = 0    -- Offset do scroll da lista
+MTCCaveBot.lastPosition = nil  -- Ultima posicao para detectar stuck real
+MTCCaveBot.samePositionCount = 0 -- Contador de vezes na mesma posicao
 
 -- IDs de itens
-BTCCaveBot.ROPE_ID = 3003
-BTCCaveBot.SHOVEL_ID = 3457
+MTCCaveBot.ROPE_ID = 3003
+MTCCaveBot.SHOVEL_ID = 3457
 
 -- UI references
-BTCCaveBot.waypointListWidget = nil
-BTCCaveBot.waypointScrollBar = nil
-BTCCaveBot.waypointContainer = nil
-BTCCaveBot.recordingEnabled = false
-BTCCaveBot.lastRecordedPos = nil
-BTCCaveBot.lastKnownPos = nil -- Ultima posicao conhecida do player (atualiza todo tick)
-BTCCaveBot.selectedIndex = 1  -- Indice selecionado para edicao
+MTCCaveBot.waypointListWidget = nil
+MTCCaveBot.waypointScrollBar = nil
+MTCCaveBot.waypointContainer = nil
+MTCCaveBot.recordingEnabled = false
+MTCCaveBot.lastRecordedPos = nil
+MTCCaveBot.lastKnownPos = nil -- Ultima posicao conhecida do player (atualiza todo tick)
+MTCCaveBot.selectedIndex = 1  -- Indice selecionado para edicao
 
 -- Sistema de Emplacement (posicionamento do waypoint)
-BTCCaveBot.EmplacementTypes = {
+MTCCaveBot.EmplacementTypes = {
   CENTER = "center",
   NORTH = "north",
   SOUTH = "south",
@@ -70,18 +70,18 @@ BTCCaveBot.EmplacementTypes = {
   SOUTHEAST = "southeast",
   SOUTHWEST = "southwest"
 }
-BTCCaveBot.currentEmplacement = BTCCaveBot.EmplacementTypes.CENTER
-BTCCaveBot.emplValueLabel = nil
-BTCCaveBot.emplButtons = {} -- Referencia aos botoes de emplacement
+MTCCaveBot.currentEmplacement = MTCCaveBot.EmplacementTypes.CENTER
+MTCCaveBot.emplValueLabel = nil
+MTCCaveBot.emplButtons = {} -- Referencia aos botoes de emplacement
 
 -- Define emplacement atual e atualiza visual dos botoes
-function BTCCaveBot.setEmplacement(emplType)
-  BTCCaveBot.currentEmplacement = emplType
-  if BTCCaveBot.emplValueLabel then
-    BTCCaveBot.emplValueLabel:setText('[' .. emplType:upper() .. ']')
+function MTCCaveBot.setEmplacement(emplType)
+  MTCCaveBot.currentEmplacement = emplType
+  if MTCCaveBot.emplValueLabel then
+    MTCCaveBot.emplValueLabel:setText('[' .. emplType:upper() .. ']')
   end
   -- Atualiza cor de todos os botoes
-  for btnType, btn in pairs(BTCCaveBot.emplButtons) do
+  for btnType, btn in pairs(MTCCaveBot.emplButtons) do
     if btn then
       if btnType == emplType then
         btn:setColor('#00ffff') -- Ciano para selecionado
@@ -94,13 +94,13 @@ function BTCCaveBot.setEmplacement(emplType)
 end
 
 -- Inicializa o modulo
-function BTCCaveBot.init()
-  BTCCaveBot.config = BTCCaveBot.loadConfig()
+function MTCCaveBot.init()
+  MTCCaveBot.config = MTCCaveBot.loadConfig()
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCCaveBot.loadConfig()
-  local saved = BTCConfig.get("cavebot")
+function MTCCaveBot.loadConfig()
+  local saved = MTCConfig.get("cavebot")
   if saved then
     saved.currentIndex = 1
     saved.enabled = false
@@ -114,16 +114,16 @@ function BTCCaveBot.loadConfig()
     end
     return saved
   end
-  return table.copy(BTCCaveBot.defaultConfig)
+  return table.copy(MTCCaveBot.defaultConfig)
 end
 
 -- Salva configuracao
-function BTCCaveBot.saveConfig()
-  BTCConfig.set("cavebot", BTCCaveBot.config)
+function MTCCaveBot.saveConfig()
+  MTCConfig.set("cavebot", MTCCaveBot.config)
 end
 
 -- Retorna posicao atual do player
-function BTCCaveBot.getPlayerPosition()
+function MTCCaveBot.getPlayerPosition()
   if not g_game.isOnline() then return nil end
   local player = g_game.getLocalPlayer()
   if not player then return nil end
@@ -131,7 +131,7 @@ function BTCCaveBot.getPlayerPosition()
 end
 
 -- Adiciona waypoint
-function BTCCaveBot.addWaypoint(waypointType, x, y, z, extra)
+function MTCCaveBot.addWaypoint(waypointType, x, y, z, extra)
   local waypoint = {
     type = waypointType,
     x = x,
@@ -139,117 +139,117 @@ function BTCCaveBot.addWaypoint(waypointType, x, y, z, extra)
     z = z,
     extra = extra or ""
   }
-  table.insert(BTCCaveBot.config.waypoints, waypoint)
-  BTCCaveBot.saveConfig()
-  BTCCaveBot.refreshWaypointList()
+  table.insert(MTCCaveBot.config.waypoints, waypoint)
+  MTCCaveBot.saveConfig()
+  MTCCaveBot.refreshWaypointList()
   return waypoint
 end
 
 -- Remove waypoint por indice
-function BTCCaveBot.removeWaypoint(index)
-  if index > 0 and index <= #BTCCaveBot.config.waypoints then
-    table.remove(BTCCaveBot.config.waypoints, index)
+function MTCCaveBot.removeWaypoint(index)
+  if index > 0 and index <= #MTCCaveBot.config.waypoints then
+    table.remove(MTCCaveBot.config.waypoints, index)
     -- Ajusta indices
-    if BTCCaveBot.config.currentIndex > #BTCCaveBot.config.waypoints then
-      BTCCaveBot.config.currentIndex = math.max(1, #BTCCaveBot.config.waypoints)
+    if MTCCaveBot.config.currentIndex > #MTCCaveBot.config.waypoints then
+      MTCCaveBot.config.currentIndex = math.max(1, #MTCCaveBot.config.waypoints)
     end
-    if BTCCaveBot.selectedIndex > #BTCCaveBot.config.waypoints then
-      BTCCaveBot.selectedIndex = math.max(1, #BTCCaveBot.config.waypoints)
+    if MTCCaveBot.selectedIndex > #MTCCaveBot.config.waypoints then
+      MTCCaveBot.selectedIndex = math.max(1, #MTCCaveBot.config.waypoints)
     end
-    BTCCaveBot.saveConfig()
-    BTCCaveBot.refreshWaypointList()
+    MTCCaveBot.saveConfig()
+    MTCCaveBot.refreshWaypointList()
   end
 end
 
 -- Remove waypoint selecionado
-function BTCCaveBot.removeSelectedWaypoint()
-  if BTCCaveBot.selectedIndex and BTCCaveBot.selectedIndex > 0 then
-    BTCCaveBot.removeWaypoint(BTCCaveBot.selectedIndex)
+function MTCCaveBot.removeSelectedWaypoint()
+  if MTCCaveBot.selectedIndex and MTCCaveBot.selectedIndex > 0 then
+    MTCCaveBot.removeWaypoint(MTCCaveBot.selectedIndex)
   end
 end
 
 -- Move waypoint para cima
-function BTCCaveBot.moveWaypointUp(index)
-  if index > 1 and index <= #BTCCaveBot.config.waypoints then
-    local temp = BTCCaveBot.config.waypoints[index]
-    BTCCaveBot.config.waypoints[index] = BTCCaveBot.config.waypoints[index - 1]
-    BTCCaveBot.config.waypoints[index - 1] = temp
+function MTCCaveBot.moveWaypointUp(index)
+  if index > 1 and index <= #MTCCaveBot.config.waypoints then
+    local temp = MTCCaveBot.config.waypoints[index]
+    MTCCaveBot.config.waypoints[index] = MTCCaveBot.config.waypoints[index - 1]
+    MTCCaveBot.config.waypoints[index - 1] = temp
     -- Atualiza selecao
-    BTCCaveBot.selectedIndex = index - 1
+    MTCCaveBot.selectedIndex = index - 1
     -- Ajusta currentIndex se necessario
-    if BTCCaveBot.config.currentIndex == index then
-      BTCCaveBot.config.currentIndex = index - 1
-    elseif BTCCaveBot.config.currentIndex == index - 1 then
-      BTCCaveBot.config.currentIndex = index
+    if MTCCaveBot.config.currentIndex == index then
+      MTCCaveBot.config.currentIndex = index - 1
+    elseif MTCCaveBot.config.currentIndex == index - 1 then
+      MTCCaveBot.config.currentIndex = index
     end
-    BTCCaveBot.saveConfig()
-    BTCCaveBot.refreshWaypointList()
+    MTCCaveBot.saveConfig()
+    MTCCaveBot.refreshWaypointList()
   end
 end
 
 -- Move waypoint para baixo
-function BTCCaveBot.moveWaypointDown(index)
-  if index > 0 and index < #BTCCaveBot.config.waypoints then
-    local temp = BTCCaveBot.config.waypoints[index]
-    BTCCaveBot.config.waypoints[index] = BTCCaveBot.config.waypoints[index + 1]
-    BTCCaveBot.config.waypoints[index + 1] = temp
+function MTCCaveBot.moveWaypointDown(index)
+  if index > 0 and index < #MTCCaveBot.config.waypoints then
+    local temp = MTCCaveBot.config.waypoints[index]
+    MTCCaveBot.config.waypoints[index] = MTCCaveBot.config.waypoints[index + 1]
+    MTCCaveBot.config.waypoints[index + 1] = temp
     -- Atualiza selecao
-    BTCCaveBot.selectedIndex = index + 1
+    MTCCaveBot.selectedIndex = index + 1
     -- Ajusta currentIndex se necessario
-    if BTCCaveBot.config.currentIndex == index then
-      BTCCaveBot.config.currentIndex = index + 1
-    elseif BTCCaveBot.config.currentIndex == index + 1 then
-      BTCCaveBot.config.currentIndex = index
+    if MTCCaveBot.config.currentIndex == index then
+      MTCCaveBot.config.currentIndex = index + 1
+    elseif MTCCaveBot.config.currentIndex == index + 1 then
+      MTCCaveBot.config.currentIndex = index
     end
-    BTCCaveBot.saveConfig()
-    BTCCaveBot.refreshWaypointList()
+    MTCCaveBot.saveConfig()
+    MTCCaveBot.refreshWaypointList()
   end
 end
 
 -- Move waypoint selecionado para cima
-function BTCCaveBot.moveSelectedUp()
-  if BTCCaveBot.selectedIndex and BTCCaveBot.selectedIndex > 1 then
-    BTCCaveBot.moveWaypointUp(BTCCaveBot.selectedIndex)
+function MTCCaveBot.moveSelectedUp()
+  if MTCCaveBot.selectedIndex and MTCCaveBot.selectedIndex > 1 then
+    MTCCaveBot.moveWaypointUp(MTCCaveBot.selectedIndex)
   end
 end
 
 -- Move waypoint selecionado para baixo
-function BTCCaveBot.moveSelectedDown()
-  if BTCCaveBot.selectedIndex and BTCCaveBot.selectedIndex < #BTCCaveBot.config.waypoints then
-    BTCCaveBot.moveWaypointDown(BTCCaveBot.selectedIndex)
+function MTCCaveBot.moveSelectedDown()
+  if MTCCaveBot.selectedIndex and MTCCaveBot.selectedIndex < #MTCCaveBot.config.waypoints then
+    MTCCaveBot.moveWaypointDown(MTCCaveBot.selectedIndex)
   end
 end
 
 -- Limpa todos os waypoints
-function BTCCaveBot.clearWaypoints()
-  BTCCaveBot.config.waypoints = {}
-  BTCCaveBot.config.currentIndex = 1
-  BTCCaveBot.saveConfig()
-  BTCCaveBot.refreshWaypointList()
+function MTCCaveBot.clearWaypoints()
+  MTCCaveBot.config.waypoints = {}
+  MTCCaveBot.config.currentIndex = 1
+  MTCCaveBot.saveConfig()
+  MTCCaveBot.refreshWaypointList()
 end
 
 -- Atualiza lista visual de waypoints
-function BTCCaveBot.refreshWaypointList()
-  if not BTCCaveBot.waypointListWidget then return end
+function MTCCaveBot.refreshWaypointList()
+  if not MTCCaveBot.waypointListWidget then return end
   
   -- Limpa lista
-  BTCCaveBot.waypointListWidget:destroyChildren()
+  MTCCaveBot.waypointListWidget:destroyChildren()
   
-  local totalWp = #BTCCaveBot.config.waypoints
-  local currentIdx = BTCCaveBot.config.currentIndex
-  local selectedIdx = BTCCaveBot.selectedIndex or 1
+  local totalWp = #MTCCaveBot.config.waypoints
+  local currentIdx = MTCCaveBot.config.currentIndex
+  local selectedIdx = MTCCaveBot.selectedIndex or 1
   
   -- Garante que selectedIndex e valido
   if selectedIdx < 1 then selectedIdx = 1 end
   if selectedIdx > totalWp and totalWp > 0 then selectedIdx = totalWp end
-  BTCCaveBot.selectedIndex = selectedIdx
+  MTCCaveBot.selectedIndex = selectedIdx
   
   -- Sistema de janela deslizante - mostra 5 waypoints por vez
   local maxVisible = 5
-  local scrollOffset = BTCCaveBot.scrollOffset or 0
+  local scrollOffset = MTCCaveBot.scrollOffset or 0
   
   -- Auto-ajusta scroll para mostrar waypoint ATUAL (sendo executado) - prioridade
-  if BTCCaveBot.config.enabled and currentIdx >= 1 and currentIdx <= totalWp then
+  if MTCCaveBot.config.enabled and currentIdx >= 1 and currentIdx <= totalWp then
     -- Quando bot esta ligado, acompanha o waypoint atual
     if currentIdx <= scrollOffset then
       scrollOffset = currentIdx - 1
@@ -268,23 +268,23 @@ function BTCCaveBot.refreshWaypointList()
   -- Limita scroll
   if scrollOffset < 0 then scrollOffset = 0 end
   if scrollOffset > totalWp - maxVisible then scrollOffset = math.max(0, totalWp - maxVisible) end
-  BTCCaveBot.scrollOffset = scrollOffset
+  MTCCaveBot.scrollOffset = scrollOffset
   
   local startIdx = scrollOffset + 1
   local endIdx = math.min(scrollOffset + maxVisible, totalWp)
   
   -- Adiciona waypoints visiveis
   for i = startIdx, endIdx do
-    local wp = BTCCaveBot.config.waypoints[i]
+    local wp = MTCCaveBot.config.waypoints[i]
     if not wp then break end
     
     -- Verifica estados
-    local isCurrentWp = (i == currentIdx and BTCCaveBot.config.enabled)
+    local isCurrentWp = (i == currentIdx and MTCCaveBot.config.enabled)
     local isSelected = (i == selectedIdx)
     
     -- Monta texto do waypoint
     local posText = ""
-    if wp.type == BTCCaveBot.WaypointTypes.LABEL then
+    if wp.type == MTCCaveBot.WaypointTypes.LABEL then
       posText = wp.extra or ""
     else
       posText = string.format("%d,%d,%d", wp.x, wp.y, wp.z)
@@ -305,24 +305,24 @@ function BTCCaveBot.refreshWaypointList()
     
     -- Cor baseada no tipo
     local typeColor = '#ffffff'
-    if wp.type == BTCCaveBot.WaypointTypes.WALK then
+    if wp.type == MTCCaveBot.WaypointTypes.WALK then
       typeColor = '#00ff00'
-    elseif wp.type == BTCCaveBot.WaypointTypes.USE then
+    elseif wp.type == MTCCaveBot.WaypointTypes.USE then
       typeColor = '#ffaa00'
-    elseif wp.type == BTCCaveBot.WaypointTypes.ROPE then
+    elseif wp.type == MTCCaveBot.WaypointTypes.ROPE then
       typeColor = '#00aaff'
-    elseif wp.type == BTCCaveBot.WaypointTypes.SHOVEL then
+    elseif wp.type == MTCCaveBot.WaypointTypes.SHOVEL then
       typeColor = '#aa5500'
-    elseif wp.type == BTCCaveBot.WaypointTypes.LABEL then
+    elseif wp.type == MTCCaveBot.WaypointTypes.LABEL then
       typeColor = '#ff00ff' -- Label agora e rosa/roxo
-    elseif wp.type == BTCCaveBot.WaypointTypes.STAND then
+    elseif wp.type == MTCCaveBot.WaypointTypes.STAND then
       typeColor = '#ff00ff'
-    elseif wp.type == BTCCaveBot.WaypointTypes.STAIRS then
+    elseif wp.type == MTCCaveBot.WaypointTypes.STAIRS then
       typeColor = '#ffff00' -- STAIRS amarelo
     end
     
     -- Cria Button clicavel
-    local item = g_ui.createWidget('Button', BTCCaveBot.waypointListWidget)
+    local item = g_ui.createWidget('Button', MTCCaveBot.waypointListWidget)
     item:setId('wp_' .. i)
     item:setText(text)
     item:setHeight(20)
@@ -351,39 +351,39 @@ function BTCCaveBot.refreshWaypointList()
     -- Clique para selecionar
     local wpIndex = i
     item.onClick = function()
-      BTCCaveBot.selectedIndex = wpIndex
-      BTCCaveBot.refreshWaypointList()
+      MTCCaveBot.selectedIndex = wpIndex
+      MTCCaveBot.refreshWaypointList()
     end
   end
   
   -- Atualiza contador
-  BTCCaveBot.updateWaypointCount()
+  MTCCaveBot.updateWaypointCount()
 end
 
 -- Scroll para cima na lista
-function BTCCaveBot.scrollUp()
-  if BTCCaveBot.scrollOffset > 0 then
-    BTCCaveBot.scrollOffset = BTCCaveBot.scrollOffset - 1
-    BTCCaveBot.refreshWaypointList()
+function MTCCaveBot.scrollUp()
+  if MTCCaveBot.scrollOffset > 0 then
+    MTCCaveBot.scrollOffset = MTCCaveBot.scrollOffset - 1
+    MTCCaveBot.refreshWaypointList()
   end
 end
 
 -- Scroll para baixo na lista
-function BTCCaveBot.scrollDown()
-  local totalWp = #BTCCaveBot.config.waypoints
+function MTCCaveBot.scrollDown()
+  local totalWp = #MTCCaveBot.config.waypoints
   local maxVisible = 5
-  if BTCCaveBot.scrollOffset < totalWp - maxVisible then
-    BTCCaveBot.scrollOffset = BTCCaveBot.scrollOffset + 1
-    BTCCaveBot.refreshWaypointList()
+  if MTCCaveBot.scrollOffset < totalWp - maxVisible then
+    MTCCaveBot.scrollOffset = MTCCaveBot.scrollOffset + 1
+    MTCCaveBot.refreshWaypointList()
   end
 end
 
 -- Retorna tooltip do waypoint
-function BTCCaveBot.getWaypointTooltip(wp, index)
+function MTCCaveBot.getWaypointTooltip(wp, index)
   local lines = {"Waypoint #" .. index}
   table.insert(lines, "Type: " .. wp.type:upper())
   
-  if wp.type ~= BTCCaveBot.WaypointTypes.LABEL then
+  if wp.type ~= MTCCaveBot.WaypointTypes.LABEL then
     table.insert(lines, string.format("Position: %d, %d, %d", wp.x, wp.y, wp.z))
   end
   
@@ -398,20 +398,20 @@ function BTCCaveBot.getWaypointTooltip(wp, index)
 end
 
 -- Verifica se pode andar
-function BTCCaveBot.canWalk()
+function MTCCaveBot.canWalk()
   local now = g_clock.millis()
-  return (now - BTCCaveBot.lastWalkTime) >= BTCCaveBot.walkCooldown
+  return (now - MTCCaveBot.lastWalkTime) >= MTCCaveBot.walkCooldown
 end
 
 -- Calcula distancia entre duas posicoes
-function BTCCaveBot.getDistance(pos1, pos2)
+function MTCCaveBot.getDistance(pos1, pos2)
   if not pos1 or not pos2 then return 999 end
   if pos1.z ~= pos2.z then return 999 end
   return math.max(math.abs(pos1.x - pos2.x), math.abs(pos1.y - pos2.y))
 end
 
 -- Executa waypoint WALK
-function BTCCaveBot.executeWalk(waypoint)
+function MTCCaveBot.executeWalk(waypoint)
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
@@ -421,35 +421,35 @@ function BTCCaveBot.executeWalk(waypoint)
   local destPos = {x = waypoint.x, y = waypoint.y, z = waypoint.z}
   
   -- Verifica se ja chegou (distancia <= 1)
-  local distance = BTCCaveBot.getDistance(playerPos, destPos)
+  local distance = MTCCaveBot.getDistance(playerPos, destPos)
   if distance <= 1 then
-    BTCCaveBot.lastPosition = nil
-    BTCCaveBot.samePositionCount = 0
+    MTCCaveBot.lastPosition = nil
+    MTCCaveBot.samePositionCount = 0
     return true -- Chegou!
   end
   
   -- Detecta stuck REAL - se esta na mesma posicao por muito tempo
-  if BTCCaveBot.lastPosition then
-    if playerPos.x == BTCCaveBot.lastPosition.x and 
-       playerPos.y == BTCCaveBot.lastPosition.y and 
-       playerPos.z == BTCCaveBot.lastPosition.z then
-      BTCCaveBot.samePositionCount = BTCCaveBot.samePositionCount + 1
+  if MTCCaveBot.lastPosition then
+    if playerPos.x == MTCCaveBot.lastPosition.x and 
+       playerPos.y == MTCCaveBot.lastPosition.y and 
+       playerPos.z == MTCCaveBot.lastPosition.z then
+      MTCCaveBot.samePositionCount = MTCCaveBot.samePositionCount + 1
       
       -- Se ficou na mesma posicao por 15 ciclos (1.5 segundos), esta STUCK
-      if BTCCaveBot.samePositionCount >= 15 then
+      if MTCCaveBot.samePositionCount >= 15 then
         -- Para qualquer autowalk em andamento
         if player:isAutoWalking() then
           g_game.stop()
         end
         
         -- Tenta andar manualmente em direcao alternativa
-        BTCCaveBot.tryAlternativeWalk(playerPos, destPos)
+        MTCCaveBot.tryAlternativeWalk(playerPos, destPos)
         
         -- Se ainda stuck apos 25 ciclos, pula waypoint
-        if BTCCaveBot.samePositionCount >= 25 then
+        if MTCCaveBot.samePositionCount >= 25 then
           print("[CaveBot] STUCK REAL detectado! Pulando para proximo waypoint")
-          BTCCaveBot.samePositionCount = 0
-          BTCCaveBot.lastPosition = nil
+          MTCCaveBot.samePositionCount = 0
+          MTCCaveBot.lastPosition = nil
           return false
         end
         
@@ -457,13 +457,13 @@ function BTCCaveBot.executeWalk(waypoint)
       end
     else
       -- Moveu! Reset contador
-      BTCCaveBot.samePositionCount = 0
+      MTCCaveBot.samePositionCount = 0
     end
   end
-  BTCCaveBot.lastPosition = {x = playerPos.x, y = playerPos.y, z = playerPos.z}
+  MTCCaveBot.lastPosition = {x = playerPos.x, y = playerPos.y, z = playerPos.z}
   
   -- Verifica se pode andar (cooldown)
-  if not BTCCaveBot.canWalk() then
+  if not MTCCaveBot.canWalk() then
     return "retry"
   end
   
@@ -473,14 +473,14 @@ function BTCCaveBot.executeWalk(waypoint)
   end
   
   -- Se esta em autowalk mas nao se movendo, cancela
-  if player:isAutoWalking() and BTCCaveBot.samePositionCount > 5 then
+  if player:isAutoWalking() and MTCCaveBot.samePositionCount > 5 then
     g_game.stop()
-    BTCCaveBot.lastWalkTime = g_clock.millis()
+    MTCCaveBot.lastWalkTime = g_clock.millis()
     return "retry"
   end
   
   -- Se ja esta em autowalk e se movendo, deixa continuar
-  if player:isAutoWalking() and BTCCaveBot.samePositionCount <= 5 then
+  if player:isAutoWalking() and MTCCaveBot.samePositionCount <= 5 then
     return "retry"
   end
   
@@ -489,18 +489,18 @@ function BTCCaveBot.executeWalk(waypoint)
   
   if path and #path > 0 then
     g_game.autoWalk(path, playerPos)
-    BTCCaveBot.lastWalkTime = g_clock.millis()
+    MTCCaveBot.lastWalkTime = g_clock.millis()
     return "retry"
   end
   
   -- Pathfinding falhou, tenta andar passo a passo
-  BTCCaveBot.tryDirectWalk(playerPos, destPos)
+  MTCCaveBot.tryDirectWalk(playerPos, destPos)
   
   return "retry"
 end
 
 -- Tenta andar diretamente na direcao do destino
-function BTCCaveBot.tryDirectWalk(playerPos, destPos)
+function MTCCaveBot.tryDirectWalk(playerPos, destPos)
   local dx = destPos.x - playerPos.x
   local dy = destPos.y - playerPos.y
   
@@ -525,10 +525,10 @@ function BTCCaveBot.tryDirectWalk(playerPos, destPos)
   
   -- Tenta cada direcao
   for _, dir in ipairs(directions) do
-    local newPos = BTCCaveBot.getPositionInDirection(playerPos, dir)
-    if BTCCaveBot.isWalkable(newPos) then
+    local newPos = MTCCaveBot.getPositionInDirection(playerPos, dir)
+    if MTCCaveBot.isWalkable(newPos) then
       g_game.walk(dir)
-      BTCCaveBot.lastWalkTime = g_clock.millis()
+      MTCCaveBot.lastWalkTime = g_clock.millis()
       return true
     end
   end
@@ -537,7 +537,7 @@ function BTCCaveBot.tryDirectWalk(playerPos, destPos)
 end
 
 -- Tenta andar em direcao alternativa quando stuck
-function BTCCaveBot.tryAlternativeWalk(playerPos, destPos)
+function MTCCaveBot.tryAlternativeWalk(playerPos, destPos)
   -- Todas as 8 direcoes
   local allDirections = {North, NorthEast, East, SouthEast, South, SouthWest, West, NorthWest}
   
@@ -548,11 +548,11 @@ function BTCCaveBot.tryAlternativeWalk(playerPos, destPos)
   -- Prioriza direcoes que aproximam do destino
   local prioritized = {}
   for _, dir in ipairs(allDirections) do
-    local newPos = BTCCaveBot.getPositionInDirection(playerPos, dir)
-    if newPos and BTCCaveBot.isWalkable(newPos) then
+    local newPos = MTCCaveBot.getPositionInDirection(playerPos, dir)
+    if newPos and MTCCaveBot.isWalkable(newPos) then
       -- Calcula se essa direcao aproxima do destino
-      local newDist = BTCCaveBot.getDistance(newPos, destPos)
-      local currentDist = BTCCaveBot.getDistance(playerPos, destPos)
+      local newDist = MTCCaveBot.getDistance(newPos, destPos)
+      local currentDist = MTCCaveBot.getDistance(playerPos, destPos)
       local priority = currentDist - newDist  -- Positivo = aproxima
       table.insert(prioritized, {dir = dir, priority = priority, pos = newPos})
     end
@@ -564,7 +564,7 @@ function BTCCaveBot.tryAlternativeWalk(playerPos, destPos)
   -- Tenta a melhor direcao disponivel
   if #prioritized > 0 then
     g_game.walk(prioritized[1].dir)
-    BTCCaveBot.lastWalkTime = g_clock.millis()
+    MTCCaveBot.lastWalkTime = g_clock.millis()
     return true
   end
   
@@ -572,7 +572,7 @@ function BTCCaveBot.tryAlternativeWalk(playerPos, destPos)
 end
 
 -- Retorna posicao na direcao especificada
-function BTCCaveBot.getPositionInDirection(pos, dir)
+function MTCCaveBot.getPositionInDirection(pos, dir)
   local newPos = {x = pos.x, y = pos.y, z = pos.z}
   
   if dir == North then newPos.y = newPos.y - 1
@@ -589,7 +589,7 @@ function BTCCaveBot.getPositionInDirection(pos, dir)
 end
 
 -- Verifica se tile e walkable
-function BTCCaveBot.isWalkable(pos)
+function MTCCaveBot.isWalkable(pos)
   if not pos then return false end
   
   local tile = g_map.getTile(pos)
@@ -600,14 +600,14 @@ function BTCCaveBot.isWalkable(pos)
 end
 
 -- Verifica se mudou de andar (para detectar sucesso ao usar escada/rope)
-function BTCCaveBot.hasChangedFloor(oldZ)
-  local playerPos = BTCCaveBot.getPlayerPosition()
+function MTCCaveBot.hasChangedFloor(oldZ)
+  local playerPos = MTCCaveBot.getPlayerPosition()
   if not playerPos then return false end
   return playerPos.z ~= oldZ
 end
 
 -- Encontra item usavel no tile (escada, buraco, lever, etc)
-function BTCCaveBot.findUsableItem(pos)
+function MTCCaveBot.findUsableItem(pos)
   local tile = g_map.getTile(pos)
   if not tile then return nil end
   
@@ -637,7 +637,7 @@ function BTCCaveBot.findUsableItem(pos)
 end
 
 -- Executa waypoint USE (escada, buraco, porta)
-function BTCCaveBot.executeUse(waypoint)
+function MTCCaveBot.executeUse(waypoint)
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
@@ -645,7 +645,7 @@ function BTCCaveBot.executeUse(waypoint)
   if not playerPos then return false end
   
   local usePos = {x = waypoint.x, y = waypoint.y, z = waypoint.z}
-  local distance = BTCCaveBot.getDistance(playerPos, usePos)
+  local distance = MTCCaveBot.getDistance(playerPos, usePos)
   
   -- Guarda o Z atual para verificar se mudou de andar
   local currentZ = playerPos.z
@@ -662,28 +662,28 @@ function BTCCaveBot.executeUse(waypoint)
       return "retry"
     end
     
-    local walkResult = BTCCaveBot.executeWalk(waypoint)
+    local walkResult = MTCCaveBot.executeWalk(waypoint)
     return walkResult
   end
   
   -- Esta perto (distancia <= 1), tenta usar
-  if not BTCCaveBot.canWalk() then
+  if not MTCCaveBot.canWalk() then
     return "retry"
   end
   
   -- Incrementa contador de tentativas para este waypoint
-  BTCCaveBot.useRetryCount = (BTCCaveBot.useRetryCount or 0) + 1
+  MTCCaveBot.useRetryCount = (MTCCaveBot.useRetryCount or 0) + 1
   
   -- Encontra item para usar
-  local useItem = BTCCaveBot.findUsableItem(usePos)
+  local useItem = MTCCaveBot.findUsableItem(usePos)
   if useItem then
     g_game.use(useItem)
-    BTCCaveBot.lastWalkTime = g_clock.millis()
-    BTCCaveBot.walkCooldown = 600
+    MTCCaveBot.lastWalkTime = g_clock.millis()
+    MTCCaveBot.walkCooldown = 600
     
     -- Agenda verificacao e reset do cooldown
     scheduleEvent(function()
-      BTCCaveBot.walkCooldown = 200
+      MTCCaveBot.walkCooldown = 200
     end, 700)
     
     return "retry" -- Continua verificando se mudou de andar
@@ -695,10 +695,10 @@ function BTCCaveBot.executeUse(waypoint)
     local ground = tile:getGround()
     if ground then
       g_game.use(ground)
-      BTCCaveBot.lastWalkTime = g_clock.millis()
-      BTCCaveBot.walkCooldown = 600
+      MTCCaveBot.lastWalkTime = g_clock.millis()
+      MTCCaveBot.walkCooldown = 600
       scheduleEvent(function()
-        BTCCaveBot.walkCooldown = 200
+        MTCCaveBot.walkCooldown = 200
       end, 700)
       return "retry"
     end
@@ -706,26 +706,26 @@ function BTCCaveBot.executeUse(waypoint)
   
   -- Se ja tentou usar varias vezes e nao funcionou, tenta andar diretamente no tile
   -- (para escadas que voce precisa pisar em cima ao inves de usar)
-  if (BTCCaveBot.useRetryCount or 0) >= 3 then
+  if (MTCCaveBot.useRetryCount or 0) >= 3 then
     if distance == 1 then
       -- Tenta andar diretamente para o tile da escada
-      local dir = BTCCaveBot.getDirectionTo(playerPos, usePos)
+      local dir = MTCCaveBot.getDirectionTo(playerPos, usePos)
       if dir then
         g_game.walk(dir, false)
-        BTCCaveBot.lastWalkTime = g_clock.millis()
-        BTCCaveBot.walkCooldown = 400
+        MTCCaveBot.lastWalkTime = g_clock.millis()
+        MTCCaveBot.walkCooldown = 400
         return "retry"
       end
     end
   end
   
   -- Continua tentando
-  print("[CaveBot] USE: Tentativa " .. (BTCCaveBot.useRetryCount or 1) .. " - aguardando em " .. usePos.x .. "," .. usePos.y .. "," .. usePos.z)
+  print("[CaveBot] USE: Tentativa " .. (MTCCaveBot.useRetryCount or 1) .. " - aguardando em " .. usePos.x .. "," .. usePos.y .. "," .. usePos.z)
   return "retry"
 end
 
 -- Obtem direcao de uma posicao para outra
-function BTCCaveBot.getDirectionTo(fromPos, toPos)
+function MTCCaveBot.getDirectionTo(fromPos, toPos)
   local dx = toPos.x - fromPos.x
   local dy = toPos.y - fromPos.y
   
@@ -743,7 +743,7 @@ function BTCCaveBot.getDirectionTo(fromPos, toPos)
 end
 
 -- Executa waypoint ROPE
-function BTCCaveBot.executeRope(waypoint)
+function MTCCaveBot.executeRope(waypoint)
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
@@ -751,7 +751,7 @@ function BTCCaveBot.executeRope(waypoint)
   if not playerPos then return false end
   
   local ropePos = {x = waypoint.x, y = waypoint.y, z = waypoint.z}
-  local distance = BTCCaveBot.getDistance(playerPos, ropePos)
+  local distance = MTCCaveBot.getDistance(playerPos, ropePos)
   
   -- Se mudou de andar, sucesso
   if playerPos.z < ropePos.z then
@@ -763,11 +763,11 @@ function BTCCaveBot.executeRope(waypoint)
     if player:isWalking() or player:isAutoWalking() then
       return "retry"
     end
-    local walkResult = BTCCaveBot.executeWalk(waypoint)
+    local walkResult = MTCCaveBot.executeWalk(waypoint)
     return walkResult
   end
   
-  if not BTCCaveBot.canWalk() then
+  if not MTCCaveBot.canWalk() then
     return "retry"
   end
   
@@ -776,21 +776,21 @@ function BTCCaveBot.executeRope(waypoint)
   if not tile then return false end
   
   -- Tenta usar rope no tile
-  local targetItem = BTCCaveBot.findUsableItem(ropePos)
+  local targetItem = MTCCaveBot.findUsableItem(ropePos)
   if targetItem then
     -- Procura rope no inventario
-    local rope = g_game.findPlayerItem(BTCCaveBot.ROPE_ID, -1)
+    local rope = g_game.findPlayerItem(MTCCaveBot.ROPE_ID, -1)
     if rope then
       g_game.useWith(rope, targetItem)
     else
       -- Tenta usar do inventario direto
-      g_game.useInventoryItemWith(BTCCaveBot.ROPE_ID, targetItem, 0)
+      g_game.useInventoryItemWith(MTCCaveBot.ROPE_ID, targetItem, 0)
     end
     
-    BTCCaveBot.lastWalkTime = g_clock.millis()
-    BTCCaveBot.walkCooldown = 600
+    MTCCaveBot.lastWalkTime = g_clock.millis()
+    MTCCaveBot.walkCooldown = 600
     scheduleEvent(function()
-      BTCCaveBot.walkCooldown = 200
+      MTCCaveBot.walkCooldown = 200
     end, 700)
     return "retry"
   end
@@ -800,7 +800,7 @@ function BTCCaveBot.executeRope(waypoint)
 end
 
 -- Executa waypoint SHOVEL
-function BTCCaveBot.executeShovel(waypoint)
+function MTCCaveBot.executeShovel(waypoint)
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
@@ -808,7 +808,7 @@ function BTCCaveBot.executeShovel(waypoint)
   if not playerPos then return false end
   
   local shovelPos = {x = waypoint.x, y = waypoint.y, z = waypoint.z}
-  local distance = BTCCaveBot.getDistance(playerPos, shovelPos)
+  local distance = MTCCaveBot.getDistance(playerPos, shovelPos)
   
   -- Se mudou de andar, sucesso
   if playerPos.z > shovelPos.z then
@@ -820,11 +820,11 @@ function BTCCaveBot.executeShovel(waypoint)
     if player:isWalking() or player:isAutoWalking() then
       return "retry"
     end
-    local walkResult = BTCCaveBot.executeWalk(waypoint)
+    local walkResult = MTCCaveBot.executeWalk(waypoint)
     return walkResult
   end
   
-  if not BTCCaveBot.canWalk() then
+  if not MTCCaveBot.canWalk() then
     return "retry"
   end
   
@@ -832,19 +832,19 @@ function BTCCaveBot.executeShovel(waypoint)
   local tile = g_map.getTile(shovelPos)
   if not tile then return false end
   
-  local targetItem = BTCCaveBot.findUsableItem(shovelPos)
+  local targetItem = MTCCaveBot.findUsableItem(shovelPos)
   if targetItem then
-    local shovel = g_game.findPlayerItem(BTCCaveBot.SHOVEL_ID, -1)
+    local shovel = g_game.findPlayerItem(MTCCaveBot.SHOVEL_ID, -1)
     if shovel then
       g_game.useWith(shovel, targetItem)
     else
-      g_game.useInventoryItemWith(BTCCaveBot.SHOVEL_ID, targetItem, 0)
+      g_game.useInventoryItemWith(MTCCaveBot.SHOVEL_ID, targetItem, 0)
     end
     
-    BTCCaveBot.lastWalkTime = g_clock.millis()
-    BTCCaveBot.walkCooldown = 600
+    MTCCaveBot.lastWalkTime = g_clock.millis()
+    MTCCaveBot.walkCooldown = 600
     scheduleEvent(function()
-      BTCCaveBot.walkCooldown = 200
+      MTCCaveBot.walkCooldown = 200
     end, 700)
     return "retry"
   end
@@ -854,8 +854,8 @@ function BTCCaveBot.executeShovel(waypoint)
 end
 
 -- Executa waypoint STAND (espera na posicao)
-function BTCCaveBot.executeStand(waypoint)
-  local playerPos = BTCCaveBot.getPlayerPosition()
+function MTCCaveBot.executeStand(waypoint)
+  local playerPos = MTCCaveBot.getPlayerPosition()
   if not playerPos then return false end
   
   local standPos = {x = waypoint.x, y = waypoint.y, z = waypoint.z}
@@ -866,16 +866,16 @@ function BTCCaveBot.executeStand(waypoint)
   end
   
   -- Anda ate la
-  return BTCCaveBot.executeWalk(waypoint)
+  return MTCCaveBot.executeWalk(waypoint)
 end
 
 -- Executa waypoint LABEL (nao faz nada, apenas marcador)
-function BTCCaveBot.executeLabel(waypoint)
+function MTCCaveBot.executeLabel(waypoint)
   return true
 end
 
 -- Executa waypoint STAIRS (anda diretamente na escada para mudar de andar)
-function BTCCaveBot.executeStairs(waypoint)
+function MTCCaveBot.executeStairs(waypoint)
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
@@ -883,20 +883,20 @@ function BTCCaveBot.executeStairs(waypoint)
   if not playerPos then return false end
   
   local stairsPos = {x = waypoint.x, y = waypoint.y, z = waypoint.z}
-  local distance = BTCCaveBot.getDistance(playerPos, stairsPos)
+  local distance = MTCCaveBot.getDistance(playerPos, stairsPos)
   
   -- Inicializa o floor inicial se nao existir
-  if not BTCCaveBot.stairsStartZ then
-    BTCCaveBot.stairsStartZ = playerPos.z
-    BTCCaveBot.stairsAttempts = 0
+  if not MTCCaveBot.stairsStartZ then
+    MTCCaveBot.stairsStartZ = playerPos.z
+    MTCCaveBot.stairsAttempts = 0
     print("[CaveBot] STAIRS: Iniciando em Z=" .. playerPos.z .. ", destino=" .. stairsPos.x .. "," .. stairsPos.y .. "," .. stairsPos.z)
   end
   
   -- Se mudou de andar (em relacao ao inicio), sucesso!
-  if playerPos.z ~= BTCCaveBot.stairsStartZ then
-    print("[CaveBot] STAIRS: Mudou de andar! " .. BTCCaveBot.stairsStartZ .. " -> " .. playerPos.z)
-    BTCCaveBot.stairsStartZ = nil
-    BTCCaveBot.stairsAttempts = nil
+  if playerPos.z ~= MTCCaveBot.stairsStartZ then
+    print("[CaveBot] STAIRS: Mudou de andar! " .. MTCCaveBot.stairsStartZ .. " -> " .. playerPos.z)
+    MTCCaveBot.stairsStartZ = nil
+    MTCCaveBot.stairsAttempts = nil
     return true
   end
   
@@ -905,11 +905,11 @@ function BTCCaveBot.executeStairs(waypoint)
     return "retry"
   end
   
-  if not BTCCaveBot.canWalk() then
+  if not MTCCaveBot.canWalk() then
     return "retry"
   end
   
-  BTCCaveBot.stairsAttempts = (BTCCaveBot.stairsAttempts or 0) + 1
+  MTCCaveBot.stairsAttempts = (MTCCaveBot.stairsAttempts or 0) + 1
   
   -- Se esta no mesmo tile da escada, tenta andar em varias direcoes para subir/descer
   if distance == 0 then
@@ -917,23 +917,23 @@ function BTCCaveBot.executeStairs(waypoint)
     
     -- Tenta andar em todas as direcoes para encontrar a saida
     local directions = {North, East, South, West, NorthEast, NorthWest, SouthEast, SouthWest}
-    local dirIndex = ((BTCCaveBot.stairsAttempts - 1) % #directions) + 1
+    local dirIndex = ((MTCCaveBot.stairsAttempts - 1) % #directions) + 1
     local dir = directions[dirIndex]
     
     g_game.walk(dir, false)
-    BTCCaveBot.lastWalkTime = g_clock.millis()
-    BTCCaveBot.walkCooldown = 400
+    MTCCaveBot.lastWalkTime = g_clock.millis()
+    MTCCaveBot.walkCooldown = 400
     return "retry"
   end
   
   -- Se esta perto (distancia 1), anda diretamente no tile da escada
   if distance == 1 then
-    local dir = BTCCaveBot.getDirectionTo(playerPos, stairsPos)
+    local dir = MTCCaveBot.getDirectionTo(playerPos, stairsPos)
     if dir then
       print("[CaveBot] STAIRS: Andando para a escada em direcao " .. dir)
       g_game.walk(dir, false)
-      BTCCaveBot.lastWalkTime = g_clock.millis()
-      BTCCaveBot.walkCooldown = 400
+      MTCCaveBot.lastWalkTime = g_clock.millis()
+      MTCCaveBot.walkCooldown = 400
       return "retry"
     end
   end
@@ -953,11 +953,11 @@ function BTCCaveBot.executeStairs(waypoint)
     -- Verifica se o tile destino eh walkable
     local tile = g_map.getTile(targetPos)
     if tile and tile:isWalkable() then
-      local dir = BTCCaveBot.getDirectionTo(playerPos, targetPos)
+      local dir = MTCCaveBot.getDirectionTo(playerPos, targetPos)
       if dir then
         g_game.walk(dir, false)
-        BTCCaveBot.lastWalkTime = g_clock.millis()
-        BTCCaveBot.walkCooldown = 300
+        MTCCaveBot.lastWalkTime = g_clock.millis()
+        MTCCaveBot.walkCooldown = 300
         return "retry"
       end
     end
@@ -965,41 +965,41 @@ function BTCCaveBot.executeStairs(waypoint)
     -- Fallback: usa autoWalk
     local result = g_game.autoWalk(stairsPos, {}, 50000)
     if result then
-      BTCCaveBot.lastWalkTime = g_clock.millis()
-      BTCCaveBot.walkCooldown = 300
+      MTCCaveBot.lastWalkTime = g_clock.millis()
+      MTCCaveBot.walkCooldown = 300
     end
     return "retry"
   end
   
   -- Fallback: tenta usar o tile caso seja uma escada que precisa de USE
-  if BTCCaveBot.stairsAttempts > 5 then
-    local useItem = BTCCaveBot.findUsableItem(stairsPos)
+  if MTCCaveBot.stairsAttempts > 5 then
+    local useItem = MTCCaveBot.findUsableItem(stairsPos)
     if useItem then
       print("[CaveBot] STAIRS: Tentando usar item na escada")
       g_game.use(useItem)
-      BTCCaveBot.lastWalkTime = g_clock.millis()
-      BTCCaveBot.walkCooldown = 600
+      MTCCaveBot.lastWalkTime = g_clock.millis()
+      MTCCaveBot.walkCooldown = 600
       return "retry"
     end
   end
   
   -- Reset apos muitas tentativas
-  if BTCCaveBot.stairsAttempts > 20 then
+  if MTCCaveBot.stairsAttempts > 20 then
     print("[CaveBot] STAIRS: Muitas tentativas, resetando...")
-    BTCCaveBot.stairsStartZ = nil
-    BTCCaveBot.stairsAttempts = nil
+    MTCCaveBot.stairsStartZ = nil
+    MTCCaveBot.stairsAttempts = nil
   end
   
   return "retry"
 end
 
 -- Vai para um label especifico
-function BTCCaveBot.gotoLabel(labelName)
+function MTCCaveBot.gotoLabel(labelName)
   labelName = labelName:lower()
-  for i, wp in ipairs(BTCCaveBot.config.waypoints) do
-    if wp.type == BTCCaveBot.WaypointTypes.LABEL then
+  for i, wp in ipairs(MTCCaveBot.config.waypoints) do
+    if wp.type == MTCCaveBot.WaypointTypes.LABEL then
       if wp.extra and wp.extra:lower() == labelName then
-        BTCCaveBot.config.currentIndex = i
+        MTCCaveBot.config.currentIndex = i
         return true
       end
     end
@@ -1008,17 +1008,17 @@ function BTCCaveBot.gotoLabel(labelName)
 end
 
 -- Executa o waypoint atual
-function BTCCaveBot.executeCurrentWaypoint()
-  if not BTCCaveBot.config.enabled then return end
-  if #BTCCaveBot.config.waypoints == 0 then return end
+function MTCCaveBot.executeCurrentWaypoint()
+  if not MTCCaveBot.config.enabled then return end
+  if #MTCCaveBot.config.waypoints == 0 then return end
   
-  local index = BTCCaveBot.config.currentIndex
-  if index < 1 or index > #BTCCaveBot.config.waypoints then
-    BTCCaveBot.config.currentIndex = 1
+  local index = MTCCaveBot.config.currentIndex
+  if index < 1 or index > #MTCCaveBot.config.waypoints then
+    MTCCaveBot.config.currentIndex = 1
     index = 1
   end
   
-  local waypoint = BTCCaveBot.config.waypoints[index]
+  local waypoint = MTCCaveBot.config.waypoints[index]
   if not waypoint then return end
   
   -- Obtem posicao atual do player
@@ -1029,119 +1029,119 @@ function BTCCaveBot.executeCurrentWaypoint()
   
   -- Para waypoints que mudam de andar (USE, ROPE, SHOVEL, STAIRS),
   -- verifica se o player ja esta em um andar diferente do waypoint
-  if waypoint.type == BTCCaveBot.WaypointTypes.USE or 
-     waypoint.type == BTCCaveBot.WaypointTypes.ROPE or
-     waypoint.type == BTCCaveBot.WaypointTypes.SHOVEL or
-     waypoint.type == BTCCaveBot.WaypointTypes.STAIRS then
+  if waypoint.type == MTCCaveBot.WaypointTypes.USE or 
+     waypoint.type == MTCCaveBot.WaypointTypes.ROPE or
+     waypoint.type == MTCCaveBot.WaypointTypes.SHOVEL or
+     waypoint.type == MTCCaveBot.WaypointTypes.STAIRS then
     -- Se player esta em andar diferente do waypoint, considera como sucesso
     if playerPos.z ~= waypoint.z then
       print("[CaveBot] Waypoint " .. index .. " (" .. waypoint.type .. ") - Mudou de andar (Z: " .. waypoint.z .. " -> " .. playerPos.z .. ")")
-      BTCCaveBot.retryCount = 0
-      BTCCaveBot.stuckCount = 0
-      BTCCaveBot.samePositionCount = 0
-      BTCCaveBot.lastPosition = nil
-      BTCCaveBot.useRetryCount = 0 -- Reset contador de tentativas USE
-      BTCCaveBot.config.currentIndex = BTCCaveBot.config.currentIndex + 1
+      MTCCaveBot.retryCount = 0
+      MTCCaveBot.stuckCount = 0
+      MTCCaveBot.samePositionCount = 0
+      MTCCaveBot.lastPosition = nil
+      MTCCaveBot.useRetryCount = 0 -- Reset contador de tentativas USE
+      MTCCaveBot.config.currentIndex = MTCCaveBot.config.currentIndex + 1
       
-      if BTCCaveBot.config.currentIndex > #BTCCaveBot.config.waypoints then
-        if BTCCaveBot.config.loopEnabled then
-          BTCCaveBot.config.currentIndex = 1
-          BTCCaveBot.config.enabled = true -- Garante que continua enabled
+      if MTCCaveBot.config.currentIndex > #MTCCaveBot.config.waypoints then
+        if MTCCaveBot.config.loopEnabled then
+          MTCCaveBot.config.currentIndex = 1
+          MTCCaveBot.config.enabled = true -- Garante que continua enabled
           print("[CaveBot] Loop - voltando ao waypoint 1")
         else
-          BTCCaveBot.config.enabled = false
-          BTCCaveBot.config.currentIndex = 1
+          MTCCaveBot.config.enabled = false
+          MTCCaveBot.config.currentIndex = 1
           print("[CaveBot] Finished all waypoints - Bot stopped")
         end
       end
-      BTCCaveBot.saveConfig()
-      BTCCaveBot.refreshWaypointList()
+      MTCCaveBot.saveConfig()
+      MTCCaveBot.refreshWaypointList()
       return
     end
   end
   
   local result = false
   
-  if waypoint.type == BTCCaveBot.WaypointTypes.WALK then
-    result = BTCCaveBot.executeWalk(waypoint)
-  elseif waypoint.type == BTCCaveBot.WaypointTypes.USE then
-    result = BTCCaveBot.executeUse(waypoint)
-  elseif waypoint.type == BTCCaveBot.WaypointTypes.ROPE then
-    result = BTCCaveBot.executeRope(waypoint)
-  elseif waypoint.type == BTCCaveBot.WaypointTypes.SHOVEL then
-    result = BTCCaveBot.executeShovel(waypoint)
-  elseif waypoint.type == BTCCaveBot.WaypointTypes.STAND then
-    result = BTCCaveBot.executeStand(waypoint)
-  elseif waypoint.type == BTCCaveBot.WaypointTypes.LABEL then
-    result = BTCCaveBot.executeLabel(waypoint)
-  elseif waypoint.type == BTCCaveBot.WaypointTypes.STAIRS then
-    result = BTCCaveBot.executeStairs(waypoint)
+  if waypoint.type == MTCCaveBot.WaypointTypes.WALK then
+    result = MTCCaveBot.executeWalk(waypoint)
+  elseif waypoint.type == MTCCaveBot.WaypointTypes.USE then
+    result = MTCCaveBot.executeUse(waypoint)
+  elseif waypoint.type == MTCCaveBot.WaypointTypes.ROPE then
+    result = MTCCaveBot.executeRope(waypoint)
+  elseif waypoint.type == MTCCaveBot.WaypointTypes.SHOVEL then
+    result = MTCCaveBot.executeShovel(waypoint)
+  elseif waypoint.type == MTCCaveBot.WaypointTypes.STAND then
+    result = MTCCaveBot.executeStand(waypoint)
+  elseif waypoint.type == MTCCaveBot.WaypointTypes.LABEL then
+    result = MTCCaveBot.executeLabel(waypoint)
+  elseif waypoint.type == MTCCaveBot.WaypointTypes.STAIRS then
+    result = MTCCaveBot.executeStairs(waypoint)
   end
   
   -- Processa resultado
   if result == true then
     -- Waypoint concluido, vai para o proximo
-    BTCCaveBot.retryCount = 0
-    BTCCaveBot.stuckCount = 0
-    BTCCaveBot.samePositionCount = 0
-    BTCCaveBot.lastPosition = nil
-    BTCCaveBot.useRetryCount = 0 -- Reset contador de tentativas USE
-    local oldIndex = BTCCaveBot.config.currentIndex
-    BTCCaveBot.config.currentIndex = BTCCaveBot.config.currentIndex + 1
+    MTCCaveBot.retryCount = 0
+    MTCCaveBot.stuckCount = 0
+    MTCCaveBot.samePositionCount = 0
+    MTCCaveBot.lastPosition = nil
+    MTCCaveBot.useRetryCount = 0 -- Reset contador de tentativas USE
+    local oldIndex = MTCCaveBot.config.currentIndex
+    MTCCaveBot.config.currentIndex = MTCCaveBot.config.currentIndex + 1
     
     -- Loop - verifica se chegou no fim
-    if BTCCaveBot.config.currentIndex > #BTCCaveBot.config.waypoints then
+    if MTCCaveBot.config.currentIndex > #MTCCaveBot.config.waypoints then
       print("[CaveBot] ========================================")
       print("[CaveBot] REACHED END OF WAYPOINTS!")
-      print("[CaveBot] Total waypoints: " .. #BTCCaveBot.config.waypoints)
-      print("[CaveBot] Loop enabled: " .. tostring(BTCCaveBot.config.loopEnabled))
-      print("[CaveBot] Current index before: " .. BTCCaveBot.config.currentIndex)
+      print("[CaveBot] Total waypoints: " .. #MTCCaveBot.config.waypoints)
+      print("[CaveBot] Loop enabled: " .. tostring(MTCCaveBot.config.loopEnabled))
+      print("[CaveBot] Current index before: " .. MTCCaveBot.config.currentIndex)
       
-      if BTCCaveBot.config.loopEnabled == true then
-        BTCCaveBot.config.currentIndex = 1
+      if MTCCaveBot.config.loopEnabled == true then
+        MTCCaveBot.config.currentIndex = 1
         -- IMPORTANTE: NÃO desabilita o enabled!
         print("[CaveBot] LOOP ACTIVATED - Resetting to waypoint 1")
-        print("[CaveBot] Current index after: " .. BTCCaveBot.config.currentIndex)
-        print("[CaveBot] Enabled status: " .. tostring(BTCCaveBot.config.enabled))
+        print("[CaveBot] Current index after: " .. MTCCaveBot.config.currentIndex)
+        print("[CaveBot] Enabled status: " .. tostring(MTCCaveBot.config.enabled))
         -- Forca que enabled continue true
-        BTCCaveBot.config.enabled = true
+        MTCCaveBot.config.enabled = true
       else
-        BTCCaveBot.config.enabled = false
-        BTCCaveBot.config.currentIndex = 1
+        MTCCaveBot.config.enabled = false
+        MTCCaveBot.config.currentIndex = 1
         print("[CaveBot] LOOP DISABLED - Bot stopped")
       end
       print("[CaveBot] ========================================")
     end
     
-    BTCCaveBot.saveConfig()
-    BTCCaveBot.refreshWaypointList()
+    MTCCaveBot.saveConfig()
+    MTCCaveBot.refreshWaypointList()
   elseif result == false then
     -- Falhou completamente, pula para proximo waypoint
     print("[CaveBot] Waypoint " .. index .. " falhou, pulando para proximo")
-    BTCCaveBot.retryCount = 0
-    BTCCaveBot.stuckCount = 0
-    BTCCaveBot.samePositionCount = 0
-    BTCCaveBot.lastPosition = nil
-    BTCCaveBot.config.currentIndex = BTCCaveBot.config.currentIndex + 1
-    if BTCCaveBot.config.currentIndex > #BTCCaveBot.config.waypoints then
-      if BTCCaveBot.config.loopEnabled then
-        BTCCaveBot.config.currentIndex = 1
-        BTCCaveBot.config.enabled = true -- Garante que continua enabled
+    MTCCaveBot.retryCount = 0
+    MTCCaveBot.stuckCount = 0
+    MTCCaveBot.samePositionCount = 0
+    MTCCaveBot.lastPosition = nil
+    MTCCaveBot.config.currentIndex = MTCCaveBot.config.currentIndex + 1
+    if MTCCaveBot.config.currentIndex > #MTCCaveBot.config.waypoints then
+      if MTCCaveBot.config.loopEnabled then
+        MTCCaveBot.config.currentIndex = 1
+        MTCCaveBot.config.enabled = true -- Garante que continua enabled
         print("[CaveBot] Loop (after fail) - voltando ao waypoint 1")
       else
-        BTCCaveBot.config.enabled = false
-        BTCCaveBot.config.currentIndex = 1
+        MTCCaveBot.config.enabled = false
+        MTCCaveBot.config.currentIndex = 1
       end
     end
-    BTCCaveBot.saveConfig()
-    BTCCaveBot.refreshWaypointList()
+    MTCCaveBot.saveConfig()
+    MTCCaveBot.refreshWaypointList()
   end
   -- "retry" nao precisa fazer nada especial, a deteccao de stuck real esta no executeWalk
 end
 
 -- Verifica se tem monstros por perto para atacar
 -- Conta quantos monstros estao por perto no mesmo andar
-function BTCCaveBot.countMonstersNearby()
+function MTCCaveBot.countMonstersNearby()
   local player = g_game.getLocalPlayer()
   if not player then return 0 end
   
@@ -1169,19 +1169,19 @@ function BTCCaveBot.countMonstersNearby()
 end
 
 -- Verifica se deve parar para atacar monstros
-function BTCCaveBot.shouldStopForMonsters()
-  local minMonsters = BTCCaveBot.config.minMonstersToStop or 1
+function MTCCaveBot.shouldStopForMonsters()
+  local minMonsters = MTCCaveBot.config.minMonstersToStop or 1
   
   -- Se minMonsters = 0, nunca para para atacar
   if minMonsters <= 0 then
     return false
   end
   
-  local monsterCount = BTCCaveBot.countMonstersNearby()
+  local monsterCount = MTCCaveBot.countMonstersNearby()
   
   -- Se nao tem monstros suficientes, nao para
   if monsterCount < minMonsters then
-    BTCCaveBot.monsterStuckTime = nil
+    MTCCaveBot.monsterStuckTime = nil
     return false
   end
   
@@ -1189,7 +1189,7 @@ function BTCCaveBot.shouldStopForMonsters()
   local attackedCreature = g_game.getAttackingCreature()
   if attackedCreature then
     -- Esta atacando, para o cavebot normalmente
-    BTCCaveBot.monsterStuckTime = nil
+    MTCCaveBot.monsterStuckTime = nil
     return true
   end
   
@@ -1197,13 +1197,13 @@ function BTCCaveBot.shouldStopForMonsters()
   -- Inicia ou verifica timer de stuck
   local now = g_clock.millis()
   
-  if not BTCCaveBot.monsterStuckTime then
-    BTCCaveBot.monsterStuckTime = now
+  if not MTCCaveBot.monsterStuckTime then
+    MTCCaveBot.monsterStuckTime = now
   end
   
   -- Se ficou mais de 3 segundos vendo monstros mas sem atacar,
   -- significa que nao consegue alcancar - continua o cavebot!
-  local stuckDuration = now - BTCCaveBot.monsterStuckTime
+  local stuckDuration = now - MTCCaveBot.monsterStuckTime
   if stuckDuration > 3000 then
     -- print("[CaveBot] Monstros na tela mas nao alcancaveis, continuando...")
     return false  -- Continua o cavebot
@@ -1214,120 +1214,120 @@ function BTCCaveBot.shouldStopForMonsters()
 end
 
 -- Funcao principal de execucao (chamada pelo loop do bot)
-function BTCCaveBot.execute()
+function MTCCaveBot.execute()
   if not g_game.isOnline() then return end
-  if not BTCCaveBot.config then return end
-  if not BTCCaveBot.config.enabled then 
+  if not MTCCaveBot.config then return end
+  if not MTCCaveBot.config.enabled then 
     return 
   end
-  if #BTCCaveBot.config.waypoints == 0 then return end
+  if #MTCCaveBot.config.waypoints == 0 then return end
   
   -- Pausa se tiver monstros suficientes E conseguir atacar
-  if BTCCaveBot.shouldStopForMonsters() then
+  if MTCCaveBot.shouldStopForMonsters() then
     return
   end
   
-  BTCCaveBot.executeCurrentWaypoint()
+  MTCCaveBot.executeCurrentWaypoint()
 end
 
 -- Calcula offset baseado no emplacement
-function BTCCaveBot.getEmplacementOffset()
+function MTCCaveBot.getEmplacementOffset()
   local offsets = {
-    [BTCCaveBot.EmplacementTypes.CENTER] = {x = 0, y = 0},
-    [BTCCaveBot.EmplacementTypes.NORTH] = {x = 0, y = -1},
-    [BTCCaveBot.EmplacementTypes.SOUTH] = {x = 0, y = 1},
-    [BTCCaveBot.EmplacementTypes.EAST] = {x = 1, y = 0},
-    [BTCCaveBot.EmplacementTypes.WEST] = {x = -1, y = 0},
-    [BTCCaveBot.EmplacementTypes.NORTHEAST] = {x = 1, y = -1},
-    [BTCCaveBot.EmplacementTypes.NORTHWEST] = {x = -1, y = -1},
-    [BTCCaveBot.EmplacementTypes.SOUTHEAST] = {x = 1, y = 1},
-    [BTCCaveBot.EmplacementTypes.SOUTHWEST] = {x = -1, y = 1}
+    [MTCCaveBot.EmplacementTypes.CENTER] = {x = 0, y = 0},
+    [MTCCaveBot.EmplacementTypes.NORTH] = {x = 0, y = -1},
+    [MTCCaveBot.EmplacementTypes.SOUTH] = {x = 0, y = 1},
+    [MTCCaveBot.EmplacementTypes.EAST] = {x = 1, y = 0},
+    [MTCCaveBot.EmplacementTypes.WEST] = {x = -1, y = 0},
+    [MTCCaveBot.EmplacementTypes.NORTHEAST] = {x = 1, y = -1},
+    [MTCCaveBot.EmplacementTypes.NORTHWEST] = {x = -1, y = -1},
+    [MTCCaveBot.EmplacementTypes.SOUTHEAST] = {x = 1, y = 1},
+    [MTCCaveBot.EmplacementTypes.SOUTHWEST] = {x = -1, y = 1}
   }
-  return offsets[BTCCaveBot.currentEmplacement] or {x = 0, y = 0}
+  return offsets[MTCCaveBot.currentEmplacement] or {x = 0, y = 0}
 end
 
 -- Adiciona waypoint da posicao atual do player (com emplacement)
-function BTCCaveBot.addCurrentPositionWaypoint(waypointType, extra)
-  local pos = BTCCaveBot.getPlayerPosition()
+function MTCCaveBot.addCurrentPositionWaypoint(waypointType, extra)
+  local pos = MTCCaveBot.getPlayerPosition()
   if not pos then return nil end
   
   -- Aplica offset do emplacement
-  local offset = BTCCaveBot.getEmplacementOffset()
+  local offset = MTCCaveBot.getEmplacementOffset()
   local finalX = pos.x + offset.x
   local finalY = pos.y + offset.y
   
-  print("[CaveBot] Adding waypoint at " .. finalX .. "," .. finalY .. "," .. pos.z .. " (Emplacement: " .. BTCCaveBot.currentEmplacement .. ")")
+  print("[CaveBot] Adding waypoint at " .. finalX .. "," .. finalY .. "," .. pos.z .. " (Emplacement: " .. MTCCaveBot.currentEmplacement .. ")")
   
-  return BTCCaveBot.addWaypoint(waypointType, finalX, finalY, pos.z, extra)
+  return MTCCaveBot.addWaypoint(waypointType, finalX, finalY, pos.z, extra)
 end
 
 -- Toggle recording mode
-function BTCCaveBot.toggleRecording()
-  BTCCaveBot.recordingEnabled = not BTCCaveBot.recordingEnabled
-  if BTCCaveBot.recordingEnabled then
-    BTCCaveBot.lastRecordedPos = BTCCaveBot.getPlayerPosition()
+function MTCCaveBot.toggleRecording()
+  MTCCaveBot.recordingEnabled = not MTCCaveBot.recordingEnabled
+  if MTCCaveBot.recordingEnabled then
+    MTCCaveBot.lastRecordedPos = MTCCaveBot.getPlayerPosition()
     print("[CaveBot] Recording ENABLED - Walk around to record waypoints")
   else
     print("[CaveBot] Recording DISABLED")
   end
-  return BTCCaveBot.recordingEnabled
+  return MTCCaveBot.recordingEnabled
 end
 
 -- Checa se deve gravar posicao (chamado quando player move)
-function BTCCaveBot.checkRecording()
-  if not BTCCaveBot.recordingEnabled then return end
+function MTCCaveBot.checkRecording()
+  if not MTCCaveBot.recordingEnabled then return end
   if not g_game.isOnline() then return end
   
-  local currentPos = BTCCaveBot.getPlayerPosition()
+  local currentPos = MTCCaveBot.getPlayerPosition()
   if not currentPos then return end
   
   -- Primeira posicao
-  if not BTCCaveBot.lastRecordedPos then
-    BTCCaveBot.lastRecordedPos = currentPos
-    BTCCaveBot.lastKnownPos = {x = currentPos.x, y = currentPos.y, z = currentPos.z}
-    BTCCaveBot.addWaypoint(BTCCaveBot.WaypointTypes.WALK, currentPos.x, currentPos.y, currentPos.z)
-    BTCCaveBot.updateWaypointCount()
+  if not MTCCaveBot.lastRecordedPos then
+    MTCCaveBot.lastRecordedPos = currentPos
+    MTCCaveBot.lastKnownPos = {x = currentPos.x, y = currentPos.y, z = currentPos.z}
+    MTCCaveBot.addWaypoint(MTCCaveBot.WaypointTypes.WALK, currentPos.x, currentPos.y, currentPos.z)
+    MTCCaveBot.updateWaypointCount()
     return
   end
   
   -- Mudou de andar (escada/buraco)
-  if currentPos.z ~= (BTCCaveBot.lastKnownPos and BTCCaveBot.lastKnownPos.z or BTCCaveBot.lastRecordedPos.z) then
+  if currentPos.z ~= (MTCCaveBot.lastKnownPos and MTCCaveBot.lastKnownPos.z or MTCCaveBot.lastRecordedPos.z) then
     -- Usa lastKnownPos (posicao exata antes da escada) como waypoint STAIRS
-    local stairPos = BTCCaveBot.lastKnownPos or BTCCaveBot.lastRecordedPos
+    local stairPos = MTCCaveBot.lastKnownPos or MTCCaveBot.lastRecordedPos
     -- Se lastKnownPos eh diferente do ultimo waypoint gravado, adiciona WALK antes
-    local distFromLastRec = BTCCaveBot.getDistance(stairPos, BTCCaveBot.lastRecordedPos)
+    local distFromLastRec = MTCCaveBot.getDistance(stairPos, MTCCaveBot.lastRecordedPos)
     if distFromLastRec >= 2 then
-      BTCCaveBot.addWaypoint(BTCCaveBot.WaypointTypes.WALK, stairPos.x, stairPos.y, stairPos.z)
+      MTCCaveBot.addWaypoint(MTCCaveBot.WaypointTypes.WALK, stairPos.x, stairPos.y, stairPos.z)
     end
     -- Adiciona posicao exata da escada como STAIRS
-    BTCCaveBot.addWaypoint(BTCCaveBot.WaypointTypes.STAIRS, stairPos.x, stairPos.y, stairPos.z)
+    MTCCaveBot.addWaypoint(MTCCaveBot.WaypointTypes.STAIRS, stairPos.x, stairPos.y, stairPos.z)
     -- Adiciona nova posicao (apos subir/descer) como WALK
-    BTCCaveBot.addWaypoint(BTCCaveBot.WaypointTypes.WALK, currentPos.x, currentPos.y, currentPos.z)
-    BTCCaveBot.lastRecordedPos = currentPos
-    BTCCaveBot.lastKnownPos = {x = currentPos.x, y = currentPos.y, z = currentPos.z}
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addWaypoint(MTCCaveBot.WaypointTypes.WALK, currentPos.x, currentPos.y, currentPos.z)
+    MTCCaveBot.lastRecordedPos = currentPos
+    MTCCaveBot.lastKnownPos = {x = currentPos.x, y = currentPos.y, z = currentPos.z}
+    MTCCaveBot.updateWaypointCount()
     return
   end
   
   -- Atualiza posicao conhecida a cada tick
-  BTCCaveBot.lastKnownPos = {x = currentPos.x, y = currentPos.y, z = currentPos.z}
+  MTCCaveBot.lastKnownPos = {x = currentPos.x, y = currentPos.y, z = currentPos.z}
   
   -- Andou longe o suficiente (3+ tiles)
-  local distance = BTCCaveBot.getDistance(currentPos, BTCCaveBot.lastRecordedPos)
+  local distance = MTCCaveBot.getDistance(currentPos, MTCCaveBot.lastRecordedPos)
   if distance >= 3 then
-    BTCCaveBot.addWaypoint(BTCCaveBot.WaypointTypes.WALK, currentPos.x, currentPos.y, currentPos.z)
-    BTCCaveBot.lastRecordedPos = currentPos
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addWaypoint(MTCCaveBot.WaypointTypes.WALK, currentPos.x, currentPos.y, currentPos.z)
+    MTCCaveBot.lastRecordedPos = currentPos
+    MTCCaveBot.updateWaypointCount()
   end
 end
 
 -- Cria UI do CaveBot
-function BTCCaveBot.createUI(parent)
+function MTCCaveBot.createUI(parent)
   -- Guarda referencia do parent
-  BTCCaveBot.parentWidget = parent
+  MTCCaveBot.parentWidget = parent
   
   -- Loop sempre ativo por padrao
-  BTCCaveBot.config.loopEnabled = true
+  MTCCaveBot.config.loopEnabled = true
   
   -- Titulo
   local titleLabel = g_ui.createWidget('Label', parent)
@@ -1346,9 +1346,9 @@ function BTCCaveBot.createUI(parent)
   arBtn:setMarginTop(6)
   arBtn:setMarginLeft(20)
   arBtn:setMarginRight(20)
-  BTCCaveBot.autoRecordBtn = arBtn
+  MTCCaveBot.autoRecordBtn = arBtn
 
-  if BTCCaveBot.recordingEnabled then
+  if MTCCaveBot.recordingEnabled then
     arBtn:setText('Auto Record: ON')
     arBtn:setColor('#00ff00')
   else
@@ -1357,8 +1357,8 @@ function BTCCaveBot.createUI(parent)
   end
 
   arBtn.onClick = function()
-    BTCCaveBot.toggleRecording()
-    if BTCCaveBot.recordingEnabled then
+    MTCCaveBot.toggleRecording()
+    if MTCCaveBot.recordingEnabled then
       arBtn:setText('Auto Record: ON')
       arBtn:setColor('#00ff00')
     else
@@ -1390,10 +1390,10 @@ function BTCCaveBot.createUI(parent)
   emplValueLabel:setMarginTop(2)
   emplValueLabel:setMarginLeft(10)
   emplValueLabel:setMarginRight(10)
-  BTCCaveBot.emplValueLabel = emplValueLabel
+  MTCCaveBot.emplValueLabel = emplValueLabel
   
   -- Grid 3x3 para direcoes
-  BTCCaveBot.emplButtons = {}
+  MTCCaveBot.emplButtons = {}
   
   -- Linha 1: NW, N, NE
   local emplRow1 = g_ui.createWidget('Panel', parent)
@@ -1410,27 +1410,27 @@ function BTCCaveBot.createUI(parent)
   nwBtn:setText('NW')
   nwBtn:setWidth(38)
   nwBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.NORTHWEST] = nwBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.NORTHWEST] = nwBtn
   nwBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.NORTHWEST)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.NORTHWEST)
   end
   
   local nBtn = g_ui.createWidget('Button', emplRow1)
   nBtn:setText('N')
   nBtn:setWidth(38)
   nBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.NORTH] = nBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.NORTH] = nBtn
   nBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.NORTH)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.NORTH)
   end
   
   local neBtn = g_ui.createWidget('Button', emplRow1)
   neBtn:setText('NE')
   neBtn:setWidth(38)
   neBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.NORTHEAST] = neBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.NORTHEAST] = neBtn
   neBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.NORTHEAST)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.NORTHEAST)
   end
   
   -- Linha 2: W, CENTER, E
@@ -1448,9 +1448,9 @@ function BTCCaveBot.createUI(parent)
   wBtn:setText('W')
   wBtn:setWidth(38)
   wBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.WEST] = wBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.WEST] = wBtn
   wBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.WEST)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.WEST)
   end
   
   local centerBtn = g_ui.createWidget('Button', emplRow2)
@@ -1458,18 +1458,18 @@ function BTCCaveBot.createUI(parent)
   centerBtn:setWidth(38)
   centerBtn:setHeight(20)
   centerBtn:setColor('#00ffff')
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.CENTER] = centerBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.CENTER] = centerBtn
   centerBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.CENTER)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.CENTER)
   end
   
   local eBtn = g_ui.createWidget('Button', emplRow2)
   eBtn:setText('E')
   eBtn:setWidth(38)
   eBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.EAST] = eBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.EAST] = eBtn
   eBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.EAST)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.EAST)
   end
   
   -- Linha 3: SW, S, SE
@@ -1487,27 +1487,27 @@ function BTCCaveBot.createUI(parent)
   swBtn:setText('SW')
   swBtn:setWidth(38)
   swBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.SOUTHWEST] = swBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.SOUTHWEST] = swBtn
   swBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.SOUTHWEST)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.SOUTHWEST)
   end
   
   local sBtn = g_ui.createWidget('Button', emplRow3)
   sBtn:setText('S')
   sBtn:setWidth(38)
   sBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.SOUTH] = sBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.SOUTH] = sBtn
   sBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.SOUTH)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.SOUTH)
   end
   
   local seBtn = g_ui.createWidget('Button', emplRow3)
   seBtn:setText('SE')
   seBtn:setWidth(38)
   seBtn:setHeight(20)
-  BTCCaveBot.emplButtons[BTCCaveBot.EmplacementTypes.SOUTHEAST] = seBtn
+  MTCCaveBot.emplButtons[MTCCaveBot.EmplacementTypes.SOUTHEAST] = seBtn
   seBtn.onClick = function()
-    BTCCaveBot.setEmplacement(BTCCaveBot.EmplacementTypes.SOUTHEAST)
+    MTCCaveBot.setEmplacement(MTCCaveBot.EmplacementTypes.SOUTHEAST)
   end
   
   -- ===== ADD WAYPOINT SECTION (SEGUNDO) =====
@@ -1535,8 +1535,8 @@ function BTCCaveBot.createUI(parent)
   walkBtn:setHeight(22)
   walkBtn:setColor('#00ff00')
   walkBtn.onClick = function()
-    BTCCaveBot.addCurrentPositionWaypoint(BTCCaveBot.WaypointTypes.WALK)
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addCurrentPositionWaypoint(MTCCaveBot.WaypointTypes.WALK)
+    MTCCaveBot.updateWaypointCount()
   end
   
   -- Botao USE
@@ -1546,8 +1546,8 @@ function BTCCaveBot.createUI(parent)
   useBtn:setHeight(22)
   useBtn:setColor('#ffaa00')
   useBtn.onClick = function()
-    BTCCaveBot.addCurrentPositionWaypoint(BTCCaveBot.WaypointTypes.USE)
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addCurrentPositionWaypoint(MTCCaveBot.WaypointTypes.USE)
+    MTCCaveBot.updateWaypointCount()
   end
   
   -- Botao ROPE
@@ -1557,8 +1557,8 @@ function BTCCaveBot.createUI(parent)
   ropeBtn:setHeight(22)
   ropeBtn:setColor('#00aaff')
   ropeBtn.onClick = function()
-    BTCCaveBot.addCurrentPositionWaypoint(BTCCaveBot.WaypointTypes.ROPE)
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addCurrentPositionWaypoint(MTCCaveBot.WaypointTypes.ROPE)
+    MTCCaveBot.updateWaypointCount()
   end
   
   -- Botao SHOVEL
@@ -1568,8 +1568,8 @@ function BTCCaveBot.createUI(parent)
   shovelBtn:setHeight(22)
   shovelBtn:setColor('#aa5500')
   shovelBtn.onClick = function()
-    BTCCaveBot.addCurrentPositionWaypoint(BTCCaveBot.WaypointTypes.SHOVEL)
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addCurrentPositionWaypoint(MTCCaveBot.WaypointTypes.SHOVEL)
+    MTCCaveBot.updateWaypointCount()
   end
   
   -- Segunda linha de botoes
@@ -1590,8 +1590,8 @@ function BTCCaveBot.createUI(parent)
   standBtn:setHeight(22)
   standBtn:setColor('#ff00ff')
   standBtn.onClick = function()
-    BTCCaveBot.addCurrentPositionWaypoint(BTCCaveBot.WaypointTypes.STAND)
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addCurrentPositionWaypoint(MTCCaveBot.WaypointTypes.STAND)
+    MTCCaveBot.updateWaypointCount()
   end
   
   -- Botao STAIRS
@@ -1601,8 +1601,8 @@ function BTCCaveBot.createUI(parent)
   stairsBtn:setHeight(22)
   stairsBtn:setColor('#ffff00')
   stairsBtn.onClick = function()
-    BTCCaveBot.addCurrentPositionWaypoint(BTCCaveBot.WaypointTypes.STAIRS)
-    BTCCaveBot.updateWaypointCount()
+    MTCCaveBot.addCurrentPositionWaypoint(MTCCaveBot.WaypointTypes.STAIRS)
+    MTCCaveBot.updateWaypointCount()
   end
   
   -- Botao DEL
@@ -1612,7 +1612,7 @@ function BTCCaveBot.createUI(parent)
   delBtn:setHeight(22)
   delBtn:setColor('#ff4444')
   delBtn.onClick = function()
-    BTCCaveBot.removeSelectedWaypoint()
+    MTCCaveBot.removeSelectedWaypoint()
   end
   
   -- Botao CLEAR
@@ -1622,7 +1622,7 @@ function BTCCaveBot.createUI(parent)
   clearBtn:setHeight(22)
   clearBtn:setColor('#ff6666')
   clearBtn.onClick = function()
-    BTCCaveBot.clearWaypoints()
+    MTCCaveBot.clearWaypoints()
   end
   
   -- ===== WAYPOINTS LIST (POR ULTIMO) =====
@@ -1649,13 +1649,13 @@ function BTCCaveBot.createUI(parent)
   minusBtn:setHeight(22)
   
   local monsterValue = g_ui.createWidget('Label', monsterRow)
-  monsterValue:setText(tostring(BTCCaveBot.config.minMonstersToStop or 1))
+  monsterValue:setText(tostring(MTCCaveBot.config.minMonstersToStop or 1))
   monsterValue:setColor('#00ff00')
   monsterValue:setTextAlign(AlignCenter)
   monsterValue:setWidth(20)
   monsterValue:setHeight(22)
   monsterValue:setBackgroundColor('#333333')
-  BTCCaveBot.monsterValueLabel = monsterValue
+  MTCCaveBot.monsterValueLabel = monsterValue
   
   local plusBtn = g_ui.createWidget('Button', monsterRow)
   plusBtn:setText('+')
@@ -1669,24 +1669,24 @@ function BTCCaveBot.createUI(parent)
   monsterLabel2:setHeight(22)
   
   minusBtn.onClick = function()
-    local current = BTCCaveBot.config.minMonstersToStop or 1
+    local current = MTCCaveBot.config.minMonstersToStop or 1
     current = math.max(0, current - 1)
-    BTCCaveBot.config.minMonstersToStop = current
-    BTCCaveBot.monsterValueLabel:setText(tostring(current))
-    BTCCaveBot.monsterValueLabel:setColor(current == 0 and '#ff4444' or '#00ff00')
-    BTCCaveBot.saveConfig()
+    MTCCaveBot.config.minMonstersToStop = current
+    MTCCaveBot.monsterValueLabel:setText(tostring(current))
+    MTCCaveBot.monsterValueLabel:setColor(current == 0 and '#ff4444' or '#00ff00')
+    MTCCaveBot.saveConfig()
   end
   
   plusBtn.onClick = function()
-    local current = BTCCaveBot.config.minMonstersToStop or 1
+    local current = MTCCaveBot.config.minMonstersToStop or 1
     current = math.min(10, current + 1)
-    BTCCaveBot.config.minMonstersToStop = current
-    BTCCaveBot.monsterValueLabel:setText(tostring(current))
-    BTCCaveBot.monsterValueLabel:setColor('#00ff00')
-    BTCCaveBot.saveConfig()
+    MTCCaveBot.config.minMonstersToStop = current
+    MTCCaveBot.monsterValueLabel:setText(tostring(current))
+    MTCCaveBot.monsterValueLabel:setColor('#00ff00')
+    MTCCaveBot.saveConfig()
   end
   
-  if (BTCCaveBot.config.minMonstersToStop or 1) == 0 then
+  if (MTCCaveBot.config.minMonstersToStop or 1) == 0 then
     monsterValue:setColor('#ff4444')
   end
   
@@ -1699,11 +1699,11 @@ function BTCCaveBot.createUI(parent)
   
   local wpLabel = g_ui.createWidget('Label', wpRow)
   wpLabel:setId('wpCountLabel')
-  wpLabel:setText('Waypoints (' .. #BTCCaveBot.config.waypoints .. ')')
+  wpLabel:setText('Waypoints (' .. #MTCCaveBot.config.waypoints .. ')')
   wpLabel:setColor('#cccccc')
   wpLabel:addAnchor(AnchorLeft, 'parent', AnchorLeft)
   wpLabel:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
-  BTCCaveBot.wpCountLabel = wpLabel
+  MTCCaveBot.wpCountLabel = wpLabel
   
   local scrollDownBtn = g_ui.createWidget('Button', wpRow)
   scrollDownBtn:setText('v')
@@ -1713,7 +1713,7 @@ function BTCCaveBot.createUI(parent)
   scrollDownBtn:addAnchor(AnchorRight, 'parent', AnchorRight)
   scrollDownBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
   scrollDownBtn.onClick = function()
-    BTCCaveBot.scrollDown()
+    MTCCaveBot.scrollDown()
   end
   
   local scrollUpBtn = g_ui.createWidget('Button', wpRow)
@@ -1725,7 +1725,7 @@ function BTCCaveBot.createUI(parent)
   scrollUpBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
   scrollUpBtn:setMarginRight(2)
   scrollUpBtn.onClick = function()
-    BTCCaveBot.scrollUp()
+    MTCCaveBot.scrollUp()
   end
   
   -- Container para lista
@@ -1739,9 +1739,9 @@ function BTCCaveBot.createUI(parent)
   
   listContainer.onMouseWheel = function(self, mousePos, direction)
     if direction == MouseWheelUp then
-      BTCCaveBot.scrollUp()
+      MTCCaveBot.scrollUp()
     else
-      BTCCaveBot.scrollDown()
+      MTCCaveBot.scrollDown()
     end
     return true
   end
@@ -1760,9 +1760,9 @@ function BTCCaveBot.createUI(parent)
   
   waypointList.onMouseWheel = function(self, mousePos, direction)
     if direction == MouseWheelUp then
-      BTCCaveBot.scrollUp()
+      MTCCaveBot.scrollUp()
     else
-      BTCCaveBot.scrollDown()
+      MTCCaveBot.scrollDown()
     end
     return true
   end
@@ -1771,30 +1771,30 @@ function BTCCaveBot.createUI(parent)
   listLayout:setSpacing(1)
   waypointList:setLayout(listLayout)
   
-  BTCCaveBot.waypointListWidget = waypointList
-  BTCCaveBot.waypointContainer = listContainer
+  MTCCaveBot.waypointListWidget = waypointList
+  MTCCaveBot.waypointContainer = listContainer
   
   -- Popula lista inicial
-  BTCCaveBot.refreshWaypointList()
+  MTCCaveBot.refreshWaypointList()
 end
 
 -- Atualiza contador de waypoints
-function BTCCaveBot.updateWaypointCount()
-  if BTCCaveBot.wpCountLabel then
-    BTCCaveBot.wpCountLabel:setText('Waypoints (' .. #BTCCaveBot.config.waypoints .. ')')
+function MTCCaveBot.updateWaypointCount()
+  if MTCCaveBot.wpCountLabel then
+    MTCCaveBot.wpCountLabel:setText('Waypoints (' .. #MTCCaveBot.config.waypoints .. ')')
   end
 end
 
 -- Retorna status do modulo
-function BTCCaveBot.getStatus()
-  if not BTCCaveBot.config then return "Not initialized" end
-  if BTCCaveBot.recordingEnabled then return "Gravando..." end
-  if not BTCCaveBot.config.enabled then return "Disabled" end
+function MTCCaveBot.getStatus()
+  if not MTCCaveBot.config then return "Not initialized" end
+  if MTCCaveBot.recordingEnabled then return "Gravando..." end
+  if not MTCCaveBot.config.enabled then return "Disabled" end
   
-  local total = #BTCCaveBot.config.waypoints
+  local total = #MTCCaveBot.config.waypoints
   if total == 0 then return "No waypoints" end
   
-  local current = BTCCaveBot.config.currentIndex
+  local current = MTCCaveBot.config.currentIndex
   return string.format("Running %d/%d", current, total)
 end
 
@@ -1802,4 +1802,4 @@ end
 
 
 
-return BTCCaveBot
+return MTCCaveBot

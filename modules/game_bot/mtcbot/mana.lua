@@ -1,15 +1,15 @@
 --[[
-  BTC Bot - Sistema de Mana
+  MTC Bot - Sistema de Mana
   
   3 slots de mana configuraveis
   Usa mana potions para recuperar MP
   Interface com icones das potions
 ]]
 
-BTCMana = BTCMana or {}
+MTCMana = MTCMana or {}
 
 -- Configuracao padrao dos 3 slots de mana
-BTCMana.defaultConfig = {
+MTCMana.defaultConfig = {
   enabled = true,  -- Modulo ativo por padrao
   slot1 = {
     enabled = true,
@@ -29,88 +29,90 @@ BTCMana.defaultConfig = {
 }
 
 -- Lista de mana potions
-BTCMana.manaPotions = {
+MTCMana.manaPotions = {
   { id = 268,   name = "Mana Potion" },
   { id = 237,   name = "Strong Mana Potion" },
   { id = 238,   name = "Great Mana Potion" },
   { id = 23373, name = "Ultimate Mana Potion" },
+  { id = 58703, name = "Super Mana Potion" },
   -- Spirit Potions (Paladin - recuperam HP e Mana)
   { id = 7642,  name = "Great Spirit Potion" },
   { id = 23374, name = "Ultimate Spirit Potion" },
+  { id = 58704, name = "Super Spirit Potion" },
   -- Eternal Potions (infinitas)
   { id = 51972, name = "Eternal Ultimate Mana Potion" },
   { id = 51973, name = "Eternal Ultimate Spirit Potion" },
 }
 
 -- Popup de selecao de potion
-BTCMana.potionPopup = nil
+MTCMana.potionPopup = nil
 
 -- Variaveis de controle
-BTCMana.config = nil
-BTCMana.lastManaTime = 0
-BTCMana.manaCooldown = 1000
+MTCMana.config = nil
+MTCMana.lastManaTime = 0
+MTCMana.manaCooldown = 1000
 
 -- Inicializa o modulo
-function BTCMana.init()
-  BTCMana.config = BTCMana.loadConfig()
+function MTCMana.init()
+  MTCMana.config = MTCMana.loadConfig()
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCMana.loadConfig()
-  local saved = BTCConfig.get("mana")
+function MTCMana.loadConfig()
+  local saved = MTCConfig.get("mana")
   if saved then
     return saved
   end
-  return BTCMana.defaultConfig
+  return MTCMana.defaultConfig
 end
 
 -- Salva configuracao
-function BTCMana.saveConfig()
-  BTCConfig.set("mana", BTCMana.config)
+function MTCMana.saveConfig()
+  MTCConfig.set("mana", MTCMana.config)
 end
 
 -- Obtem configuracao de um slot
-function BTCMana.getSlotConfig(slotNum)
+function MTCMana.getSlotConfig(slotNum)
   local key = "slot" .. slotNum
-  if BTCMana.config and BTCMana.config[key] then
-    return BTCMana.config[key]
+  if MTCMana.config and MTCMana.config[key] then
+    return MTCMana.config[key]
   end
-  return BTCMana.defaultConfig["slot" .. slotNum]
+  return MTCMana.defaultConfig["slot" .. slotNum]
 end
 
 -- Atualiza configuracao de um slot
-function BTCMana.setSlotConfig(slotNum, config)
+function MTCMana.setSlotConfig(slotNum, config)
   local key = "slot" .. slotNum
-  BTCMana.config[key] = config
-  BTCMana.saveConfig()
+  MTCMana.config[key] = config
+  MTCMana.saveConfig()
 end
 
 -- Verifica se pode usar potion (cooldown)
-function BTCMana.canUseMana()
+function MTCMana.canUseMana()
   local now = g_clock.millis()
-  return (now - BTCMana.lastManaTime) >= BTCMana.manaCooldown
+  return (now - MTCMana.lastManaTime) >= MTCMana.manaCooldown
 end
 
 -- Executa uso de mana potion
-function BTCMana.useManaPotion(itemId)
+function MTCMana.useManaPotion(itemId)
   if not g_game.isOnline() then return false end
   
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
   g_game.useInventoryItemWith(itemId, player, 0)
-  BTCMana.lastManaTime = g_clock.millis()
+  MTCMana.lastManaTime = g_clock.millis()
   return true
 end
 
 -- Funcao principal de execucao
-function BTCMana.execute()
+function MTCMana.execute()
   if not g_game.isOnline() then return end
   
   -- Verifica se o modulo de mana esta ativo
-  if not BTCMana.config or not BTCMana.config.enabled then return end
+  if not MTCMana.config or not MTCMana.config.enabled then return end
   
-  if not BTCMana.canUseMana() then return end
+  if not MTCMana.canUseMana() then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
@@ -124,11 +126,11 @@ function BTCMana.execute()
   
   -- Verifica cada slot (prioridade: slot1 > slot2 > slot3)
   for i = 1, 3 do
-    local slotConfig = BTCMana.getSlotConfig(i)
+    local slotConfig = MTCMana.getSlotConfig(i)
     
     if slotConfig.enabled and manaPercent <= slotConfig.mpPercent then
       if slotConfig.itemId and slotConfig.itemId > 0 then
-        if BTCMana.useManaPotion(slotConfig.itemId) then
+        if MTCMana.useManaPotion(slotConfig.itemId) then
           return
         end
       end
@@ -137,7 +139,7 @@ function BTCMana.execute()
 end
 
 -- Cria a UI do modulo
-function BTCMana.createUI(container)
+function MTCMana.createUI(container)
   if not container then return end
   
   container:destroyChildren()
@@ -153,23 +155,23 @@ function BTCMana.createUI(container)
   
   -- Cria 3 slots (separador ja esta dentro de createSlotUI)
   for i = 1, 3 do
-    BTCMana.createSlotUI(container, i)
+    MTCMana.createSlotUI(container, i)
   end
 end
 
 -- Fecha popup se existir
-function BTCMana.closePopup()
-  if BTCMana.potionPopup then
-    BTCMana.potionPopup:destroy()
-    BTCMana.potionPopup = nil
+function MTCMana.closePopup()
+  if MTCMana.potionPopup then
+    MTCMana.potionPopup:destroy()
+    MTCMana.potionPopup = nil
   end
 end
 
 -- Cria popup de selecao de potion com icones
-function BTCMana.showPotionPopup(itemBox, slotNum, slotConfig, onSelect)
-  BTCMana.closePopup()
+function MTCMana.showPotionPopup(itemBox, slotNum, slotConfig, onSelect)
+  MTCMana.closePopup()
   
-  local potionCount = #BTCMana.manaPotions
+  local potionCount = #MTCMana.manaPotions
   local itemSize = 42
   local spacing = 5
   local padding = 8
@@ -179,7 +181,7 @@ function BTCMana.showPotionPopup(itemBox, slotNum, slotConfig, onSelect)
   -- Cria popup panel
   local popup = g_ui.createWidget("Panel", rootWidget)
   popup:setId("manaPotionPopup")
-  BTCMana.potionPopup = popup
+  MTCMana.potionPopup = popup
   
   -- Estilo do popup - sem borda externa
   popup:setBackgroundColor("#2a2a2a")
@@ -195,7 +197,7 @@ function BTCMana.showPotionPopup(itemBox, slotNum, slotConfig, onSelect)
   popup:setPaddingBottom(padding)
   
   -- Adiciona cada potion em seu proprio quadrado
-  for _, potion in ipairs(BTCMana.manaPotions) do
+  for _, potion in ipairs(MTCMana.manaPotions) do
     -- Container individual para cada potion (quadrado)
     local potionBox = g_ui.createWidget("Button", popup)
     potionBox:setSize({width = itemSize, height = itemSize})
@@ -223,11 +225,11 @@ function BTCMana.showPotionPopup(itemBox, slotNum, slotConfig, onSelect)
     -- Clique no quadrado seleciona a potion
     potionBox.onClick = function()
       slotConfig.itemId = potion.id
-      BTCMana.setSlotConfig(slotNum, slotConfig)
+      MTCMana.setSlotConfig(slotNum, slotConfig)
       if onSelect then
         onSelect(potion.id)
       end
-      BTCMana.closePopup()
+      MTCMana.closePopup()
     end
   end
   
@@ -243,15 +245,15 @@ function BTCMana.showPotionPopup(itemBox, slotNum, slotConfig, onSelect)
   popup.onFocusChange = function(widget, focused)
     if not focused then
       scheduleEvent(function()
-        BTCMana.closePopup()
+        MTCMana.closePopup()
       end, 100)
     end
   end
 end
 
 -- Cria UI de um slot (mesmo layout do Healing)
-function BTCMana.createSlotUI(parent, slotNum)
-  local slotConfig = BTCMana.getSlotConfig(slotNum)
+function MTCMana.createSlotUI(parent, slotNum)
+  local slotConfig = MTCMana.getSlotConfig(slotNum)
   
   -- Linha 1: ON/OFF
   local row1 = g_ui.createWidget('Panel', parent)
@@ -269,7 +271,7 @@ function BTCMana.createSlotUI(parent, slotNum)
     slotConfig.enabled = not slotConfig.enabled
     enabledBtn:setText(slotConfig.enabled and 'ON' or 'OFF')
     enabledBtn:setColor(slotConfig.enabled and '#00ff00' or '#ff4444')
-    BTCMana.setSlotConfig(slotNum, slotConfig)
+    MTCMana.setSlotConfig(slotNum, slotConfig)
   end
   
   -- Linha 2: Potion (Icone + Nome)
@@ -306,7 +308,7 @@ function BTCMana.createSlotUI(parent, slotNum)
   
   -- Tooltip com nome da potion
   local potionName = "Mana Potion"
-  for _, p in ipairs(BTCMana.manaPotions) do
+  for _, p in ipairs(MTCMana.manaPotions) do
     if p.id == slotConfig.itemId then
       potionName = p.name
       break
@@ -326,10 +328,10 @@ function BTCMana.createSlotUI(parent, slotNum)
   
   -- Clique no botao abre popup
   itemContainer.onClick = function()
-    BTCMana.showPotionPopup(itemContainer, slotNum, slotConfig, function(newItemId)
+    MTCMana.showPotionPopup(itemContainer, slotNum, slotConfig, function(newItemId)
       itemBox:setItemId(newItemId)
       -- Atualiza tooltip e nome
-      for _, p in ipairs(BTCMana.manaPotions) do
+      for _, p in ipairs(MTCMana.manaPotions) do
         if p.id == newItemId then
           itemContainer:setTooltip(p.name)
           nameLabel:setText(p.name)
@@ -377,7 +379,7 @@ function BTCMana.createSlotUI(parent, slotNum)
     if slotConfig.mpPercent > 5 then
       slotConfig.mpPercent = slotConfig.mpPercent - 5
       mpValue:setText(slotConfig.mpPercent .. '%')
-      BTCMana.setSlotConfig(slotNum, slotConfig)
+      MTCMana.setSlotConfig(slotNum, slotConfig)
     end
   end
   
@@ -385,7 +387,7 @@ function BTCMana.createSlotUI(parent, slotNum)
     if slotConfig.mpPercent < 100 then
       slotConfig.mpPercent = slotConfig.mpPercent + 5
       mpValue:setText(slotConfig.mpPercent .. '%')
-      BTCMana.setSlotConfig(slotNum, slotConfig)
+      MTCMana.setSlotConfig(slotNum, slotConfig)
     end
   end
   
@@ -398,10 +400,10 @@ function BTCMana.createSlotUI(parent, slotNum)
 end
 
 -- Retorna status do modulo
-function BTCMana.getStatus()
-  local enabled = BTCMana.config and BTCMana.config.enabled
+function MTCMana.getStatus()
+  local enabled = MTCMana.config and MTCMana.config.enabled
   return enabled and "ON" or "OFF"
 end
 
 -- Inicializa
-BTCMana.init()
+MTCMana.init()

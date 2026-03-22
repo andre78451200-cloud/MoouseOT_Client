@@ -56,7 +56,7 @@ BotCheckBox < CheckBox
 
 BotModalWindow < MainWindow
   id: botModalWindow
-  !text: tr('BTC Bot')
+  !text: tr('MTC Bot')
   size: 565 480
   @onEscape: modules.game_bot.hideModal()
 

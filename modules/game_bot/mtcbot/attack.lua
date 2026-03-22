@@ -1,15 +1,15 @@
 --[[
-  BTC Bot - Sistema de Attack
+  MTC Bot - Sistema de Attack
   
   Auto-attack em monstros
   6 slots de spells de ataque com cooldown tracking
   Lista de prioridade e ignore
 ]]
 
-BTCAttack = BTCAttack or {}
+MTCAttack = MTCAttack or {}
 
 -- Configuracao padrao
-BTCAttack.defaultConfig = {
+MTCAttack.defaultConfig = {
   enabled = true,
   autoAttack = true,
   attackPlayers = false,
@@ -34,7 +34,7 @@ BTCAttack.defaultConfig = {
 }
 
 -- Lista de runas de ataque
-BTCAttack.attackRunes = {
+MTCAttack.attackRunes = {
   { itemId = 3155, name = "Sudden Death Rune", shortName = "SD" },
   { itemId = 3161, name = "Heavy Magic Missile", shortName = "HMM" },
   { itemId = 3180, name = "Fireball Rune", shortName = "FB" },
@@ -50,7 +50,7 @@ BTCAttack.attackRunes = {
 
 -- Lista de spells de ataque disponiveis (dados do servidor)
 -- VOCACOES (clientid): Knight=1, Paladin=2, Sorcerer=3, Druid=4, Monk=5, EK=11, RP=12, MS=13, ED=14, ExMonk=15
-BTCAttack.attackSpells = {
+MTCAttack.attackSpells = {
   -- ===== KNIGHT (clientid 1 base, 11 promoted) =====
   { words = "exori", name = "Berserk", cooldown = 3000, mana = 115, voc = {1,11} },
   { words = "exori gran", name = "Fierce Berserk", cooldown = 3000, mana = 340, voc = {1,11} },
@@ -115,31 +115,31 @@ BTCAttack.attackSpells = {
 }
 
 -- Variaveis de controle
-BTCAttack.config = nil
-BTCAttack.lastAttackTime = 0
-BTCAttack.attackCooldown = 100  -- 100ms entre tentativas de uso de spell (rapido)
-BTCAttack.spellPopup = nil
-BTCAttack.lastSpellSlot = 0  -- Para rotacao de spells
+MTCAttack.config = nil
+MTCAttack.lastAttackTime = 0
+MTCAttack.attackCooldown = 100  -- 100ms entre tentativas de uso de spell (rapido)
+MTCAttack.spellPopup = nil
+MTCAttack.lastSpellSlot = 0  -- Para rotacao de spells
 
 -- UI references para cooldown visual
-BTCAttack.spellSlotWidgets = {}
+MTCAttack.spellSlotWidgets = {}
 
 -- Inicializa o modulo
-function BTCAttack.init()
-  BTCAttack.config = BTCAttack.loadConfig()
+function MTCAttack.init()
+  MTCAttack.config = MTCAttack.loadConfig()
   -- Migra configs antigas quando player estiver online (SpellInfo disponivel)
-  BTCAttack.migrateOldConfigs()
+  MTCAttack.migrateOldConfigs()
 end
 
 -- Migra configs antigas que nao tem spellId
-function BTCAttack.migrateOldConfigs()
-  if not BTCAttack.config or not BTCAttack.config.spells then return end
+function MTCAttack.migrateOldConfigs()
+  if not MTCAttack.config or not MTCAttack.config.spells then return end
   if not SpellInfo or not SpellInfo["Default"] then return end
   
   local migrated = false
-  for i, spell in ipairs(BTCAttack.config.spells) do
+  for i, spell in ipairs(MTCAttack.config.spells) do
     if spell.words and spell.words ~= "" and (not spell.spellId or spell.spellId == 0) then
-      local spellData = BTCAttack.getSpellDataByWords(spell.words)
+      local spellData = MTCAttack.getSpellDataByWords(spell.words)
       if spellData then
         spell.spellId = spellData.spellId
         spell.iconId = spellData.iconId
@@ -150,13 +150,13 @@ function BTCAttack.migrateOldConfigs()
   end
   
   if migrated then
-    BTCAttack.saveConfig()
+    MTCAttack.saveConfig()
   end
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCAttack.loadConfig()
-  local saved = BTCConfig.get("attack")
+function MTCAttack.loadConfig()
+  local saved = MTCConfig.get("attack")
   if saved then
     -- Garante que lastUsed esta zerado
     if saved.spells then
@@ -170,16 +170,16 @@ function BTCAttack.loadConfig()
     end
     return saved
   end
-  return table.copy(BTCAttack.defaultConfig)
+  return table.copy(MTCAttack.defaultConfig)
 end
 
 -- Salva configuracao
-function BTCAttack.saveConfig()
-  BTCConfig.set("attack", BTCAttack.config)
+function MTCAttack.saveConfig()
+  MTCConfig.set("attack", MTCAttack.config)
 end
 
 -- Retorna vocacao do player
-function BTCAttack.getPlayerVocation()
+function MTCAttack.getPlayerVocation()
   if not g_game.isOnline() then return 0 end
   local player = g_game.getLocalPlayer()
   if not player then return 0 end
@@ -187,8 +187,8 @@ function BTCAttack.getPlayerVocation()
 end
 
 -- Retorna lista de spells de ataque do cliente filtrada pela vocacao atual
-function BTCAttack.getAvailableSpells()
-  local voc = BTCAttack.getPlayerVocation()
+function MTCAttack.getAvailableSpells()
+  local voc = MTCAttack.getPlayerVocation()
   local available = {}
   local profile = "Default"
   
@@ -289,15 +289,15 @@ function BTCAttack.getAvailableSpells()
 end
 
 -- Verifica se pode atacar (cooldown global entre acoes)
-function BTCAttack.canAttack()
+function MTCAttack.canAttack()
   local now = g_clock.millis()
-  return (now - BTCAttack.lastAttackTime) >= BTCAttack.attackCooldown
+  return (now - MTCAttack.lastAttackTime) >= MTCAttack.attackCooldown
 end
 
 -- Verifica se spell esta em cooldown (usa cooldown REAL do servidor via iconId)
-function BTCAttack.isSpellReady(slotIndex)
-  if not BTCAttack.config or not BTCAttack.config.spells then return false end
-  local spell = BTCAttack.config.spells[slotIndex]
+function MTCAttack.isSpellReady(slotIndex)
+  if not MTCAttack.config or not MTCAttack.config.spells then return false end
+  local spell = MTCAttack.config.spells[slotIndex]
   if not spell or not spell.enabled then return false end
   if not spell.words or spell.words == "" then return false end
   
@@ -326,9 +326,9 @@ function BTCAttack.isSpellReady(slotIndex)
 end
 
 -- Retorna tempo restante do cooldown em ms
-function BTCAttack.getSpellCooldownRemaining(slotIndex)
-  if not BTCAttack.config or not BTCAttack.config.spells then return 0 end
-  local spell = BTCAttack.config.spells[slotIndex]
+function MTCAttack.getSpellCooldownRemaining(slotIndex)
+  if not MTCAttack.config or not MTCAttack.config.spells then return 0 end
+  local spell = MTCAttack.config.spells[slotIndex]
   if not spell then return 0 end
   
   local now = g_clock.millis()
@@ -339,20 +339,20 @@ function BTCAttack.getSpellCooldownRemaining(slotIndex)
 end
 
 -- Retorna porcentagem do cooldown (0-100)
-function BTCAttack.getSpellCooldownPercent(slotIndex)
-  if not BTCAttack.config or not BTCAttack.config.spells then return 0 end
-  local spell = BTCAttack.config.spells[slotIndex]
+function MTCAttack.getSpellCooldownPercent(slotIndex)
+  if not MTCAttack.config or not MTCAttack.config.spells then return 0 end
+  local spell = MTCAttack.config.spells[slotIndex]
   if not spell or spell.cooldown <= 0 then return 0 end
   
-  local remaining = BTCAttack.getSpellCooldownRemaining(slotIndex)
+  local remaining = MTCAttack.getSpellCooldownRemaining(slotIndex)
   return (remaining / spell.cooldown) * 100
 end
 
 -- Usa uma spell ou runa
-function BTCAttack.useSpell(slotIndex)
+function MTCAttack.useSpell(slotIndex)
   if not g_game.isOnline() then return false end
   
-  local spell = BTCAttack.config.spells[slotIndex]
+  local spell = MTCAttack.config.spells[slotIndex]
   if not spell or not spell.enabled then return false end
   
   local player = g_game.getLocalPlayer()
@@ -360,7 +360,7 @@ function BTCAttack.useSpell(slotIndex)
   
   -- Verifica se e runa
   if spell.type == "rune" and spell.itemId and spell.itemId > 0 then
-    return BTCAttack.useRune(slotIndex)
+    return MTCAttack.useRune(slotIndex)
   end
   
   -- E uma spell normal
@@ -372,16 +372,16 @@ function BTCAttack.useSpell(slotIndex)
   -- Fala a spell
   g_game.talk(spell.words)
   spell.lastUsed = g_clock.millis()
-  BTCAttack.lastAttackTime = g_clock.millis()
+  MTCAttack.lastAttackTime = g_clock.millis()
   
   return true
 end
 
 -- Usa uma runa de ataque no target atual
-function BTCAttack.useRune(slotIndex)
+function MTCAttack.useRune(slotIndex)
   if not g_game.isOnline() then return false end
   
-  local spell = BTCAttack.config.spells[slotIndex]
+  local spell = MTCAttack.config.spells[slotIndex]
   if not spell or not spell.enabled then return false end
   if not spell.itemId or spell.itemId == 0 then return false end
   
@@ -390,19 +390,19 @@ function BTCAttack.useRune(slotIndex)
   if not target or target:isDead() then return false end
   
   -- Procura a runa no inventario
-  local hasRune = BTCAttack.findRuneInInventory(spell.itemId)
+  local hasRune = MTCAttack.findRuneInInventory(spell.itemId)
   if not hasRune then return false end
   
   -- Usa a runa no target
   g_game.useInventoryItemWith(spell.itemId, target, 0)
   spell.lastUsed = g_clock.millis()
-  BTCAttack.lastAttackTime = g_clock.millis()
+  MTCAttack.lastAttackTime = g_clock.millis()
   
   return true
 end
 
 -- Procura uma runa no inventario (verifica se existe)
-function BTCAttack.findRuneInInventory(itemId)
+function MTCAttack.findRuneInInventory(itemId)
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
@@ -436,7 +436,7 @@ function BTCAttack.findRuneInInventory(itemId)
 end
 
 -- Encontra monstro mais proximo para atacar
-function BTCAttack.findTarget()
+function MTCAttack.findTarget()
   if not g_game.isOnline() then return nil end
   
   local player = g_game.getLocalPlayer()
@@ -453,14 +453,14 @@ function BTCAttack.findTarget()
   if not spectators then return nil end
   
   local bestTarget = nil
-  local bestDistance = BTCAttack.config.attackRange + 1
+  local bestDistance = MTCAttack.config.attackRange + 1
   local bestPriority = 0
   
   for _, creature in ipairs(spectators) do
-    if BTCAttack.isValidTarget(creature, playerPos) then
+    if MTCAttack.isValidTarget(creature, playerPos) then
       local creaturePos = creature:getPosition()
-      local distance = BTCAttack.getDistance(playerPos, creaturePos)
-      local priority = BTCAttack.getCreaturePriority(creature)
+      local distance = MTCAttack.getDistance(playerPos, creaturePos)
+      local priority = MTCAttack.getCreaturePriority(creature)
       
       -- Prioridade > distancia
       if priority > bestPriority or (priority == bestPriority and distance < bestDistance) then
@@ -475,7 +475,7 @@ function BTCAttack.findTarget()
 end
 
 -- Verifica se criatura e um alvo valido
-function BTCAttack.isValidTarget(creature, playerPos)
+function MTCAttack.isValidTarget(creature, playerPos)
   if not creature then return false end
   if creature:isLocalPlayer() then return false end
   if creature:isDead() then return false end
@@ -486,28 +486,28 @@ function BTCAttack.isValidTarget(creature, playerPos)
   if creaturePos.z ~= playerPos.z then return false end
   
   -- Verifica distancia
-  local distance = BTCAttack.getDistance(playerPos, creaturePos)
-  if distance > BTCAttack.config.attackRange then return false end
+  local distance = MTCAttack.getDistance(playerPos, creaturePos)
+  if distance > MTCAttack.config.attackRange then return false end
   
   -- Verifica tipo de criatura
   if creature:isMonster() then
-    if not BTCAttack.config.attackMonsters then return false end
+    if not MTCAttack.config.attackMonsters then return false end
   elseif creature:isPlayer() then
-    if not BTCAttack.config.attackPlayers then return false end
+    if not MTCAttack.config.attackPlayers then return false end
   elseif creature:isNpc() then
     return false -- Nunca ataca NPCs
   end
   
   -- Verifica lista de ignore
   local creatureName = creature:getName():lower()
-  for _, ignoreName in ipairs(BTCAttack.config.ignoreList or {}) do
+  for _, ignoreName in ipairs(MTCAttack.config.ignoreList or {}) do
     if creatureName == ignoreName:lower() then
       return false
     end
   end
   
   -- Verifica se o monstro esta acessivel (nao atras de parede)
-  if not BTCAttack.isReachable(playerPos, creaturePos) then
+  if not MTCAttack.isReachable(playerPos, creaturePos) then
     return false
   end
   
@@ -515,7 +515,7 @@ function BTCAttack.isValidTarget(creature, playerPos)
 end
 
 -- Verifica se existe caminho ate a criatura (nao esta atras de parede)
-function BTCAttack.isReachable(playerPos, targetPos)
+function MTCAttack.isReachable(playerPos, targetPos)
   if not playerPos or not targetPos then return false end
   
   -- Mesmo andar obrigatorio
@@ -527,20 +527,20 @@ function BTCAttack.isReachable(playerPos, targetPos)
 end
 
 -- Verifica linha de visao entre duas posicoes (simplificado)
-function BTCAttack.hasLineOfSight(pos1, pos2)
+function MTCAttack.hasLineOfSight(pos1, pos2)
   if not pos1 or not pos2 then return false end
   if pos1.z ~= pos2.z then return false end
   return true
 end
 
 -- Retorna prioridade da criatura (maior = mais prioritario)
-function BTCAttack.getCreaturePriority(creature)
+function MTCAttack.getCreaturePriority(creature)
   if not creature then return 0 end
   
   local creatureName = creature:getName():lower()
   
   -- Verifica lista de prioridade
-  for i, priorityName in ipairs(BTCAttack.config.priorityList or {}) do
+  for i, priorityName in ipairs(MTCAttack.config.priorityList or {}) do
     if creatureName == priorityName:lower() then
       return 100 - i -- Maior prioridade para os primeiros da lista
     end
@@ -550,26 +550,26 @@ function BTCAttack.getCreaturePriority(creature)
 end
 
 -- Calcula distancia entre duas posicoes
-function BTCAttack.getDistance(pos1, pos2)
+function MTCAttack.getDistance(pos1, pos2)
   local dx = math.abs(pos1.x - pos2.x)
   local dy = math.abs(pos1.y - pos2.y)
   return math.max(dx, dy)
 end
 
 -- Funcao principal de execucao
-function BTCAttack.execute()
+function MTCAttack.execute()
   if not g_game.isOnline() then return end
   
   -- Verifica se o modulo esta ativo
-  if not BTCAttack.config or not BTCAttack.config.enabled then return end
+  if not MTCAttack.config or not MTCAttack.config.enabled then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
   
   -- IMPORTANTE: Se o CaveBot esta ativo, so ataca quando tiver mobs suficientes
   -- Se CaveBot esta andando (menos mobs que configurado), NAO ataca
-  if BTCCaveBot and BTCCaveBot.config and BTCCaveBot.config.enabled then
-    if not BTCCaveBot.shouldStopForMonsters() then
+  if MTCCaveBot and MTCCaveBot.config and MTCCaveBot.config.enabled then
+    if not MTCCaveBot.shouldStopForMonsters() then
       -- CaveBot esta andando, nao ataca - deixa o cavebot trabalhar
       -- Remove target atual se tiver
       local currentTarget = g_game.getAttackingCreature()
@@ -585,7 +585,7 @@ function BTCAttack.execute()
   
   -- Se nao tem alvo, procura um
   if not currentTarget or currentTarget:isDead() then
-    local newTarget = BTCAttack.findTarget()
+    local newTarget = MTCAttack.findTarget()
     if newTarget then
       g_game.attack(newTarget)
     end
@@ -594,17 +594,17 @@ function BTCAttack.execute()
   -- Executa spells se estiver atacando
   local attackingCreature = g_game.getAttackingCreature()
   if attackingCreature and not attackingCreature:isDead() then
-    BTCAttack.executeSpells()
+    MTCAttack.executeSpells()
   end
 end
 
 -- Chase automatico: anda ate o monstro atacado
-function BTCAttack.chaseTarget(player, target)
+function MTCAttack.chaseTarget(player, target)
   if not player or not target then return end
   if player:isWalking() then return end
   
   local now = g_clock.millis()
-  if (now - BTCAttack.lastAttackTime) < 200 then return end
+  if (now - MTCAttack.lastAttackTime) < 200 then return end
   
   local playerPos = player:getPosition()
   local targetPos = target:getPosition()
@@ -626,7 +626,7 @@ function BTCAttack.chaseTarget(player, target)
       table.remove(path, #path)
     end
     g_game.autoWalk(path, playerPos)
-    BTCAttack.lastAttackTime = now
+    MTCAttack.lastAttackTime = now
   else
     -- Pathfinding falhou, tenta andar direto na direcao do monstro
     local moveX = 0
@@ -649,15 +649,15 @@ function BTCAttack.chaseTarget(player, target)
     
     if dir then
       g_game.walk(dir, false)
-      BTCAttack.lastAttackTime = now
+      MTCAttack.lastAttackTime = now
     end
   end
 end
 
 -- Executa spells de ataque (Sistema de Rotacao)
-function BTCAttack.executeSpells()
+function MTCAttack.executeSpells()
   -- Cooldown global minimo entre acoes (100ms para nao spammar)
-  if not BTCAttack.canAttack() then return end
+  if not MTCAttack.canAttack() then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
@@ -665,7 +665,7 @@ function BTCAttack.executeSpells()
   -- Conta quantos slots estao habilitados e guarda na ordem
   local enabledSlots = {}
   for i = 1, 6 do
-    local spell = BTCAttack.config.spells[i]
+    local spell = MTCAttack.config.spells[i]
     if spell and spell.enabled and spell.words and spell.words ~= "" then
       table.insert(enabledSlots, i)
     end
@@ -679,7 +679,7 @@ function BTCAttack.executeSpells()
   -- Encontra o indice do ultimo slot usado na lista de slots habilitados
   local lastUsedIndex = 0
   for idx, slotNum in ipairs(enabledSlots) do
-    if slotNum == BTCAttack.lastSpellSlot then
+    if slotNum == MTCAttack.lastSpellSlot then
       lastUsedIndex = idx
       break
     end
@@ -690,15 +690,15 @@ function BTCAttack.executeSpells()
     -- Calcula o indice circular (1-based)
     local idx = ((lastUsedIndex + attempt - 1) % #enabledSlots) + 1
     local slotIndex = enabledSlots[idx]
-    local spell = BTCAttack.config.spells[slotIndex]
+    local spell = MTCAttack.config.spells[slotIndex]
     
     -- Verifica se a spell esta pronta (cooldown do servidor)
-    if BTCAttack.isSpellReady(slotIndex) then
+    if MTCAttack.isSpellReady(slotIndex) then
       -- Verifica mana
       if player:getMana() >= (spell.manaCost or 0) then
         -- Tenta usar a spell
-        if BTCAttack.useSpell(slotIndex) then
-          BTCAttack.lastSpellSlot = slotIndex
+        if MTCAttack.useSpell(slotIndex) then
+          MTCAttack.lastSpellSlot = slotIndex
           return -- Usou uma spell, para aqui
         end
       end
@@ -709,15 +709,15 @@ function BTCAttack.executeSpells()
 end
 
 -- Fecha popup se existir
-function BTCAttack.closePopup()
-  if BTCAttack.spellPopup then
-    BTCAttack.spellPopup:destroy()
-    BTCAttack.spellPopup = nil
+function MTCAttack.closePopup()
+  if MTCAttack.spellPopup then
+    MTCAttack.spellPopup:destroy()
+    MTCAttack.spellPopup = nil
   end
 end
 
 -- Obtem clip da spell pelo words (busca direto do SpellInfo)
-function BTCAttack.getSpellClipByWords(words)
+function MTCAttack.getSpellClipByWords(words)
   if not words or words == "" then return nil end
   
   local profile = "Default"
@@ -738,10 +738,10 @@ function BTCAttack.getSpellClipByWords(words)
 end
 
 -- Mostra modal de selecao de spell com scroll
-function BTCAttack.showSpellPopup(anchorWidget, slotIndex, onSelect)
-  BTCAttack.closePopup()
+function MTCAttack.showSpellPopup(anchorWidget, slotIndex, onSelect)
+  MTCAttack.closePopup()
   
-  local spells = BTCAttack.getAvailableSpells()
+  local spells = MTCAttack.getAvailableSpells()
   if #spells == 0 then 
     return 
   end
@@ -759,7 +759,7 @@ function BTCAttack.showSpellPopup(anchorWidget, slotIndex, onSelect)
   modal:setText('Attack Spells (' .. #spells .. ')')
   modal:setSize({width = 280, height = 400})
   modal:centerIn('parent')
-  BTCAttack.spellPopup = modal
+  MTCAttack.spellPopup = modal
   
   -- Cria VerticalScrollBar
   local scrollBar = g_ui.createWidget('VerticalScrollBar', modal)
@@ -848,7 +848,7 @@ function BTCAttack.showSpellPopup(anchorWidget, slotIndex, onSelect)
         if onSelect then
           onSelect(widget.spell)
         end
-        BTCAttack.closePopup()
+        MTCAttack.closePopup()
         return true
       end
       return false
@@ -863,26 +863,26 @@ function BTCAttack.showSpellPopup(anchorWidget, slotIndex, onSelect)
   cancelBtn:addAnchor(AnchorHorizontalCenter, 'parent', AnchorHorizontalCenter)
   cancelBtn:setMarginBottom(5)
   cancelBtn.onClick = function()
-    BTCAttack.closePopup()
+    MTCAttack.closePopup()
   end
 end
 
 -- Popup de selecao de runa
-BTCAttack.runePopup = nil
+MTCAttack.runePopup = nil
 
 -- Fecha popup de runa se existir
-function BTCAttack.closeRunePopup()
-  if BTCAttack.runePopup then
-    BTCAttack.runePopup:destroy()
-    BTCAttack.runePopup = nil
+function MTCAttack.closeRunePopup()
+  if MTCAttack.runePopup then
+    MTCAttack.runePopup:destroy()
+    MTCAttack.runePopup = nil
   end
 end
 
 -- Mostra popup de selecao de runa com icones (igual ao healing potions)
-function BTCAttack.showRunePopup(itemContainer, slotIndex, config, onSelect)
-  BTCAttack.closeRunePopup()
+function MTCAttack.showRunePopup(itemContainer, slotIndex, config, onSelect)
+  MTCAttack.closeRunePopup()
   
-  local runeCount = #BTCAttack.attackRunes
+  local runeCount = #MTCAttack.attackRunes
   local itemSize = 42
   local spacing = 5
   local padding = 8
@@ -892,7 +892,7 @@ function BTCAttack.showRunePopup(itemContainer, slotIndex, config, onSelect)
   -- Cria popup panel
   local popup = g_ui.createWidget("Panel", rootWidget)
   popup:setId("attackRunePopup")
-  BTCAttack.runePopup = popup
+  MTCAttack.runePopup = popup
   
   -- Estilo do popup
   popup:setBackgroundColor("#2a2a2a")
@@ -908,7 +908,7 @@ function BTCAttack.showRunePopup(itemContainer, slotIndex, config, onSelect)
   popup:setPaddingBottom(padding)
   
   -- Adiciona cada runa
-  for idx, rune in ipairs(BTCAttack.attackRunes) do
+  for idx, rune in ipairs(MTCAttack.attackRunes) do
     -- Container individual para cada runa (quadrado)
     local runeBox = g_ui.createWidget("Button", popup)
     runeBox:setSize({width = itemSize, height = itemSize})
@@ -941,7 +941,7 @@ function BTCAttack.showRunePopup(itemContainer, slotIndex, config, onSelect)
       if onSelect then
         onSelect(rune)
       end
-      BTCAttack.closeRunePopup()
+      MTCAttack.closeRunePopup()
     end
   end
   
@@ -957,29 +957,29 @@ function BTCAttack.showRunePopup(itemContainer, slotIndex, config, onSelect)
   popup.onFocusChange = function(widget, focused)
     if not focused then
       scheduleEvent(function()
-        BTCAttack.closeRunePopup()
+        MTCAttack.closeRunePopup()
       end, 100)
     end
   end
 end
 
 -- UI reference para o container principal
-BTCAttack.mainContainer = nil
+MTCAttack.mainContainer = nil
 
 -- Cria a UI do modulo
-function BTCAttack.createUI(container)
+function MTCAttack.createUI(container)
   if not container then return end
   
   -- Guarda referencia ao container principal
-  BTCAttack.mainContainer = container
+  MTCAttack.mainContainer = container
   
   container:destroyChildren()
-  BTCAttack.spellSlotWidgets = {}
+  MTCAttack.spellSlotWidgets = {}
   
   -- =============================================
   -- SECAO: TARGETING & MOVEMENT (integrado aqui)
   -- =============================================
-  BTCAttack.createTargetingUI(container)
+  MTCAttack.createTargetingUI(container)
   
   local profile = "Default"
   local iconFile = "/images/game/spells/defaultspells"
@@ -1009,7 +1009,7 @@ function BTCAttack.createUI(container)
   targetsRow:addAnchor(AnchorRight, 'parent', AnchorRight)
   
   local monstersBtn = g_ui.createWidget("Button", targetsRow)
-  monstersBtn:setText(BTCAttack.config.attackMonsters and "[X]" or "[ ]")
+  monstersBtn:setText(MTCAttack.config.attackMonsters and "[X]" or "[ ]")
   monstersBtn:setWidth(28)
   monstersBtn:addAnchor(AnchorLeft, 'parent', AnchorLeft)
   monstersBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
@@ -1022,13 +1022,13 @@ function BTCAttack.createUI(container)
   monstersLabel:setMarginLeft(3)
   
   monstersBtn.onClick = function()
-    BTCAttack.config.attackMonsters = not BTCAttack.config.attackMonsters
-    monstersBtn:setText(BTCAttack.config.attackMonsters and "[X]" or "[ ]")
-    BTCAttack.saveConfig()
+    MTCAttack.config.attackMonsters = not MTCAttack.config.attackMonsters
+    monstersBtn:setText(MTCAttack.config.attackMonsters and "[X]" or "[ ]")
+    MTCAttack.saveConfig()
   end
   
   local playersBtn = g_ui.createWidget("Button", targetsRow)
-  playersBtn:setText(BTCAttack.config.attackPlayers and "[X]" or "[ ]")
+  playersBtn:setText(MTCAttack.config.attackPlayers and "[X]" or "[ ]")
   playersBtn:setWidth(28)
   playersBtn:addAnchor(AnchorLeft, 'prev', AnchorRight)
   playersBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
@@ -1042,9 +1042,9 @@ function BTCAttack.createUI(container)
   playersLabel:setMarginLeft(3)
   
   playersBtn.onClick = function()
-    BTCAttack.config.attackPlayers = not BTCAttack.config.attackPlayers
-    playersBtn:setText(BTCAttack.config.attackPlayers and "[X]" or "[ ]")
-    BTCAttack.saveConfig()
+    MTCAttack.config.attackPlayers = not MTCAttack.config.attackPlayers
+    playersBtn:setText(MTCAttack.config.attackPlayers and "[X]" or "[ ]")
+    MTCAttack.saveConfig()
   end
   
   -- Separador
@@ -1060,23 +1060,23 @@ function BTCAttack.createUI(container)
   
   -- Cria 6 slots usando a mesma logica do Healing (com escolha de tipo)
   for i = 1, 6 do
-    BTCAttack.createAttackSlotUI(container, i, iconFile)
+    MTCAttack.createAttackSlotUI(container, i, iconFile)
   end
   
   -- Info de vocacao
   local vocInfo = g_ui.createWidget("Label", container)
   vocInfo:setMarginTop(5)
-  local voc = BTCAttack.getPlayerVocation()
+  local voc = MTCAttack.getPlayerVocation()
   -- Usando clientid: Knight=1, Paladin=2, Sorcerer=3, Druid=4, Monk=5, EK=11, RP=12, MS=13, ED=14, ExMonk=15
   local vocNames = {[0]="None", [1]="Knight", [2]="Paladin", [3]="Sorcerer", [4]="Druid", [5]="Monk", [11]="Elite Knight", [12]="Royal Paladin", [13]="Master Sorcerer", [14]="Elder Druid", [15]="Exalted Monk"}
-  vocInfo:setText("Voc: " .. (vocNames[voc] or ("ID:" .. voc)) .. " (" .. #BTCAttack.getAvailableSpells() .. " spells)")
+  vocInfo:setText("Voc: " .. (vocNames[voc] or ("ID:" .. voc)) .. " (" .. #MTCAttack.getAvailableSpells() .. " spells)")
   vocInfo:setColor("#666666")
   vocInfo:setFont("verdana-11px-rounded")
 end
 
 -- Cria UI de um slot de ataque (Runa OU Spell - igual ao Healing)
-function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
-  local spell = BTCAttack.config.spells[slotIndex] or {
+function MTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
+  local spell = MTCAttack.config.spells[slotIndex] or {
     enabled = false, type = "spell", words = "", cooldown = 2000, manaCost = 0, itemId = 0, lastUsed = 0
   }
   -- Garante que tem o campo type
@@ -1113,8 +1113,8 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
     
     spell.enabled = not spell.enabled
     updateToggleBtn()
-    BTCAttack.config.spells[slotIndex] = spell
-    BTCAttack.saveConfig()
+    MTCAttack.config.spells[slotIndex] = spell
+    MTCAttack.saveConfig()
   end
   
   local typeCombo = g_ui.createWidget('ComboBox', row1)
@@ -1136,11 +1136,11 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
     spell.iconId = 0
     spell.groups = nil
     spell.lastUsed = 0
-    BTCAttack.config.spells[slotIndex] = spell
-    BTCAttack.saveConfig()
+    MTCAttack.config.spells[slotIndex] = spell
+    MTCAttack.saveConfig()
     -- Usa a referencia guardada ao container principal
-    if BTCAttack.mainContainer then
-      BTCAttack.createUI(BTCAttack.mainContainer)
+    if MTCAttack.mainContainer then
+      MTCAttack.createUI(MTCAttack.mainContainer)
     end
   end
   
@@ -1227,7 +1227,7 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
     
     -- Clique no container abre popup de spells
     itemContainer.onClick = function()
-      BTCAttack.showSpellPopup(itemContainer, slotIndex, function(selectedSpell)
+      MTCAttack.showSpellPopup(itemContainer, slotIndex, function(selectedSpell)
         spell.words = selectedSpell.words
         spell.cooldown = selectedSpell.cooldown
         spell.manaCost = selectedSpell.mana
@@ -1236,7 +1236,7 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
         spell.groups = selectedSpell.groups
         spell.lastUsed = 0
         spell.enabled = true
-        BTCAttack.config.spells[slotIndex] = spell
+        MTCAttack.config.spells[slotIndex] = spell
         
         -- Atualiza visual
         updateToggleBtn()
@@ -1255,12 +1255,12 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
         nameLabel:setColor('#ff6600')
         
         itemContainer:setTooltip(selectedSpell.words .. "\nCD: " .. selectedSpell.cooldown/1000 .. "s | MP: " .. selectedSpell.mana)
-        BTCAttack.saveConfig()
+        MTCAttack.saveConfig()
       end)
     end
     
     -- Armazena referencias
-    BTCAttack.spellSlotWidgets[slotIndex] = {
+    MTCAttack.spellSlotWidgets[slotIndex] = {
       row = row2,
       enabledBtn = toggleBtn,
       icon = iconWidget,
@@ -1303,7 +1303,7 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
     -- Busca nome da runa
     local runeName = "[Click to select]"
     local runeShortName = ""
-    for _, r in ipairs(BTCAttack.attackRunes) do
+    for _, r in ipairs(MTCAttack.attackRunes) do
       if r.itemId == spell.itemId then
         runeName = r.name
         runeShortName = r.shortName
@@ -1330,14 +1330,14 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
     
     -- Clique no botao abre popup
     itemContainer.onClick = function()
-      BTCAttack.showRunePopup(itemContainer, slotIndex, spell, function(selectedRune)
+      MTCAttack.showRunePopup(itemContainer, slotIndex, spell, function(selectedRune)
         spell.itemId = selectedRune.itemId
         spell.words = selectedRune.shortName
         spell.type = "rune"
         spell.cooldown = 2000  -- Cooldown padrao para runas
         spell.manaCost = 0     -- Runas nao gastam mana
         spell.enabled = true
-        BTCAttack.config.spells[slotIndex] = spell
+        MTCAttack.config.spells[slotIndex] = spell
         
         -- Atualiza visual
         updateToggleBtn()
@@ -1346,12 +1346,12 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
         nameLabel:setText(selectedRune.name)
         nameLabel:setColor('#ff8800')
         
-        BTCAttack.saveConfig()
+        MTCAttack.saveConfig()
       end)
     end
     
     -- Armazena referencias
-    BTCAttack.spellSlotWidgets[slotIndex] = {
+    MTCAttack.spellSlotWidgets[slotIndex] = {
       row = row2,
       enabledBtn = toggleBtn,
       icon = itemBox,
@@ -1368,12 +1368,12 @@ function BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
 end
 
 -- Mantém a função antiga para compatibilidade (redireciona para a nova)
-function BTCAttack.createSpellSlotUI(parent, slotIndex, iconFile)
-  BTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
+function MTCAttack.createSpellSlotUI(parent, slotIndex, iconFile)
+  MTCAttack.createAttackSlotUI(parent, slotIndex, iconFile)
 end
 
 -- Busca dados completos da spell pelo words (para migrar configs antigas)
-function BTCAttack.getSpellDataByWords(words)
+function MTCAttack.getSpellDataByWords(words)
   if not words or words == "" then return nil end
   
   local profile = "Default"
@@ -1414,14 +1414,14 @@ function BTCAttack.getSpellDataByWords(words)
 end
 
 -- Atualiza visual de cooldown dos slots (chamado pelo loop principal)
-function BTCAttack.updateCooldownUI()
+function MTCAttack.updateCooldownUI()
   -- Atualiza indicador visual de cooldown para cada slot
   for i = 1, 6 do
-    local slotWidgets = BTCAttack.spellSlotWidgets[i]
+    local slotWidgets = MTCAttack.spellSlotWidgets[i]
     if slotWidgets and slotWidgets.enabledBtn and slotWidgets.icon then
-      local spell = BTCAttack.config and BTCAttack.config.spells and BTCAttack.config.spells[i]
+      local spell = MTCAttack.config and MTCAttack.config.spells and MTCAttack.config.spells[i]
       if spell and spell.enabled and spell.words ~= "" then
-        if BTCAttack.isSpellReady(i) then
+        if MTCAttack.isSpellReady(i) then
           -- Spell pronta - cor normal
           slotWidgets.enabledBtn:setColor('#00ff00')
           slotWidgets.icon:setOpacity(1.0)
@@ -1440,9 +1440,9 @@ end
 -- =============================================
 
 -- Cria UI de Targeting dentro do painel de Attack
-function BTCAttack.createTargetingUI(container)
+function MTCAttack.createTargetingUI(container)
   if not container then return end
-  if not BTCTargeting or not BTCTargeting.config then return end
+  if not MTCTargeting or not MTCTargeting.config then return end
   
   -- Titulo
   local title = g_ui.createWidget("Label", container)
@@ -1472,7 +1472,7 @@ function BTCAttack.createTargetingUI(container)
   local modeButtons = {}
   local function updateModeButtons()
     for mode, btn in pairs(modeButtons) do
-      if BTCTargeting.config.moveMode == mode then
+      if MTCTargeting.config.moveMode == mode then
         btn:setColor('#00ff00')
       else
         btn:setColor('#888888')
@@ -1488,8 +1488,8 @@ function BTCAttack.createTargetingUI(container)
   modeButtons["stand"] = standBtn
   
   standBtn.onClick = function()
-    BTCTargeting.config.moveMode = "stand"
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.moveMode = "stand"
+    MTCTargeting.saveConfig()
     updateModeButtons()
   end
   
@@ -1502,8 +1502,8 @@ function BTCAttack.createTargetingUI(container)
   modeButtons["approach"] = approachBtn
   
   approachBtn.onClick = function()
-    BTCTargeting.config.moveMode = "approach"
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.moveMode = "approach"
+    MTCTargeting.saveConfig()
     updateModeButtons()
   end
   
@@ -1516,7 +1516,7 @@ function BTCAttack.createTargetingUI(container)
   onlyAttackRow:setMarginBottom(3)
   
   local onlyAttackBtn = g_ui.createWidget("Button", onlyAttackRow)
-  onlyAttackBtn:setText(BTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
+  onlyAttackBtn:setText(MTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
   onlyAttackBtn:setWidth(28)
   onlyAttackBtn:addAnchor(AnchorLeft, 'parent', AnchorLeft)
   onlyAttackBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
@@ -1529,9 +1529,9 @@ function BTCAttack.createTargetingUI(container)
   onlyAttackLabel:setMarginLeft(5)
   
   onlyAttackBtn.onClick = function()
-    BTCTargeting.config.onlyWhenAttacking = not BTCTargeting.config.onlyWhenAttacking
-    onlyAttackBtn:setText(BTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.onlyWhenAttacking = not MTCTargeting.config.onlyWhenAttacking
+    onlyAttackBtn:setText(MTCTargeting.config.onlyWhenAttacking and "[X]" or "[ ]")
+    MTCTargeting.saveConfig()
   end
   
   -- Checkbox: Permitir diagonal
@@ -1540,7 +1540,7 @@ function BTCAttack.createTargetingUI(container)
   diagRow:setMarginBottom(5)
   
   local diagBtn = g_ui.createWidget("Button", diagRow)
-  diagBtn:setText(BTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
+  diagBtn:setText(MTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
   diagBtn:setWidth(28)
   diagBtn:addAnchor(AnchorLeft, 'parent', AnchorLeft)
   diagBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
@@ -1553,9 +1553,9 @@ function BTCAttack.createTargetingUI(container)
   diagLabel:setMarginLeft(5)
   
   diagBtn.onClick = function()
-    BTCTargeting.config.allowDiagonal = not BTCTargeting.config.allowDiagonal
-    diagBtn:setText(BTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
-    BTCTargeting.saveConfig()
+    MTCTargeting.config.allowDiagonal = not MTCTargeting.config.allowDiagonal
+    diagBtn:setText(MTCTargeting.config.allowDiagonal and "[X]" or "[ ]")
+    MTCTargeting.saveConfig()
   end
   
   -- Separador entre Targeting e Attack
@@ -1565,10 +1565,10 @@ function BTCAttack.createTargetingUI(container)
 end
 
 -- Retorna status do modulo
-function BTCAttack.getStatus()
-  local enabled = BTCAttack.config and BTCAttack.config.enabled
+function MTCAttack.getStatus()
+  local enabled = MTCAttack.config and MTCAttack.config.enabled
   return enabled and "ON" or "OFF"
 end
 
 -- Inicializa
-BTCAttack.init()
+MTCAttack.init()

@@ -1,5 +1,5 @@
 --[[
-  BTC Bot - Sistema de Healing Friends
+  MTC Bot - Sistema de Healing Friends
   
   Cura automatica de outros jogadores (party members ou lista customizada)
   
@@ -8,10 +8,10 @@
   - exura gran mas res (Mass Healing - Druid, cura todos na area)
 ]]
 
-BTCHealFriend = BTCHealFriend or {}
+MTCHealFriend = MTCHealFriend or {}
 
 -- Configuracao padrao
-BTCHealFriend.defaultConfig = {
+MTCHealFriend.defaultConfig = {
   enabled = false,
   healParty = true,           -- Curar membros da party automaticamente
   healFriendList = {},        -- Lista de nomes para curar (alem da party)
@@ -39,7 +39,7 @@ BTCHealFriend.defaultConfig = {
 }
 
 -- Spells de cura em outros jogadores
-BTCHealFriend.healSpells = {
+MTCHealFriend.healSpells = {
   -- Druid
   { words = "exura sio", mana = 120, level = 18, voc = {4,14}, needTarget = true, range = 7 },
   { words = "exura gran sio", mana = 210, level = 60, voc = {4,14}, needTarget = true, range = 7 },  -- Salvation (cura forte)
@@ -49,50 +49,50 @@ BTCHealFriend.healSpells = {
 }
 
 -- Popup de edicao
-BTCHealFriend.friendListPopup = nil
+MTCHealFriend.friendListPopup = nil
 
 -- Variaveis de controle
-BTCHealFriend.config = nil
-BTCHealFriend.lastHealTime = 0
-BTCHealFriend.healCooldown = 1000  -- 1 segundo entre curas
+MTCHealFriend.config = nil
+MTCHealFriend.lastHealTime = 0
+MTCHealFriend.healCooldown = 1000  -- 1 segundo entre curas
 
 -- Inicializa o modulo
-function BTCHealFriend.init()
-  BTCHealFriend.config = BTCHealFriend.loadConfig()
+function MTCHealFriend.init()
+  MTCHealFriend.config = MTCHealFriend.loadConfig()
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCHealFriend.loadConfig()
-  local saved = BTCConfig.get("healfriend")
+function MTCHealFriend.loadConfig()
+  local saved = MTCConfig.get("healfriend")
   if saved then
     return saved
   end
-  return BTCHealFriend.defaultConfig
+  return MTCHealFriend.defaultConfig
 end
 
 -- Salva configuracao
-function BTCHealFriend.saveConfig()
-  BTCConfig.set("healfriend", BTCHealFriend.config)
+function MTCHealFriend.saveConfig()
+  MTCConfig.set("healfriend", MTCHealFriend.config)
 end
 
 -- Obtem configuracao de um slot
-function BTCHealFriend.getSlotConfig(slotNum)
+function MTCHealFriend.getSlotConfig(slotNum)
   local key = "slot" .. slotNum
-  if BTCHealFriend.config and BTCHealFriend.config[key] then
-    return BTCHealFriend.config[key]
+  if MTCHealFriend.config and MTCHealFriend.config[key] then
+    return MTCHealFriend.config[key]
   end
-  return BTCHealFriend.defaultConfig["slot" .. slotNum]
+  return MTCHealFriend.defaultConfig["slot" .. slotNum]
 end
 
 -- Atualiza configuracao de um slot
-function BTCHealFriend.setSlotConfig(slotNum, config)
+function MTCHealFriend.setSlotConfig(slotNum, config)
   local key = "slot" .. slotNum
-  BTCHealFriend.config[key] = config
-  BTCHealFriend.saveConfig()
+  MTCHealFriend.config[key] = config
+  MTCHealFriend.saveConfig()
 end
 
 -- Retorna vocacao do player (ou 0 se nao conseguir)
-function BTCHealFriend.getPlayerVocation()
+function MTCHealFriend.getPlayerVocation()
   if not g_game.isOnline() then return 0 end
   local player = g_game.getLocalPlayer()
   if not player then return 0 end
@@ -100,11 +100,11 @@ function BTCHealFriend.getPlayerVocation()
 end
 
 -- Retorna lista de spells filtrada pela vocacao atual
-function BTCHealFriend.getAvailableSpells()
-  local voc = BTCHealFriend.getPlayerVocation()
+function MTCHealFriend.getAvailableSpells()
+  local voc = MTCHealFriend.getPlayerVocation()
   local available = {}
   
-  for _, spell in ipairs(BTCHealFriend.healSpells) do
+  for _, spell in ipairs(MTCHealFriend.healSpells) do
     if voc == 0 then
       table.insert(available, spell)
     else
@@ -121,14 +121,14 @@ function BTCHealFriend.getAvailableSpells()
 end
 
 -- Verifica se pode curar (cooldown)
-function BTCHealFriend.canHeal()
+function MTCHealFriend.canHeal()
   local now = g_clock.millis()
-  return (now - BTCHealFriend.lastHealTime) >= BTCHealFriend.healCooldown
+  return (now - MTCHealFriend.lastHealTime) >= MTCHealFriend.healCooldown
 end
 
 -- Obtem info da spell
-function BTCHealFriend.getSpellInfo(spellWords)
-  for _, spell in ipairs(BTCHealFriend.healSpells) do
+function MTCHealFriend.getSpellInfo(spellWords)
+  for _, spell in ipairs(MTCHealFriend.healSpells) do
     if spell.words == spellWords then
       return spell
     end
@@ -137,7 +137,7 @@ function BTCHealFriend.getSpellInfo(spellWords)
 end
 
 -- Verifica se e membro da party
-function BTCHealFriend.isPartyMember(creature)
+function MTCHealFriend.isPartyMember(creature)
   if not creature then return false end
   if creature:isLocalPlayer() then return false end
   if not creature:isPlayer() then return false end
@@ -154,13 +154,13 @@ function BTCHealFriend.isPartyMember(creature)
 end
 
 -- Verifica se esta na lista de amigos
-function BTCHealFriend.isInFriendList(creature)
+function MTCHealFriend.isInFriendList(creature)
   if not creature then return false end
-  if not BTCHealFriend.config.healFriendList then return false end
+  if not MTCHealFriend.config.healFriendList then return false end
   
   local name = creature:getName():lower()
   
-  for _, friendName in ipairs(BTCHealFriend.config.healFriendList) do
+  for _, friendName in ipairs(MTCHealFriend.config.healFriendList) do
     if friendName:lower() == name then
       return true
     end
@@ -170,17 +170,17 @@ function BTCHealFriend.isInFriendList(creature)
 end
 
 -- Verifica se deve curar a criatura
-function BTCHealFriend.shouldHeal(creature)
+function MTCHealFriend.shouldHeal(creature)
   if not creature then return false end
   if creature:isLocalPlayer() then return false end
   if not creature:isPlayer() then return false end
   if creature:isDead() then return false end
   
   -- Verifica se e da party ou da lista de amigos
-  local isParty = BTCHealFriend.isPartyMember(creature)
-  local isFriend = BTCHealFriend.isInFriendList(creature)
+  local isParty = MTCHealFriend.isPartyMember(creature)
+  local isFriend = MTCHealFriend.isInFriendList(creature)
   
-  if BTCHealFriend.config.healParty and isParty then
+  if MTCHealFriend.config.healParty and isParty then
     return true
   end
   
@@ -192,13 +192,13 @@ function BTCHealFriend.shouldHeal(creature)
 end
 
 -- Calcula distancia entre posicoes
-function BTCHealFriend.getDistance(pos1, pos2)
+function MTCHealFriend.getDistance(pos1, pos2)
   if not pos1 or not pos2 then return 999 end
   return math.max(math.abs(pos1.x - pos2.x), math.abs(pos1.y - pos2.y))
 end
 
 -- Encontra amigos que precisam de cura
-function BTCHealFriend.findFriendsNeedingHeal(maxHpPercent, maxRange)
+function MTCHealFriend.findFriendsNeedingHeal(maxHpPercent, maxRange)
   if not g_game.isOnline() then return {} end
   
   local player = g_game.getLocalPlayer()
@@ -216,10 +216,10 @@ function BTCHealFriend.findFriendsNeedingHeal(maxHpPercent, maxRange)
   local friendsNeedHeal = {}
   
   for _, creature in ipairs(spectators) do
-    if BTCHealFriend.shouldHeal(creature) then
+    if MTCHealFriend.shouldHeal(creature) then
       local creaturePos = creature:getPosition()
       if creaturePos and creaturePos.z == playerPos.z then
-        local distance = BTCHealFriend.getDistance(playerPos, creaturePos)
+        local distance = MTCHealFriend.getDistance(playerPos, creaturePos)
         
         if distance <= maxRange then
           local hp = creature:getHealthPercent()
@@ -249,13 +249,13 @@ function BTCHealFriend.findFriendsNeedingHeal(maxHpPercent, maxRange)
 end
 
 -- Usa spell de cura em alvo especifico
-function BTCHealFriend.castHealOnTarget(spellWords, targetName)
+function MTCHealFriend.castHealOnTarget(spellWords, targetName)
   if not g_game.isOnline() then return false end
   
   local player = g_game.getLocalPlayer()
   if not player then return false end
   
-  local spellInfo = BTCHealFriend.getSpellInfo(spellWords)
+  local spellInfo = MTCHealFriend.getSpellInfo(spellWords)
   if not spellInfo then return false end
   
   -- Verifica mana
@@ -272,18 +272,18 @@ function BTCHealFriend.castHealOnTarget(spellWords, targetName)
     g_game.talk(spellWords)
   end
   
-  BTCHealFriend.lastHealTime = g_clock.millis()
+  MTCHealFriend.lastHealTime = g_clock.millis()
   return true
 end
 
 -- Funcao principal de execucao
-function BTCHealFriend.execute()
+function MTCHealFriend.execute()
   if not g_game.isOnline() then return end
   
   -- Verifica se o modulo esta ativo
-  if not BTCHealFriend.config or not BTCHealFriend.config.enabled then return end
+  if not MTCHealFriend.config or not MTCHealFriend.config.enabled then return end
   
-  if not BTCHealFriend.canHeal() then return end
+  if not MTCHealFriend.canHeal() then return end
   
   local player = g_game.getLocalPlayer()
   if not player then return end
@@ -292,17 +292,17 @@ function BTCHealFriend.execute()
   
   -- Slot 1 e 2: Heal Friend individual
   for slotNum = 1, 2 do
-    local slot = BTCHealFriend.getSlotConfig(slotNum)
+    local slot = MTCHealFriend.getSlotConfig(slotNum)
     
     if slot.enabled and slot.spell and slot.spell ~= "" then
-      local spellInfo = BTCHealFriend.getSpellInfo(slot.spell)
+      local spellInfo = MTCHealFriend.getSpellInfo(slot.spell)
       if spellInfo then
-        local friends = BTCHealFriend.findFriendsNeedingHeal(slot.hpPercent, spellInfo.range or 7)
+        local friends = MTCHealFriend.findFriendsNeedingHeal(slot.hpPercent, spellInfo.range or 7)
         
         if #friends > 0 then
           -- Cura o amigo com menor HP
           local target = friends[1]
-          if BTCHealFriend.castHealOnTarget(slot.spell, target.name) then
+          if MTCHealFriend.castHealOnTarget(slot.spell, target.name) then
             return
           end
         end
@@ -311,15 +311,15 @@ function BTCHealFriend.execute()
   end
   
   -- Slot 3: Mass Healing (AoE)
-  local slot3 = BTCHealFriend.getSlotConfig(3)
+  local slot3 = MTCHealFriend.getSlotConfig(3)
   
   if slot3.enabled and slot3.spell and slot3.spell ~= "" then
-    local spellInfo = BTCHealFriend.getSpellInfo(slot3.spell)
+    local spellInfo = MTCHealFriend.getSpellInfo(slot3.spell)
     if spellInfo and spellInfo.aoe then
-      local friends = BTCHealFriend.findFriendsNeedingHeal(slot3.hpPercent, spellInfo.range or 5)
+      local friends = MTCHealFriend.findFriendsNeedingHeal(slot3.hpPercent, spellInfo.range or 5)
       
       if #friends >= (slot3.minFriendsInRange or 2) then
-        if BTCHealFriend.castHealOnTarget(slot3.spell, "") then
+        if MTCHealFriend.castHealOnTarget(slot3.spell, "") then
           return
         end
       end
@@ -328,20 +328,20 @@ function BTCHealFriend.execute()
 end
 
 -- Fecha popup se existir
-function BTCHealFriend.closePopup()
-  if BTCHealFriend.friendListPopup then
-    BTCHealFriend.friendListPopup:destroy()
-    BTCHealFriend.friendListPopup = nil
+function MTCHealFriend.closePopup()
+  if MTCHealFriend.friendListPopup then
+    MTCHealFriend.friendListPopup:destroy()
+    MTCHealFriend.friendListPopup = nil
   end
 end
 
 -- Mostra popup para adicionar amigo
-function BTCHealFriend.showAddFriendPopup(listPanel, updateCallback)
-  BTCHealFriend.closePopup()
+function MTCHealFriend.showAddFriendPopup(listPanel, updateCallback)
+  MTCHealFriend.closePopup()
   
   local popup = g_ui.createWidget("Panel", rootWidget)
   popup:setId("addFriendPopup")
-  BTCHealFriend.friendListPopup = popup
+  MTCHealFriend.friendListPopup = popup
   
   popup:setBackgroundColor("#333333")
   popup:setWidth(250)
@@ -400,13 +400,13 @@ function BTCHealFriend.showAddFriendPopup(listPanel, updateCallback)
     local name = textEdit:getText()
     if name and name ~= "" then
       -- Adiciona a lista
-      if not BTCHealFriend.config.healFriendList then
-        BTCHealFriend.config.healFriendList = {}
+      if not MTCHealFriend.config.healFriendList then
+        MTCHealFriend.config.healFriendList = {}
       end
       
       -- Verifica se ja existe
       local exists = false
-      for _, n in ipairs(BTCHealFriend.config.healFriendList) do
+      for _, n in ipairs(MTCHealFriend.config.healFriendList) do
         if n:lower() == name:lower() then
           exists = true
           break
@@ -414,18 +414,18 @@ function BTCHealFriend.showAddFriendPopup(listPanel, updateCallback)
       end
       
       if not exists then
-        table.insert(BTCHealFriend.config.healFriendList, name)
-        BTCHealFriend.saveConfig()
+        table.insert(MTCHealFriend.config.healFriendList, name)
+        MTCHealFriend.saveConfig()
         if updateCallback then
           updateCallback()
         end
       end
     end
-    BTCHealFriend.closePopup()
+    MTCHealFriend.closePopup()
   end
   
   cancelBtn.onClick = function()
-    BTCHealFriend.closePopup()
+    MTCHealFriend.closePopup()
   end
   
   -- Enter para confirmar
@@ -442,31 +442,31 @@ function BTCHealFriend.showAddFriendPopup(listPanel, updateCallback)
 end
 
 -- Remove amigo da lista
-function BTCHealFriend.removeFriend(name)
-  if not BTCHealFriend.config.healFriendList then return end
+function MTCHealFriend.removeFriend(name)
+  if not MTCHealFriend.config.healFriendList then return end
   
-  for i, n in ipairs(BTCHealFriend.config.healFriendList) do
+  for i, n in ipairs(MTCHealFriend.config.healFriendList) do
     if n:lower() == name:lower() then
-      table.remove(BTCHealFriend.config.healFriendList, i)
-      BTCHealFriend.saveConfig()
+      table.remove(MTCHealFriend.config.healFriendList, i)
+      MTCHealFriend.saveConfig()
       return
     end
   end
 end
 
 -- Cria a interface de configuracao do Heal Friend
-function BTCHealFriend.createUI(parent)
+function MTCHealFriend.createUI(parent)
   parent:destroyChildren()
   
   -- Checkbox: Heal Party Members
   local partyCheck = g_ui.createWidget('CheckBox', parent)
   partyCheck:setText(' Curar membros da Party')
-  partyCheck:setChecked(BTCHealFriend.config.healParty)
+  partyCheck:setChecked(MTCHealFriend.config.healParty)
   partyCheck:setMarginTop(5)
   
   partyCheck.onCheckChange = function(widget, checked)
-    BTCHealFriend.config.healParty = checked
-    BTCHealFriend.saveConfig()
+    MTCHealFriend.config.healParty = checked
+    MTCHealFriend.saveConfig()
   end
   
   -- Separador
@@ -498,7 +498,7 @@ function BTCHealFriend.createUI(parent)
     listContainer:destroyChildren()
     
     local yPos = 0
-    for i, name in ipairs(BTCHealFriend.config.healFriendList or {}) do
+    for i, name in ipairs(MTCHealFriend.config.healFriendList or {}) do
       local friendRow = g_ui.createWidget('Panel', listContainer)
       friendRow:setHeight(18)
       friendRow:addAnchor(AnchorTop, 'parent', AnchorTop)
@@ -521,7 +521,7 @@ function BTCHealFriend.createUI(parent)
       removeBtn:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
       
       removeBtn.onClick = function()
-        BTCHealFriend.removeFriend(name)
+        MTCHealFriend.removeFriend(name)
         updateFriendList()
       end
       
@@ -537,7 +537,7 @@ function BTCHealFriend.createUI(parent)
   addBtn:setMarginTop(3)
   
   addBtn.onClick = function()
-    BTCHealFriend.showAddFriendPopup(listContainer, updateFriendList)
+    MTCHealFriend.showAddFriendPopup(listContainer, updateFriendList)
   end
   
   -- Separador
@@ -553,13 +553,13 @@ function BTCHealFriend.createUI(parent)
   
   -- Cria UI para cada slot
   for i = 1, 3 do
-    BTCHealFriend.createSlotUI(parent, i)
+    MTCHealFriend.createSlotUI(parent, i)
   end
 end
 
 -- Cria UI de um slot individual (compacto)
-function BTCHealFriend.createSlotUI(parent, slotNum)
-  local config = BTCHealFriend.getSlotConfig(slotNum)
+function MTCHealFriend.createSlotUI(parent, slotNum)
+  local config = MTCHealFriend.getSlotConfig(slotNum)
   
   -- Container do slot
   local slotPanel = g_ui.createWidget('Panel', parent)
@@ -597,7 +597,7 @@ function BTCHealFriend.createSlotUI(parent, slotNum)
   toggleBtn.onClick = function()
     config.enabled = not config.enabled
     updateToggle()
-    BTCHealFriend.setSlotConfig(slotNum, config)
+    MTCHealFriend.setSlotConfig(slotNum, config)
   end
   
   -- Label do slot
@@ -619,7 +619,7 @@ function BTCHealFriend.createSlotUI(parent, slotNum)
   spellCombo:addAnchor(AnchorRight, 'parent', AnchorRight)
   spellCombo:addAnchor(AnchorVerticalCenter, 'parent', AnchorVerticalCenter)
   
-  local availableSpells = BTCHealFriend.getAvailableSpells()
+  local availableSpells = MTCHealFriend.getAvailableSpells()
   for _, spell in ipairs(availableSpells) do
     spellCombo:addOption(spell.words)
   end
@@ -630,7 +630,7 @@ function BTCHealFriend.createSlotUI(parent, slotNum)
   
   spellCombo.onOptionChange = function(widget, option)
     config.spell = option
-    BTCHealFriend.setSlotConfig(slotNum, config)
+    MTCHealFriend.setSlotConfig(slotNum, config)
   end
   
   -- Linha 2: HP%
@@ -674,7 +674,7 @@ function BTCHealFriend.createSlotUI(parent, slotNum)
     if config.hpPercent > 5 then
       config.hpPercent = config.hpPercent - 5
       hpValue:setText(config.hpPercent .. '%')
-      BTCHealFriend.setSlotConfig(slotNum, config)
+      MTCHealFriend.setSlotConfig(slotNum, config)
     end
   end
   
@@ -682,7 +682,7 @@ function BTCHealFriend.createSlotUI(parent, slotNum)
     if config.hpPercent < 100 then
       config.hpPercent = config.hpPercent + 5
       hpValue:setText(config.hpPercent .. '%')
-      BTCHealFriend.setSlotConfig(slotNum, config)
+      MTCHealFriend.setSlotConfig(slotNum, config)
     end
   end
   
@@ -722,7 +722,7 @@ function BTCHealFriend.createSlotUI(parent, slotNum)
       if (config.minFriendsInRange or 2) > 1 then
         config.minFriendsInRange = (config.minFriendsInRange or 2) - 1
         minValue:setText(tostring(config.minFriendsInRange))
-        BTCHealFriend.setSlotConfig(slotNum, config)
+        MTCHealFriend.setSlotConfig(slotNum, config)
       end
     end
     
@@ -730,10 +730,10 @@ function BTCHealFriend.createSlotUI(parent, slotNum)
       if (config.minFriendsInRange or 2) < 10 then
         config.minFriendsInRange = (config.minFriendsInRange or 2) + 1
         minValue:setText(tostring(config.minFriendsInRange))
-        BTCHealFriend.setSlotConfig(slotNum, config)
+        MTCHealFriend.setSlotConfig(slotNum, config)
       end
     end
   end
 end
 
-return BTCHealFriend
+return MTCHealFriend

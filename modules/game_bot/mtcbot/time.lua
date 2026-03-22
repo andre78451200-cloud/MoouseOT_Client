@@ -1,5 +1,5 @@
 --[[
-  BTC Bot - Modulo Time (Uso Temporizado de Itens)
+  MTC Bot - Modulo Time (Uso Temporizado de Itens)
   
   Permite configurar ate 5 itens para serem usados automaticamente
   em intervalos de tempo definidos pelo jogador.
@@ -7,10 +7,10 @@
   Exemplo: Usar food a cada 60s, usar um item especial a cada 120s, etc.
 ]]
 
-BTCTime = BTCTime or {}
+MTCTime = MTCTime or {}
 
 -- Configuracao padrao: 5 slots de item temporizado
-BTCTime.defaultConfig = {
+MTCTime.defaultConfig = {
   enabled = false,
   slots = {
     { enabled = false, itemId = 0, interval = 60, name = "" },
@@ -22,24 +22,24 @@ BTCTime.defaultConfig = {
 }
 
 -- Timers de controle (ultimo uso de cada slot em milissegundos)
-BTCTime.lastUseTime = { 0, 0, 0, 0, 0 }
+MTCTime.lastUseTime = { 0, 0, 0, 0, 0 }
 
 -- Config atual
-BTCTime.config = nil
+MTCTime.config = nil
 
 -- Inicializa o modulo
-function BTCTime.init()
-  BTCTime.config = BTCTime.loadConfig()
-  BTCTime.lastUseTime = { 0, 0, 0, 0, 0 }
+function MTCTime.init()
+  MTCTime.config = MTCTime.loadConfig()
+  MTCTime.lastUseTime = { 0, 0, 0, 0, 0 }
 end
 
 -- Carrega configuracao salva ou usa padrao
-function BTCTime.loadConfig()
-  local saved = BTCConfig.get("time")
+function MTCTime.loadConfig()
+  local saved = MTCConfig.get("time")
   if saved then
     -- Garantir que tem 5 slots
     if not saved.slots then
-      saved.slots = BTCTime.defaultConfig.slots
+      saved.slots = MTCTime.defaultConfig.slots
     end
     while #saved.slots < 5 do
       table.insert(saved.slots, { enabled = false, itemId = 0, interval = 60, name = "" })
@@ -58,12 +58,12 @@ function BTCTime.loadConfig()
 end
 
 -- Salva configuracao
-function BTCTime.saveConfig()
-  BTCConfig.set("time", BTCTime.config)
+function MTCTime.saveConfig()
+  MTCConfig.set("time", MTCTime.config)
 end
 
 -- Encontra e usa um item pelo ID no inventario/containers do jogador
-function BTCTime.useItemById(itemId)
+function MTCTime.useItemById(itemId)
   if not g_game.isOnline() then return false end
   local player = g_game.getLocalPlayer()
   if not player then return false end
@@ -84,24 +84,24 @@ function BTCTime.useItemById(itemId)
   return true
 end
 
--- Loop de execucao principal (chamado pelo BTCBot.execute)
-function BTCTime.execute()
-  if not BTCTime.config or not BTCTime.config.enabled then return end
+-- Loop de execucao principal (chamado pelo MTCBot.execute)
+function MTCTime.execute()
+  if not MTCTime.config or not MTCTime.config.enabled then return end
   if not g_game.isOnline() then return end
 
   local now = g_clock.millis()
 
   for i = 1, 5 do
-    local slot = BTCTime.config.slots[i]
+    local slot = MTCTime.config.slots[i]
     if slot and slot.enabled and slot.itemId and slot.itemId > 0 and slot.interval and slot.interval > 0 then
       local intervalMs = slot.interval * 1000 -- Converter segundos para milissegundos
-      local lastUse = BTCTime.lastUseTime[i] or 0
+      local lastUse = MTCTime.lastUseTime[i] or 0
 
       if (now - lastUse) >= intervalMs then
         -- Tentar usar o item
-        local success = BTCTime.useItemById(slot.itemId)
+        local success = MTCTime.useItemById(slot.itemId)
         if success then
-          BTCTime.lastUseTime[i] = now
+          MTCTime.lastUseTime[i] = now
         end
       end
     end
@@ -110,7 +110,7 @@ end
 
 -- ===================== UI =====================
 
-function BTCTime.createUI(parent)
+function MTCTime.createUI(parent)
   parent:destroyChildren()
 
   -- Descricao
@@ -123,7 +123,7 @@ function BTCTime.createUI(parent)
 
   -- 5 slots de item
   for i = 1, 5 do
-    BTCTime.createSlotUI(parent, i)
+    MTCTime.createSlotUI(parent, i)
   end
 
   -- Dicas de IDs
@@ -134,8 +134,8 @@ function BTCTime.createUI(parent)
   tipsLabel:setMarginTop(10)
 end
 
-function BTCTime.createSlotUI(parent, slotIndex)
-  local slot = BTCTime.config.slots[slotIndex]
+function MTCTime.createSlotUI(parent, slotIndex)
+  local slot = MTCTime.config.slots[slotIndex]
   if not slot then return end
 
   -- Painel de fundo escuro para cada slot
@@ -156,8 +156,8 @@ function BTCTime.createSlotUI(parent, slotIndex)
   enableCheck:setChecked(slot.enabled)
   enableCheck:setWidth(60)
   enableCheck.onCheckChange = function(widget, checked)
-    BTCTime.config.slots[slotIndex].enabled = checked
-    BTCTime.saveConfig()
+    MTCTime.config.slots[slotIndex].enabled = checked
+    MTCTime.saveConfig()
   end
 
   -- Item Icon (preview)
@@ -176,8 +176,8 @@ function BTCTime.createSlotUI(parent, slotIndex)
 
   itemIdInput.onTextChange = function(widget, text)
     local id = tonumber(text) or 0
-    BTCTime.config.slots[slotIndex].itemId = id
-    BTCTime.saveConfig()
+    MTCTime.config.slots[slotIndex].itemId = id
+    MTCTime.saveConfig()
     -- Atualiza preview do icone
     if id > 0 then
       itemPreview:setItemId(id)
@@ -209,8 +209,8 @@ function BTCTime.createSlotUI(parent, slotIndex)
   timeInput.onTextChange = function(widget, text)
     local newInterval = tonumber(text) or 60
     if newInterval < 1 then newInterval = 1 end
-    BTCTime.config.slots[slotIndex].interval = newInterval
-    BTCTime.saveConfig()
+    MTCTime.config.slots[slotIndex].interval = newInterval
+    MTCTime.saveConfig()
     -- Atualiza info de tempo
     local mins = math.floor(newInterval / 60)
     local secs = newInterval % 60
@@ -239,4 +239,4 @@ function BTCTime.createSlotUI(parent, slotIndex)
   end
 end
 
-return BTCTime
+return MTCTime
