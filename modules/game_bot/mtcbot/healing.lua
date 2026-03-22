@@ -45,9 +45,6 @@ MTCHealing.healthPotions = {
   { id = 7642,  name = "Great Spirit Potion" },
   { id = 23374, name = "Ultimate Spirit Potion" },
   { id = 58704, name = "Super Spirit Potion" },
-  -- Eternal Potions (infinitas)
-  { id = 51971, name = "Eternal Supreme Health Potion" },
-  { id = 51973, name = "Eternal Ultimate Spirit Potion" },
 }
 
 -- Popup de selecao de potion
