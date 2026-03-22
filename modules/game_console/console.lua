@@ -1158,67 +1158,61 @@ function addTabText(text, speaktype, tab, creatureName)
 
     label.highlightInfo = {}
 
-    -- Overlay for consoleBuffer which shows highlighted words only
+    -- NPC highlighted words (clickable keywords)
 
     if speaktype.npcChat and
         (g_game.getCharacterName() ~= creatureName or g_game.getCharacterName() == 'Account Manager') then
         local highlightData = getHighlightedText(text)
         if #highlightData > 0 then
-            local labelHighlight = g_ui.createWidget('ConsolePhantomLabel', label)
-            labelHighlight:fill('parent')
-
-            labelHighlight:setId('consoleLabelHighlight' .. consoleBuffer:getChildCount())
-            labelHighlight:setColor('#1f9ffe')
-
-            -- Remove the curly braces
+            -- Build colored text and track clickable positions
+            -- Remove curly braces and recalculate positions
+            local cleanText = text
             for i = 1, #highlightData / 3 do
                 local dataBlock = {
                     _start = highlightData[(i - 1) * 3 + 1],
                     _end = highlightData[(i - 1) * 3 + 2],
                     words = highlightData[(i - 1) * 3 + 3]
                 }
-                text = text:gsub('%{(.-)%}', dataBlock.words, 1)
+                cleanText = cleanText:gsub('%{(.-)%}', dataBlock.words, 1)
 
                 -- Recalculate positions as braces are removed
                 highlightData[(i - 1) * 3 + 1] = dataBlock._start - ((i - 1) * 2)
                 highlightData[(i - 1) * 3 + 2] = dataBlock._end - (1 + (i - 1) * 2)
             end
-            label:setText(text)
 
-            -- Calculate the positions of the highlighted text and fill with string.char(127) [Width: 1]
-            local drawText = label:getDrawText()
-            local tmpText = ''
+            -- Build setColoredText format: normal text + {highlighted, #color}
+            -- Use speaktype color for normal parts since setColoredText ignores widget color
+            local npcColor = speaktype.color or '#5FF7F7'
+            local coloredStr = ''
+            local lastEnd = 1
             for i = 1, #highlightData / 3 do
                 local dataBlock = {
                     _start = highlightData[(i - 1) * 3 + 1],
                     _end = highlightData[(i - 1) * 3 + 2],
                     words = highlightData[(i - 1) * 3 + 3]
                 }
-                local lastBlockEnd = (highlightData[(i - 2) * 3 + 2] or 1)
 
-                for i = dataBlock._start, dataBlock._end do
-                    label.highlightInfo[i] = dataBlock.words
+                -- Track clickable positions
+                for pos = dataBlock._start, dataBlock._end do
+                    label.highlightInfo[pos] = dataBlock.words
                 end
 
-                for letter = lastBlockEnd, dataBlock._start - 1 do
-                    local tmpChar = string.byte(drawText:sub(letter, letter))
-                    local fillChar = (tmpChar == 10 or tmpChar == 32) and string.char(tmpChar) or string.char(127)
-
-                    tmpText = tmpText .. string.rep(fillChar, letterWidth[tmpChar])
+                -- Add normal text before this highlight (with NPC color)
+                if dataBlock._start > lastEnd then
+                    local prefix = cleanText:sub(lastEnd, dataBlock._start - 1)
+                    coloredStr = coloredStr .. '{' .. prefix .. ', ' .. npcColor .. '}'
                 end
-                tmpText = tmpText .. dataBlock.words
+                -- Add highlighted text with blue color
+                coloredStr = coloredStr .. '{' .. dataBlock.words .. ', #1f9ffe}'
+                lastEnd = dataBlock._end + 1
+            end
+            -- Add remaining text after last highlight (with NPC color)
+            if lastEnd <= #cleanText then
+                coloredStr = coloredStr .. '{' .. cleanText:sub(lastEnd) .. ', ' .. npcColor .. '}'
             end
 
-            -- Fill the highlight label to the same size as default label
-            local finalBlockEnd = (highlightData[(#highlightData / 3 - 1) * 3 + 2] or 1)
-            for letter = finalBlockEnd, drawText:len() do
-                local tmpChar = string.byte(drawText:sub(letter, letter))
-                local fillChar = (tmpChar == 10 or tmpChar == 32) and string.char(tmpChar) or string.char(127)
-
-                tmpText = tmpText .. string.rep(fillChar, letterWidth[tmpChar])
-            end
-
-            labelHighlight:setText(tmpText)
+            label:setColoredText(coloredStr)
+            text = cleanText
         end
     end
 
